@@ -2,7 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.EstadoFatura;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Table(name = "fatura")
 public class Fatura {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idFatura", nullable = false)
     private Integer id;
 

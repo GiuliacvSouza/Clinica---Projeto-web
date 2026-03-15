@@ -25,12 +25,8 @@ public class UtilizadorService {
             throw new RuntimeException("Email é obrigatório.");
         }
 
-        boolean duplicado = repository.findAll().stream()
-                .anyMatch(u ->
-                        u.getEmail() != null &&
-                                u.getEmail().equalsIgnoreCase(utilizador.getEmail()) &&
-                                !u.getId().equals(utilizador.getId())
-                );
+        boolean duplicado = utilizador.getId() == null
+                && repository.existsByEmail(utilizador.getEmail());
 
         if (duplicado) {
             throw new RuntimeException("Email já cadastrado.");

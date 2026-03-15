@@ -1,11 +1,14 @@
 package model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name = "contatoEmergencia")
 public class ContatoEmergencia {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contatoEmergencia", nullable = false)
     private Integer id;
 

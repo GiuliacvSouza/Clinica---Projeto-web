@@ -1,13 +1,15 @@
 package model;
 
 import jakarta.persistence.*;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "anamnese")
 public class Anamnese {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idAnamnese", nullable = false)
     private Integer id;
 

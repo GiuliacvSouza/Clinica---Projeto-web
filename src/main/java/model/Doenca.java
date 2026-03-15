@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name = "doenca")

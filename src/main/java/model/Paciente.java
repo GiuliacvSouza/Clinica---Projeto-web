@@ -1,7 +1,6 @@
 package model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -12,7 +11,7 @@ public class Paciente {
     private Integer id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
     @JoinColumn(name = "idUtilizador", nullable = false)
     private Utilizador utilizador;
 

@@ -2,13 +2,15 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.Turno;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "recepcionista")
 public class Recepcionista {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idUtilizador", nullable = false)
     private Integer id;
 

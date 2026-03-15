@@ -1,13 +1,15 @@
 package model;
 
 import jakarta.persistence.*;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "material")
 public class Material {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMaterial", nullable = false)
     private Integer id;
 

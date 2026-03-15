@@ -1,14 +1,17 @@
 package model;
 
 import jakarta.persistence.*;
-
 import java.time.Instant;
 import java.time.LocalDate;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name = "utilizador")
 public class Utilizador {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idUtilizador", nullable = false)
     private Integer id;
 
@@ -51,6 +54,9 @@ public class Utilizador {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codigoPostal")
     private CodigoPostal codigoPostal;
+
+    public Utilizador() {
+    }
 
     public Integer getId() {
         return id;

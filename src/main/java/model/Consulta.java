@@ -2,7 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.EstadoConsulta;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Table(name = "consulta")
 public class Consulta {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idConsulta", nullable = false)
     private Integer id;
 

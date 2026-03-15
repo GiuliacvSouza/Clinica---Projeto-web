@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.TipoAlergia;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name = "alergia")
