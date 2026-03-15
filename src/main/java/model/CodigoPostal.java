@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 @Table(name = "codigoPostal")
 public class CodigoPostal {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigoPostal", nullable = false, length = 10)
     private String codigoPostal;
 
