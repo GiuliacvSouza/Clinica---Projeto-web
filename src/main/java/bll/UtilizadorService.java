@@ -32,6 +32,10 @@ public class UtilizadorService {
             throw new RuntimeException("Email já cadastrado.");
         }
 
+        if (utilizador.getSenha() == null || utilizador.getSenha().isBlank()) {
+            throw new RuntimeException("Senha é obrigatória.");
+        }
+
         return repository.save(utilizador);
     }
 

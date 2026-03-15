@@ -15,6 +15,13 @@ public class Utilizador {
     @Column(name = "idUtilizador", nullable = false)
     private Integer id;
 
+    @Column(name = "senha", length = 255)
+    private String senha;
+
+    // getter e setter
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
+
     @Column(name = "primeiroNome", length = 100)
     private String primeiroNome;
 

@@ -86,6 +86,7 @@ public class MainApplication implements CommandLineRunner {
         u.setEmail(nome.toLowerCase() + "." + apelido.toLowerCase()
                 + "." + System.nanoTime() + "@clinica.pt");
         u.setTipoUtilizador(tipo);
+        u.setSenha("Clinica2025!");  // ✅ senha padrao para testes
         return utilizadorService.salvar(u);
     }
 
@@ -106,7 +107,7 @@ public class MainApplication implements CommandLineRunner {
         Fatura      fatura         = null;
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 1 – UTILIZADORES
+        // BLOCO 1 - UTILIZADORES
         // ══════════════════════════════════════════════════════════════════════
         secao("1. UTILIZADORES");
 
@@ -129,20 +130,36 @@ public class MainApplication implements CommandLineRunner {
             dup.setUltimoNome("Teste");
             dup.setEmail(uPaciente != null ? uPaciente.getEmail() : "dup@clinica.pt");
             dup.setTipoUtilizador("PACIENTE");
+            dup.setSenha("Clinica2025!");
             utilizadorService.salvar(dup);
             erro("Deveria ter rejeitado email duplicado!");
         } catch (Exception e) {
             ok("Email duplicado rejeitado: " + e.getMessage());
         }
 
-        // Nome obrigatório
+        // Nome obrigatorio
         try {
             Utilizador sem = new Utilizador();
             sem.setEmail("semNome@clinica.pt");
+            sem.setSenha("Clinica2025!");
             utilizadorService.salvar(sem);
             erro("Deveria ter rejeitado utilizador sem nome!");
         } catch (Exception e) {
-            ok("Nome obrigatório validado: " + e.getMessage());
+            ok("Nome obrigatorio validado: " + e.getMessage());
+        }
+
+        // Senha obrigatoria
+        try {
+            Utilizador semSenha = new Utilizador();
+            semSenha.setPrimeiroNome("Sem");
+            semSenha.setUltimoNome("Senha");
+            semSenha.setEmail("semsenha." + System.nanoTime() + "@clinica.pt");
+            semSenha.setTipoUtilizador("PACIENTE");
+            // sem setSenha() -- deve ser rejeitado
+            utilizadorService.salvar(semSenha);
+            erro("Deveria ter rejeitado utilizador sem senha!");
+        } catch (Exception e) {
+            ok("Senha obrigatoria validada: " + e.getMessage());
         }
 
         try {
@@ -150,12 +167,12 @@ public class MainApplication implements CommandLineRunner {
         } catch (Exception e) { erro(e.getMessage()); }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 2 – PACIENTE
+        // BLOCO 2 - PACIENTE
         // ══════════════════════════════════════════════════════════════════════
         secao("2. PACIENTE");
 
         try {
-            if (uPaciente == null) throw new Exception("Utilizador paciente não disponível");
+            if (uPaciente == null) throw new Exception("Utilizador paciente nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uPaciente.getId());
             Paciente p = new Paciente();
             p.setUtilizador(managed);
@@ -165,9 +182,8 @@ public class MainApplication implements CommandLineRunner {
             ok("Paciente criado com ID: " + paciente.getId());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Data de registo futura deve ser rejeitada
         try {
-            if (uPaciente == null) throw new Exception("Utilizador paciente não disponível");
+            if (uPaciente == null) throw new Exception("Utilizador paciente nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uPaciente.getId());
             Paciente pFut = new Paciente();
             pFut.setUtilizador(managed);
@@ -179,25 +195,24 @@ public class MainApplication implements CommandLineRunner {
             ok("Data de registo futura rejeitada: " + e.getMessage());
         }
 
-        // Status obrigatório
         try {
-            if (uPaciente == null) throw new Exception("Utilizador paciente não disponível");
+            if (uPaciente == null) throw new Exception("Utilizador paciente nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uPaciente.getId());
             Paciente pSem = new Paciente();
             pSem.setUtilizador(managed);
             pacienteService.salvar(pSem);
             erro("Deveria ter rejeitado status vazio!");
         } catch (Exception e) {
-            ok("Status obrigatório validado: " + e.getMessage());
+            ok("Status obrigatorio validado: " + e.getMessage());
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 3 – DENTISTA
+        // BLOCO 3 - DENTISTA
         // ══════════════════════════════════════════════════════════════════════
         secao("3. DENTISTA");
 
         try {
-            if (uDentista == null) throw new Exception("Utilizador dentista não disponível");
+            if (uDentista == null) throw new Exception("Utilizador dentista nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uDentista.getId());
             Dentista d = new Dentista();
             d.setUtilizador(managed);
@@ -210,9 +225,8 @@ public class MainApplication implements CommandLineRunner {
             ok("Dentista criado com ID: " + dentista.getId());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Horário saída antes da entrada
         try {
-            if (uDentista == null) throw new Exception("Utilizador dentista não disponível");
+            if (uDentista == null) throw new Exception("Utilizador dentista nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uDentista.getId());
             Dentista dInv = new Dentista();
             dInv.setUtilizador(managed);
@@ -220,30 +234,29 @@ public class MainApplication implements CommandLineRunner {
             dInv.setHorarioEntrada(LocalTime.of(18, 0));
             dInv.setHorarioSaida(LocalTime.of(9, 0));
             dentistaService.salvar(dInv);
-            erro("Deveria ter rejeitado horário inválido!");
+            erro("Deveria ter rejeitado horario invalido!");
         } catch (Exception e) {
-            ok("Horário inválido rejeitado: " + e.getMessage());
+            ok("Horario invalido rejeitado: " + e.getMessage());
         }
 
-        // OMD obrigatório
         try {
-            if (uDentista == null) throw new Exception("Utilizador dentista não disponível");
+            if (uDentista == null) throw new Exception("Utilizador dentista nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uDentista.getId());
             Dentista dSem = new Dentista();
             dSem.setUtilizador(managed);
             dentistaService.salvar(dSem);
             erro("Deveria ter rejeitado dentista sem OMD!");
         } catch (Exception e) {
-            ok("OMD obrigatório validado: " + e.getMessage());
+            ok("OMD obrigatorio validado: " + e.getMessage());
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 4 – ASSISTENTE & RECEPCIONISTA
+        // BLOCO 4 - ASSISTENTE & RECEPCIONISTA
         // ══════════════════════════════════════════════════════════════════════
         secao("4. ASSISTENTE & RECEPCIONISTA");
 
         try {
-            if (uAssistente == null) throw new Exception("Utilizador assistente não disponível");
+            if (uAssistente == null) throw new Exception("Utilizador assistente nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uAssistente.getId());
             Assistente a = new Assistente();
             a.setUtilizador(managed);
@@ -255,7 +268,7 @@ public class MainApplication implements CommandLineRunner {
         } catch (Exception e) { erro(e.getMessage()); }
 
         try {
-            if (uRecepcionista == null) throw new Exception("Utilizador recepcionista não disponível");
+            if (uRecepcionista == null) throw new Exception("Utilizador recepcionista nao disponivel");
             Utilizador managed = utilizadorService.buscarPorId(uRecepcionista.getId());
             Recepcionista r = new Recepcionista();
             r.setUtilizador(managed);
@@ -266,7 +279,7 @@ public class MainApplication implements CommandLineRunner {
         } catch (Exception e) { erro(e.getMessage()); }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 5 – SEGURO & PACIENTE×SEGURO
+        // BLOCO 5 - SEGURO & PACIENTE x SEGURO
         // ══════════════════════════════════════════════════════════════════════
         secao("5. SEGURO & PACIENTE×SEGURO");
 
@@ -280,15 +293,12 @@ public class MainApplication implements CommandLineRunner {
             ok("Seguro criado com ID: " + seguro.getId());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Associar paciente ao seguro
         try {
             if (paciente == null || seguro == null)
-                throw new Exception("Paciente ou seguro não disponível");
-
+                throw new Exception("Paciente ou seguro nao disponivel");
             PacientexSeguroId psId = new PacientexSeguroId();
             psId.setIdUtilizador(paciente.getId());
             psId.setIdSeguro(seguro.getId());
-
             PacientexSeguro ps = new PacientexSeguro();
             ps.setId(psId);
             ps.setIdUtilizador(pacienteService.buscarPorId(paciente.getId()));
@@ -300,15 +310,12 @@ public class MainApplication implements CommandLineRunner {
             ok("Paciente associado ao seguro");
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Datas de cobertura invertidas
         try {
             if (paciente == null || seguro == null)
-                throw new Exception("Paciente ou seguro não disponível");
-
+                throw new Exception("Paciente ou seguro nao disponivel");
             PacientexSeguroId psId2 = new PacientexSeguroId();
             psId2.setIdUtilizador(paciente.getId());
             psId2.setIdSeguro(seguro.getId());
-
             PacientexSeguro psInv = new PacientexSeguro();
             psInv.setId(psId2);
             psInv.setIdUtilizador(pacienteService.buscarPorId(paciente.getId()));
@@ -322,66 +329,64 @@ public class MainApplication implements CommandLineRunner {
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 6 – CONTATO DE EMERGÊNCIA
+        // BLOCO 6 - CONTATO DE EMERGENCIA
         // ══════════════════════════════════════════════════════════════════════
         secao("6. CONTATO DE EMERGÊNCIA");
 
         try {
-            if (paciente == null) throw new Exception("Paciente não disponível");
+            if (paciente == null) throw new Exception("Paciente nao disponivel");
             ContatoEmergencia ce = new ContatoEmergencia();
             ce.setPaciente(pacienteService.buscarPorId(paciente.getId()));
             ce.setPrimeiroNome("Maria");
             ce.setUltimoNome("Costa");
             contatoEmergenciaService.salvar(ce);
-            ok("Contato de emergência criado");
+            ok("Contato de emergencia criado");
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Nome obrigatório
         try {
-            if (paciente == null) throw new Exception("Paciente não disponível");
+            if (paciente == null) throw new Exception("Paciente nao disponivel");
             ContatoEmergencia ceSem = new ContatoEmergencia();
             ceSem.setPaciente(pacienteService.buscarPorId(paciente.getId()));
             contatoEmergenciaService.salvar(ceSem);
             erro("Deveria ter rejeitado contato sem nome!");
         } catch (Exception e) {
-            ok("Nome de contato obrigatório validado: " + e.getMessage());
+            ok("Nome de contato obrigatorio validado: " + e.getMessage());
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 7 – PRONTUÁRIO
+        // BLOCO 7 - PRONTUARIO
         // ══════════════════════════════════════════════════════════════════════
         secao("7. PRONTUÁRIO");
 
         try {
-            if (paciente == null) throw new Exception("Paciente não disponível");
+            if (paciente == null) throw new Exception("Paciente nao disponivel");
             Prontuario pr = new Prontuario();
             pr.setPaciente(pacienteService.buscarPorId(paciente.getId()));
             pr.setGrupoSanguineo("A+");
             pr.setObservacoes("Paciente sem alergias conhecidas.");
             prontuarioService.criarProntuario(pr);
-            ok("Prontuário criado");
+            ok("Prontuario criado");
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Prontuário duplicado
         try {
-            if (paciente == null) throw new Exception("Paciente não disponível");
+            if (paciente == null) throw new Exception("Paciente nao disponivel");
             Prontuario prDup = new Prontuario();
             prDup.setPaciente(pacienteService.buscarPorId(paciente.getId()));
             prDup.setGrupoSanguineo("B+");
             prontuarioService.criarProntuario(prDup);
-            erro("Deveria ter rejeitado prontuário duplicado!");
+            erro("Deveria ter rejeitado prontuario duplicado!");
         } catch (Exception e) {
-            ok("Prontuário duplicado rejeitado: " + e.getMessage());
+            ok("Prontuario duplicado rejeitado: " + e.getMessage());
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 8 – CONSULTA
+        // BLOCO 8 - CONSULTA
         // ══════════════════════════════════════════════════════════════════════
         secao("8. CONSULTA");
 
         try {
             if (paciente == null || dentista == null)
-                throw new Exception("Paciente ou dentista não disponível");
+                throw new Exception("Paciente ou dentista nao disponivel");
             Consulta c = new Consulta();
             c.setIdPaciente(pacienteService.buscarPorId(paciente.getId()));
             c.setIdDentista(dentistaService.buscarPorId(dentista.getId()));
@@ -394,10 +399,9 @@ public class MainApplication implements CommandLineRunner {
             ok("Consulta agendada com ID: " + consulta.getId());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Consulta no passado
         try {
             if (paciente == null || dentista == null)
-                throw new Exception("Paciente ou dentista não disponível");
+                throw new Exception("Paciente ou dentista nao disponivel");
             Consulta cPass = new Consulta();
             cPass.setIdPaciente(pacienteService.buscarPorId(paciente.getId()));
             cPass.setIdDentista(dentistaService.buscarPorId(dentista.getId()));
@@ -409,7 +413,6 @@ public class MainApplication implements CommandLineRunner {
             ok("Consulta no passado rejeitada: " + e.getMessage());
         }
 
-        // Consulta sem paciente
         try {
             Consulta cSem = new Consulta();
             cSem.setDataHoraInicio(Instant.now().plusSeconds(86400));
@@ -421,54 +424,52 @@ public class MainApplication implements CommandLineRunner {
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 9 – ATENDIMENTO
+        // BLOCO 9 - ATENDIMENTO
         // ══════════════════════════════════════════════════════════════════════
         secao("9. ATENDIMENTO");
 
         try {
-            if (consulta == null) throw new Exception("Consulta não disponível");
+            if (consulta == null) throw new Exception("Consulta nao disponivel");
             Atendimento at = new Atendimento();
             at.setIdConsulta(consultaService.buscarPorId(consulta.getId()));
-            at.setDiagnostico("Cárie grau 2 no dente 36.");
+            at.setDiagnostico("Carie grau 2 no dente 36.");
             at.setRetorno(true);
             at.setPeriodoRetorno(30);
-            at.setObservacoes("Aplicar selante após tratamento.");
+            at.setObservacoes("Aplicar selante apos tratamento.");
             atendimento = atendimentoService.salvar(at);
             ok("Atendimento criado com ID: " + atendimento.getId());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Retorno sem período
         try {
-            if (consulta == null) throw new Exception("Consulta não disponível");
+            if (consulta == null) throw new Exception("Consulta nao disponivel");
             Atendimento atInv = new Atendimento();
             atInv.setIdConsulta(consultaService.buscarPorId(consulta.getId()));
             atInv.setRetorno(true);
             atendimentoService.salvar(atInv);
-            erro("Deveria ter rejeitado retorno sem período!");
+            erro("Deveria ter rejeitado retorno sem periodo!");
         } catch (Exception e) {
-            ok("Retorno sem período rejeitado: " + e.getMessage());
+            ok("Retorno sem periodo rejeitado: " + e.getMessage());
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 10 – FATURA & PAGAMENTO
+        // BLOCO 10 - FATURA & PAGAMENTO
         // ══════════════════════════════════════════════════════════════════════
         secao("10. FATURA & PAGAMENTO");
 
         try {
-            if (atendimento == null) throw new Exception("Atendimento não disponível");
+            if (atendimento == null) throw new Exception("Atendimento nao disponivel");
             Fatura f = new Fatura();
             f.setIdAtendimento(atendimentoService.buscarPorId(atendimento.getId()));
             f.setValorFinal(new BigDecimal("150.00"));
             f.setEstado(EstadoFatura.PENDENTE);
             fatura = faturaService.emitirFatura(f);
             ok("Fatura emitida com ID: " + fatura.getId()
-                    + " | Valor: " + fatura.getValorFinal() + "€"
+                    + " | Valor: " + fatura.getValorFinal() + "E"
                     + " | Data: " + fatura.getDataEmissao());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Valor zero
         try {
-            if (atendimento == null) throw new Exception("Atendimento não disponível");
+            if (atendimento == null) throw new Exception("Atendimento nao disponivel");
             Fatura fInv = new Fatura();
             fInv.setIdAtendimento(atendimentoService.buscarPorId(atendimento.getId()));
             fInv.setValorFinal(BigDecimal.ZERO);
@@ -478,10 +479,9 @@ public class MainApplication implements CommandLineRunner {
             ok("Valor zero rejeitado: " + e.getMessage());
         }
 
-        // Registar pagamento
         try {
             if (fatura == null || uPaciente == null)
-                throw new Exception("Fatura ou utilizador não disponível");
+                throw new Exception("Fatura ou utilizador nao disponivel");
             Pagamento pg = new Pagamento();
             pg.setIdFatura(faturaService.buscarPorId(fatura.getId()));
             pg.setIdUtilizador(utilizadorService.buscarPorId(uPaciente.getId()));
@@ -490,12 +490,11 @@ public class MainApplication implements CommandLineRunner {
             pg.setDataPagamento(LocalDate.now());
             Pagamento pgSalvo = pagamentoService.registrarPagamento(pg);
             ok("Pagamento registado com ID: " + pgSalvo.getId()
-                    + " | Método: " + pgSalvo.getMetodo());
+                    + " | Metodo: " + pgSalvo.getMetodo());
         } catch (Exception e) { erro(e.getMessage()); }
 
-        // Data de pagamento futura
         try {
-            if (fatura == null) throw new Exception("Fatura não disponível");
+            if (fatura == null) throw new Exception("Fatura nao disponivel");
             Pagamento pgFut = new Pagamento();
             pgFut.setIdFatura(faturaService.buscarPorId(fatura.getId()));
             pgFut.setValorPago(new BigDecimal("50.00"));
@@ -507,16 +506,16 @@ public class MainApplication implements CommandLineRunner {
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // BLOCO 11 – LISTAGENS FINAIS
+        // BLOCO 11 - LISTAGENS FINAIS
         // ══════════════════════════════════════════════════════════════════════
         secao("11. LISTAGENS FINAIS");
 
         try {
             System.out.println("  Utilizadores (" + utilizadorService.listarTodos().size() + "):");
             utilizadorService.listarTodos().forEach(u ->
-                    System.out.println("    • [" + u.getTipoUtilizador() + "] "
+                    System.out.println("    * [" + u.getTipoUtilizador() + "] "
                             + u.getPrimeiroNome() + " " + u.getUltimoNome()
-                            + " — " + u.getEmail()));
+                            + " -- " + u.getEmail()));
         } catch (Exception e) { erro(e.getMessage()); }
 
         try {
