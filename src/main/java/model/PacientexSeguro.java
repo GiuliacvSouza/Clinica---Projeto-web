@@ -9,19 +9,20 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "pacientexseguro")
 public class PacientexSeguro {
+
     @EmbeddedId
     private PacientexSeguroId id;
 
     @MapsId("idUtilizador")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "idUtilizador", nullable = false)
+    @JoinColumn(name = "id_utilizador", nullable = false)   // ✅ snake_case
     private Paciente idUtilizador;
 
     @MapsId("idSeguro")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "idSeguro", nullable = false)
+    @JoinColumn(name = "id_seguro", nullable = false)       // ✅ snake_case
     private Seguro idSeguro;
 
     @Column(name = "numeroApolice", length = 50)

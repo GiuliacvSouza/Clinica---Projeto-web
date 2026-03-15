@@ -9,10 +9,11 @@ import java.util.Objects;
 @Embeddable
 public class PacientexSeguroId implements Serializable {
     private static final long serialVersionUID = 5454738706395719972L;
-    @Column(name = "idUtilizador", nullable = false)
+
+    @Column(name = "id_utilizador", nullable = false)
     private Integer idUtilizador;
 
-    @Column(name = "idSeguro", nullable = false)
+    @Column(name = "id_seguro", nullable = false)
     private Integer idSeguro;
 
     public Integer getIdUtilizador() {
