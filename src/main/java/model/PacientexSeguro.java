@@ -16,13 +16,13 @@ public class PacientexSeguro {
     @MapsId("idUtilizador")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id_utilizador", nullable = false)   // ✅ snake_case
+    @JoinColumn(name = "id_utilizador", nullable = false)
     private Paciente idUtilizador;
 
     @MapsId("idSeguro")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id_seguro", nullable = false)       // ✅ snake_case
+    @JoinColumn(name = "id_seguro", nullable = false)
     private Seguro idSeguro;
 
     @Column(name = "numeroApolice", length = 50)

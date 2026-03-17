@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Table(name = "assistente")
 public class Assistente {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idUtilizador", nullable = false)
     private Integer id;
 
