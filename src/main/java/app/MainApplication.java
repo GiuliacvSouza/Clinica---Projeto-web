@@ -77,7 +77,7 @@ public class MainApplication implements CommandLineRunner {
     }
 
     private static void ok(String msg)   { System.out.println("  ✔ " + msg); }
-    private static void erro(String msg) { System.out.println("  ❌ ERRO: " + msg); }
+    private static void erro(String msg) { System.out.println(" ERRO: " + msg); }
 
     private Utilizador criarUtilizador(String nome, String apelido, String tipo) {
         Utilizador u = new Utilizador();
@@ -86,7 +86,7 @@ public class MainApplication implements CommandLineRunner {
         u.setEmail(nome.toLowerCase() + "." + apelido.toLowerCase()
                 + "." + System.nanoTime() + "@clinica.pt");
         u.setTipoUtilizador(tipo);
-        u.setSenha("Clinica2025!");  // ✅ senha padrao para testes
+        u.setSenha("Clinica2025!");  //   senha padrao para testes
         return utilizadorService.salvar(u);
     }
 

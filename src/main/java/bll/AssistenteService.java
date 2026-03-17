@@ -28,7 +28,7 @@ public class AssistenteService {
         if (assistente.getDataAdmissao() != null && assistente.getDataAdmissao().isAfter(LocalDate.now()))
             throw new RuntimeException("Data de admissão não pode ser futura.");
 
-        assistente.setUtilizador(entityManager.merge(assistente.getUtilizador())); // ✅
+        assistente.setUtilizador(entityManager.merge(assistente.getUtilizador())); //  
         return repository.save(assistente);
     }
 

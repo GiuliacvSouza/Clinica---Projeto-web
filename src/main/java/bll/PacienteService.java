@@ -30,7 +30,7 @@ public class PacienteService {
         if (paciente.getDataRegisto() != null && paciente.getDataRegisto().isAfter(LocalDate.now()))
             throw new RuntimeException("Data de registo não pode ser futura.");
 
-        paciente.setUtilizador(entityManager.merge(paciente.getUtilizador())); // ✅
+        paciente.setUtilizador(entityManager.merge(paciente.getUtilizador())); //  
         return repository.save(paciente);
     }
 

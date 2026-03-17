@@ -28,7 +28,8 @@ public class RecepcionistaService {
         if (recepcionista.getDataAdmissao() != null && recepcionista.getDataAdmissao().isAfter(LocalDate.now()))
             throw new RuntimeException("Data de admissão não pode ser futura.");
 
-        recepcionista.setUtilizador(entityManager.merge(recepcionista.getUtilizador()));
+        // REMOVIDO: recepcionista.setId(recepcionista.getUtilizador().getId());
+        recepcionista.setUtilizador(entityManager.merge(recepcionista.getUtilizador())); //  
         return repository.save(recepcionista);
     }
 

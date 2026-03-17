@@ -33,7 +33,7 @@ public class DentistaService {
                 && dentista.getHorarioSaida().isBefore(dentista.getHorarioEntrada()))
             throw new RuntimeException("Horário de saída deve ser após horário de entrada.");
 
-        dentista.setUtilizador(entityManager.merge(dentista.getUtilizador())); // ✅
+        dentista.setUtilizador(entityManager.merge(dentista.getUtilizador())); //  
         return repository.save(dentista);
     }
 
