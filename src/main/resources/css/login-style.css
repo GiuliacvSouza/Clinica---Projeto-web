@@ -1,0 +1,97 @@
+/* ==================== TÍTULOS ==================== */
+.titulo-login {
+    -fx-font-size: 64px;
+    -fx-font-weight: normal;
+    -fx-text-fill: rgba(0, 0, 0, 0.8);       /* era #000000CC */
+    -fx-font-family: 'Poppins';
+}
+
+.subtitulo-login {
+    -fx-font-size: 24px;
+    -fx-text-fill: rgba(0, 0, 0, 0.8);       /* era #000000CC */
+    -fx-font-family: 'Poppins';
+    -fx-font-weight: normal;
+    -fx-padding: 0 0 20 0;
+}
+
+.welcome-login {
+    -fx-font-size: 24px;
+    -fx-text-fill: #000000;
+    -fx-font-family: 'Poppins Medium';        /* peso 500 = familia separada */
+    -fx-padding: 0 0 5 0;
+}
+
+.description-login {
+    -fx-font-size: 20px;
+    -fx-text-fill: #000000;
+    -fx-font-family: 'Poppins Light';         /* peso 300 = familia separada */
+    -fx-padding: 0 0 20 0;
+}
+
+/* ==================== LABELS ==================== */
+.label-login {
+    -fx-font-size: 16px;
+    -fx-font-family: 'Poppins Medium';        /* peso 500 */
+    -fx-text-fill: #000000;
+}
+
+.label-mandatory {
+    -fx-font-size: 16px;
+    -fx-text-fill: #FB2424;
+    -fx-font-family: 'Poppins';
+}
+
+.label-erro {
+    -fx-text-fill: #FB2424;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Poppins';
+    -fx-padding: 5 0 0 0;
+}
+
+/* ==================== CAMPOS DE TEXTO ==================== */
+.campo-texto {
+    -fx-pref-width: 496px;
+    -fx-pref-height: 63px;
+    -fx-background-radius: 8px;
+    -fx-background-color: rgba(76, 148, 140, 0.07);   /* era #4C948C12 */
+    -fx-border-color: rgba(76, 148, 140, 0.13);        /* era #4C948C21 */
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 0 15px;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Poppins';
+}
+
+.campo-texto:focused {
+    -fx-border-color: #4C948C;
+    -fx-border-width: 2px;
+    -fx-background-color: rgba(76, 148, 140, 0.07);
+}
+
+/* ==================== BOTÕES ==================== */
+.primary-button {
+    -fx-background-color: #4C948C;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-family: 'Poppins';
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.primary-button:hover {
+    -fx-background-color: #3a7a73;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 8, 0, 0, 2);
+}
+
+.primary-button:pressed {
+    -fx-background-color: #2e6860;
+}
+
+/* ==================== CARD DO FORMULÁRIO ==================== */
+.form-login {
+    -fx-padding: 30;
+    -fx-background-color: rgba(76, 148, 140, 0.07);   /* era #4C948C12 */
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 5);
+}

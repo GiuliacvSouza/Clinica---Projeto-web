@@ -1,0 +1,71 @@
+/* Estilo da Raiz (Background do lado direito) */
+.root {
+    -fx-font-family: "Poppins"; /* Nome da família que carregaste no Java */
+}
+
+/* O "Card" central do Login */
+.login-card {
+    -fx-background-color: #f4f9f8; /* Cor que pegaste no Figma */
+    -fx-background-radius: 15;      /* Border radius do Figma */
+    -fx-padding: 30;               /* Espaçamento interno */
+    -fx-spacing: 20;               /* Espaço entre os elementos dentro dele */
+    /* Sombra do card (Drop Shadow do Figma) */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0.5, 0, 4);
+}
+
+/* Títulos */
+.titulo-principal {
+    -fx-font-family: "Poppins";
+    -fx-font-weight: regular;
+    -fx-font-size: 36px;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 0 0 -10 0; /* Margem negativa em baixo para aproximar o próximo elemento */
+}
+
+.subtitulo {
+    -fx-font-family: "Poppins";
+    -fx-font-weight: regular;
+    -fx-font-size: 16px;
+    -fx-text-fill: #666666;
+    -fx-translate-y: -15; /* Move o subtítulo para cima */
+}
+
+/* Labels dentro do card (Email e Palavra-passe) */
+.label-campo {
+    -fx-font-family: "Poppins Regular";
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-padding: 0 0 5 0; /* Um pequeno respiro entre a label e o campo de texto */
+}
+
+
+/* Estilo dos campos de entrada (TextField e PasswordField) */
+.text-input {
+    -fx-background-color: #e9f2f0; /* Cor igual à da imagem */
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-font-family: "Poppins";
+}
+
+/* Foco no campo (quando clicas para digitar) */
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #84a59d;
+    -fx-border-radius: 8;
+    -fx-background-color: #ffffff;
+}
+
+/* Botão Entrar */
+.button-entrar {
+    -fx-background-color: #84a59d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 12 0 12 0; /* Mais alto */
+}
+
+.button-entrar:hover {
+    -fx-background-color: #6b8e85;
+}

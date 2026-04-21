@@ -8,6 +8,18 @@ import jakarta.persistence.GenerationType;
 @Entity
 @Table(name = "alergia")
 public class Alergia {
+    /*
+    *
+    *
+    * Button b=new Button("click me");
+    * b.setOnAction{
+    *
+    *
+    * }
+    *
+    *
+    *
+    * */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idAlergia", nullable = false)

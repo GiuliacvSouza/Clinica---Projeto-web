@@ -1,13 +1,14 @@
 plugins {
     id 'java'
+    id 'application'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-group = 'com.example'
+group = 'com.clinica'
 version = '0.0.1-SNAPSHOT'
-description = 'ClinicaDentaria'
-
+description = "ClinicaDentaria"
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -18,13 +19,34 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
+javafx {
+    version = '21'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
 
+dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     runtimeOnly 'org.postgresql:postgresql'
-    //runtimeOnly 'com.h2database:h2'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+application {
+    mainClass = 'app.Launcher'
+}
+
+bootJar {
+    mainClass = 'app.Launcher'
+    manifest {
+        attributes 'Main-Class': 'app.Launcher'
+    }
+}
+
+tasks.named('bootRun') {
+    mainClass = 'app.Launcher'
 }
 
 tasks.named('test') {

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.LoginController"
+      prefWidth="1440" prefHeight="1024"
+      style="-fx-background-color: white;">
+
+    <!-- ═══ LADO ESQUERDO — Imagem ═══ -->
+    <ImageView fx:id="imgClinica"
+               fitWidth="668" fitHeight="1024"
+               preserveRatio="false">
+        <image>
+            <Image url="@../images/rececionistaLogin.png"/>
+        </image>
+    </ImageView>
+
+    <!-- ═══ LADO DIREITO — Formulário ═══ -->
+    <VBox alignment="CENTER" spacing="0"
+          HBox.hgrow="ALWAYS"
+          style="-fx-background-color: white; -fx-padding: 60 80 60 80;">
+
+        <!-- Título principal -->
+        <Label text="CLÍNICA DENTÁRIA"
+               styleClass="titulo-login"/>
+
+        <!-- Subtítulo -->
+        <Label text="Portal Da Rececionista"
+               styleClass="subtitulo-login"/>
+
+        <!-- ── Card do formulário ── -->
+        <VBox spacing="14"
+              styleClass="form-login"
+              maxWidth="564" minWidth="450">
+
+            <!-- Bem vinda de volta -->
+            <Label text="Bem vinda de volta"
+                   styleClass="welcome-login"/>
+
+            <Label text="Entre para aceder o portal"
+                   styleClass="description-login"/>
+
+            <!-- Label Email -->
+            <HBox spacing="4" alignment="CENTER_LEFT">
+                <Label text="Email"
+                       styleClass="label-login"/>
+                <Label text="*"
+                       styleClass="label-mandatory"/>
+            </HBox>
+
+            <!-- Campo Email -->
+            <TextField fx:id="txtEmail"
+                       promptText="seu@email.com"
+                       styleClass="campo-texto"/>
+
+            <!-- Label Palavra-Passe -->
+            <HBox spacing="4" alignment="CENTER_LEFT"
+                  style="-fx-padding: 8 0 0 0;">
+                <Label text="Palavra-Passe"
+                       styleClass="label-login"/>
+                <Label text="*"
+                       styleClass="label-mandatory"/>
+            </HBox>
+
+            <!-- Campo Password -->
+            <PasswordField fx:id="txtPassword"
+                           promptText="••••••••"
+                           prefHeight="50"
+                           styleClass="campo-texto"/>
+
+            <!-- Mensagem de erro (invisível por defeito) -->
+            <Label fx:id="lblErro"
+                   text=""
+                   styleClass="label-erro"
+                   visible="false"/>
+
+            <!-- Botão ENTRAR -->
+            <Button fx:id="btnEntrar"
+                    text="ENTRAR"
+                    prefHeight="52"
+                    maxWidth="Infinity"
+                    onAction="#handleLogin"
+                    styleClass="primary-button">
+                <VBox.margin>
+                    <Insets top="12"/>
+                </VBox.margin>
+            </Button>
+
+        </VBox>
+    </VBox>
+</HBox>
