@@ -35,7 +35,7 @@
                styleClass="subtitulo-login"/>
 
         <!-- ── Card do formulário ── -->
-        <VBox spacing="14"
+        <VBox spacing="4"
               styleClass="form-login"
               maxWidth="564" minWidth="450">
 
@@ -88,7 +88,7 @@
                     onAction="#handleLogin"
                     styleClass="primary-button">
                 <VBox.margin>
-                    <Insets top="12"/>
+                    <Insets top="8"/>
                 </VBox.margin>
             </Button>
 

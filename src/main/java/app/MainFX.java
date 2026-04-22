@@ -17,10 +17,9 @@ public class MainFX extends Application {
 
     @Override
     public void init() {
-        //Arranca o Spring Boot
+
         springContext = SpringApplication.run(MainFX.class);
 
-        //Carrega as fontes Poppins AQUI (init corre antes do start)
         String[] weights = {
                 "Regular", "Bold", "Light", "Medium",
                 "SemiBold", "ExtraBold", "Black",
@@ -36,19 +35,17 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        //Carrega o FXML
+
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/fxml/login-view.fxml")
         );
         loader.setControllerFactory(springContext::getBean);
 
-        //Cria a cena e aplica o CSS
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(
                 getClass().getResource("/css/login-style.css").toExternalForm()
         );
 
-        //Configura e mostra o Stage
         stage.setTitle("Clínica Dentária");
         stage.setMaximized(true); // abre em fullscreen desktop
         stage.setScene(scene);
