@@ -1,6 +1,7 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.AtendimentoService;
 import bll.ConsultaService;
@@ -536,18 +537,18 @@ public class PaymentController {
 
     @FXML
     private void abrirAgenda() throws IOException {
-        trocarTela("/fxml/Agenda.fxml");
+        SceneManager.trocarTela("/fxml/Agenda.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void abrirPacientes() throws IOException {
-        trocarTela("/fxml/pacientes.fxml");
+        SceneManager.trocarTela("/fxml/pacientes.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void fazerLogout() throws IOException {
         SessionContext.limparSessao();
-        trocarTela("/fxml/login-view.fxml");
+        SceneManager.trocarTelaMaximizado("/fxml/login-view.fxml", "/css/login-style.css");
     }
 
     private void trocarTela(String fxmlPath) throws IOException {
