@@ -233,7 +233,7 @@ public class PaymentController {
         atendimentoSelecionado = atendimentoService.buscarPorConsulta(consulta);
         if (atendimentoSelecionado == null) {
             limparResumoFinanceiro();
-            mostrarAlerta("A consulta ainda nÃ£o tem atendimento associado.");
+            mostrarAlerta("A consulta ainda nÃƒÆ’Ã‚Â£o tem atendimento associado.");
             return;
         }
 
@@ -380,18 +380,18 @@ public class PaymentController {
         }
 
         if (pagamentoGroup.getSelectedToggle() == null) {
-            mostrarAlerta("Selecione um mÃ©todo de pagamento.");
+            mostrarAlerta("Selecione um mÃƒÆ’Ã‚Â©todo de pagamento.");
             return;
         }
 
         Utilizador utilizadorLogado = SessionContext.getUtilizadorLogado();
         if (utilizadorLogado == null) {
-            mostrarAlerta("SessÃ£o expirada. FaÃ§a login novamente.");
+            mostrarAlerta("SessÃƒÆ’Ã‚Â£o expirada. FaÃƒÆ’Ã‚Â§a login novamente.");
             return;
         }
 
         if (faturaAtual.getEstado() == EstadoFatura.PAGA) {
-            mostrarAlerta("Esta fatura jÃ¡ foi paga.", Alert.AlertType.INFORMATION);
+            mostrarAlerta("Esta fatura jÃƒÆ’Ã‚Â¡ foi paga.", Alert.AlertType.INFORMATION);
             return;
         }
 
@@ -428,7 +428,7 @@ public class PaymentController {
         if (selectedToggle == mbwayBtn) {
             return MetodoPagamento.MBWAY;
         }
-        throw new RuntimeException("Selecione um mÃ©todo de pagamento.");
+        throw new RuntimeException("Selecione um mÃƒÆ’Ã‚Â©todo de pagamento.");
     }
 
     private BigDecimal obterValorAPagar() {
@@ -472,7 +472,7 @@ public class PaymentController {
 
     private String formatarMoeda(BigDecimal valor) {
         BigDecimal valorFormatado = valor != null ? valor.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        return "€ " + valorFormatado.toPlainString();
+        return "Ã¢â€šÂ¬ " + valorFormatado.toPlainString();
     }
 
     private String formatarPercentual(BigDecimal valor) {
@@ -482,12 +482,12 @@ public class PaymentController {
 
     @FXML
     private void abrirAgenda() throws IOException {
-        trocarTela("/fxml/agenda-view.fxml");
+        trocarTela("/fxml/Agenda.fxml");
     }
 
     @FXML
     private void abrirPacientes() throws IOException {
-        trocarTela("/fxml/pacientes-view.fxml");
+        trocarTela("/fxml/pacientes.fxml");
     }
 
     @FXML
@@ -499,7 +499,7 @@ public class PaymentController {
     private void trocarTela(String fxmlPath) throws IOException {
         var resource = getClass().getResource(fxmlPath);
         if (resource == null) {
-            mostrarAlerta("A tela solicitada ainda nÃ£o estÃ¡ disponÃ­vel.", Alert.AlertType.INFORMATION);
+            mostrarAlerta("A tela solicitada ainda nÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡ disponÃƒÆ’Ã‚Â­vel.", Alert.AlertType.INFORMATION);
             return;
         }
 
@@ -520,6 +520,7 @@ public class PaymentController {
         String cssPath = switch (fxmlPath) {
             case "/fxml/login-view.fxml" -> "/css/login-style.css";
             case "/fxml/payment-view.fxml" -> "/css/payment-style.css";
+            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml" -> "/css/dashboard-style.css";
             default -> null;
         };
 
@@ -539,7 +540,7 @@ public class PaymentController {
 
     private void mostrarAlerta(String msg, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
-        alert.setTitle("InformaÃ§Ã£o");
+        alert.setTitle("InformaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();

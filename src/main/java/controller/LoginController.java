@@ -1,19 +1,24 @@
 package controller;
 
+import app.MainFX;
 import app.SessionContext;
+import bll.RecepcionistaService;
+import bll.UtilizadorService;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-import model.Utilizador;
 import model.Recepcionista;
-import bll.UtilizadorService;
-import bll.RecepcionistaService;
+import model.Utilizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +45,6 @@ public class LoginController {
     public void initialize() {
         setupEventHandlers();
         setupPlaceholders();
-        System.out.println("LoginController inicializado com Spring!");
     }
 
     private void setupEventHandlers() {
@@ -71,7 +75,7 @@ public class LoginController {
 
     private void setupPlaceholders() {
         txtEmail.setPromptText("seu@email.com");
-        txtPassword.setPromptText("••••••••");
+        txtPassword.setPromptText("********");
     }
 
     @FXML
@@ -94,7 +98,7 @@ public class LoginController {
         }
 
         if (!isValidEmail(email)) {
-            showError("Por favor, insira um email válido");
+            showError("Por favor, insira um email valido");
             txtEmail.requestFocus();
             highlightError(txtEmail);
             return;
@@ -108,27 +112,23 @@ public class LoginController {
                 Utilizador user = utilizadorService.autenticar(email, senha);
 
                 javafx.application.Platform.runLater(() -> {
-                    // Verifica se o usuário existe e está ativo (status = "ativo")
                     if (user != null && "ativo".equalsIgnoreCase(user.getStatus())) {
                         utilizadorLogado = user;
 
-                        // Verifica se é recepcionista e carrega dados adicionais
                         if ("RECEPCIONISTA".equals(user.getTipoUtilizador())) {
                             try {
                                 recepcionistaLogado = recepcionistaService.buscarPorUtilizadorId(user.getId());
-                                System.out.println("Recepcionista logado - Turno: " + recepcionistaLogado.getTurno());
-                            } catch (Exception e) {
-                                System.out.println("Info: Utilizador não é recepcionista ou dados não encontrados");
+                            } catch (Exception ignored) {
+                                recepcionistaLogado = null;
                             }
                         }
 
-                        // Atualiza último acesso (ultimoAcesso) com a data/hora atual
                         user.setUltimoAcesso(Instant.now());
                         utilizadorService.salvar(user);
                         SessionContext.iniciarSessao(utilizadorLogado, recepcionistaLogado);
                         showSuccessAndNavigate();
                     } else {
-                        showError("Email, palavra-passe inválidos ou conta inativa");
+                        showError("Email, palavra-passe invalidos ou conta inativa");
                         txtPassword.clear();
                         txtPassword.requestFocus();
                         highlightError(txtEmail);
@@ -156,35 +156,33 @@ public class LoginController {
         btnEntrar.setStyle("-fx-background-color: #4CAF50;");
 
         PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
-        delay.setOnFinished(event -> openMenuPrincipal());
+        delay.setOnFinished(event -> openAgenda());
         delay.play();
     }
 
-    private void openMenuPrincipal() {
+    private void openAgenda() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/menu-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Agenda.fxml"));
+            if (MainFX.getSpringContext() != null) {
+                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
+            }
+
             Parent root = loader.load();
-
-            MenuController menuController = loader.getController();
-            menuController.setDadosLogin(utilizadorLogado, recepcionistaLogado);
-
             Stage stage = (Stage) btnEntrar.getScene().getWindow();
             Scene scene = new Scene(root, 1200, 800);
 
-            try {
-                scene.getStylesheets().add(getClass().getResource("/css/menu-style.css").toExternalForm());
-            } catch (Exception e) {
-                System.out.println("CSS do menu não encontrado");
+            var css = getClass().getResource("/css/dashboard-style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
             }
 
             stage.setScene(scene);
-            stage.setTitle("Clínica Dentária - Menu Principal - Bem-vindo, " + utilizadorLogado.getPrimeiroNome());
+            stage.setTitle("Clinica Dentaria - Agenda");
             stage.setMaximized(true);
             stage.show();
-
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Erro ao carregar o menu: " + e.getMessage());
+            showError("Erro ao carregar a agenda: " + e.getMessage());
             btnEntrar.setDisable(false);
             btnEntrar.setText("ENTRAR");
             btnEntrar.setStyle("");
