@@ -54,17 +54,22 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class PaymentController {
+
+    private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final Locale LOCALE_PT = Locale.forLanguageTag("pt-PT");
 
     @Autowired private ConsultaService consultaService;
     @Autowired private AtendimentoService atendimentoService;
@@ -104,6 +109,10 @@ public class PaymentController {
         mbwayBtn.setToggleGroup(pagamentoGroup);
 
         Utilizador utilizadorLogado = SessionContext.getUtilizadorLogado();
+        if (utilizadorLogado == null) {
+            mostrarAlerta("Sessao expirada. Faca login novamente.");
+            return;
+        }
         if (utilizadorLogado != null) {
             nomeUtilizador.setText(utilizadorLogado.getPrimeiroNome() + " " + utilizadorLogado.getUltimoNome());
         }
@@ -185,10 +194,10 @@ public class PaymentController {
                         : "Paciente sem dados");
                 nomeLabel.setStyle("-fx-font-weight: bold;");
 
-                Label horaLabel = new Label(consulta.getDataHoraInicio()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()
-                        .format(DateTimeFormatter.ofPattern("HH:mm")));
+                String hora = consulta.getDataHoraInicio() != null
+                        ? consulta.getDataHoraInicio().atZone(ZoneId.systemDefault()).toLocalDateTime().format(HORA_FORMATTER)
+                        : "--:--";
+                Label horaLabel = new Label(hora);
                 horaLabel.setStyle("-fx-text-fill: #666;");
 
                 topRow.getChildren().addAll(nomeLabel, new Region(), horaLabel);
@@ -231,6 +240,11 @@ public class PaymentController {
         pacienteNif.setText("NIF: " + (paciente != null ? paciente.getNif() : "-"));
 
         atendimentoSelecionado = atendimentoService.buscarPorConsulta(consulta);
+        if (atendimentoSelecionado == null) {
+            limparResumoFinanceiro();
+            mostrarAlerta("A consulta ainda nao tem atendimento associado.");
+            return;
+        }
         if (atendimentoSelecionado == null) {
             limparResumoFinanceiro();
             mostrarAlerta("A consulta ainda nÃƒÆ’Ã‚Â£o tem atendimento associado.");
@@ -330,7 +344,7 @@ public class PaymentController {
             Label ivaLabel = new Label(formatarPercentual(taxaIva));
             ivaLabel.getStyleClass().add("procedure-cell");
 
-            Label valorFinalLabel = new Label(formatarMoeda(valorFinalItem));
+            Label valorFinalLabel = new Label(formatarMoedaLegivel(valorFinalItem));
             valorFinalLabel.getStyleClass().add("procedure-cell-value");
 
             linhaProcedimento.add(procedimentoLabel, 0, 0);
@@ -380,6 +394,22 @@ public class PaymentController {
         }
 
         if (pagamentoGroup.getSelectedToggle() == null) {
+            mostrarAlerta("Selecione um metodo de pagamento.");
+            return;
+        }
+
+        Utilizador utilizadorLogadoSeguro = SessionContext.getUtilizadorLogado();
+        if (utilizadorLogadoSeguro == null) {
+            mostrarAlerta("Sessao expirada. Faca login novamente.");
+            return;
+        }
+
+        if (faturaAtual.getEstado() == EstadoFatura.PAGA) {
+            mostrarAlerta("Esta fatura ja foi paga.", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        if (pagamentoGroup.getSelectedToggle() == null) {
             mostrarAlerta("Selecione um mÃƒÆ’Ã‚Â©todo de pagamento.");
             return;
         }
@@ -397,10 +427,10 @@ public class PaymentController {
 
         Pagamento pagamento = new Pagamento();
         pagamento.setIdFatura(faturaAtual);
-        pagamento.setIdUtilizador(utilizadorLogado);
+        pagamento.setIdUtilizador(utilizadorLogadoSeguro);
         pagamento.setDataPagamento(LocalDate.now());
         pagamento.setValorPago(obterValorAPagar());
-        pagamento.setMetodo(getMetodoSelecionado());
+        pagamento.setMetodo(getMetodoSelecionadoSeguro());
 
         pagamentoService.registrarPagamento(pagamento);
 
@@ -441,7 +471,7 @@ public class PaymentController {
 
     private void atualizarTotais() {
         BigDecimal total = obterValorAPagar();
-        valorPagarLabel.setText(formatarMoeda(total));
+        valorPagarLabel.setText(formatarMoedaLegivel(total));
     }
 
     private Utilizador getPacienteUtilizador(Consulta consulta) {
@@ -456,7 +486,7 @@ public class PaymentController {
         atendimentoSelecionado = null;
         faturaAtual = null;
         procedimentosContainer.getChildren().clear();
-        valorPagarLabel.setText(formatarMoeda(BigDecimal.ZERO));
+        valorPagarLabel.setText(formatarMoedaLegivel(BigDecimal.ZERO));
         seguroCombo.getItems().clear();
         seguroCombo.getSelectionModel().clearSelection();
         seguroCombo.setDisable(true);
@@ -478,6 +508,30 @@ public class PaymentController {
     private String formatarPercentual(BigDecimal valor) {
         BigDecimal valorFormatado = valor != null ? valor.stripTrailingZeros() : BigDecimal.ZERO;
         return valorFormatado.toPlainString() + "%";
+    }
+
+    private String formatarMoedaLegivel(BigDecimal valor) {
+        BigDecimal valorFormatado = valor != null
+                ? valor.setScale(2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        NumberFormat formatador = NumberFormat.getNumberInstance(LOCALE_PT);
+        formatador.setMinimumFractionDigits(2);
+        formatador.setMaximumFractionDigits(2);
+        return "EUR " + formatador.format(valorFormatado);
+    }
+
+    private MetodoPagamento getMetodoSelecionadoSeguro() {
+        Toggle selectedToggle = pagamentoGroup.getSelectedToggle();
+        if (selectedToggle == numerarioBtn) {
+            return MetodoPagamento.DINHEIRO;
+        }
+        if (selectedToggle == multibancoBtn) {
+            return MetodoPagamento.CARTAO;
+        }
+        if (selectedToggle == mbwayBtn) {
+            return MetodoPagamento.MBWAY;
+        }
+        throw new RuntimeException("Selecione um metodo de pagamento.");
     }
 
     @FXML
@@ -508,11 +562,19 @@ public class PaymentController {
             loader.setControllerFactory(MainFX.getSpringContext()::getBean);
         }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        aplicarStylesheet(scene, fxmlPath);
         Stage stage = (Stage) consultasListView.getScene().getWindow();
+        boolean estavaMaximizada = stage.isMaximized();
+        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
+        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+        Parent root = loader.load();
+        Scene scene = new Scene(root, larguraAtual, alturaAtual);
+        aplicarStylesheet(scene, fxmlPath);
         stage.setScene(scene);
+        if (!estavaMaximizada) {
+            stage.setWidth(larguraAtual);
+            stage.setHeight(alturaAtual);
+        }
+        stage.setMaximized(estavaMaximizada);
         stage.show();
     }
 
@@ -540,7 +602,9 @@ public class PaymentController {
 
     private void mostrarAlerta(String msg, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
+        alert.setTitle("Informacao");
         alert.setTitle("InformaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o");
+        alert.setTitle("Informacao");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();

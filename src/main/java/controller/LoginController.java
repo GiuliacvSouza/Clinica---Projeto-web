@@ -169,7 +169,10 @@ public class LoginController {
 
             Parent root = loader.load();
             Stage stage = (Stage) btnEntrar.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
+            boolean estavaMaximizada = stage.isMaximized();
+            double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
+            double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+            Scene scene = new Scene(root, larguraAtual, alturaAtual);
 
             var css = getClass().getResource("/css/dashboard-style.css");
             if (css != null) {
@@ -178,7 +181,11 @@ public class LoginController {
 
             stage.setScene(scene);
             stage.setTitle("Clinica Dentaria - Agenda");
-            stage.setMaximized(true);
+            if (!estavaMaximizada) {
+                stage.setWidth(larguraAtual);
+                stage.setHeight(alturaAtual);
+            }
+            stage.setMaximized(estavaMaximizada);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

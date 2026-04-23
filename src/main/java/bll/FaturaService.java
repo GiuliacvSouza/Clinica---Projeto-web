@@ -90,7 +90,7 @@ public class FaturaService {
     }
 
     @Transactional
-    public Fatura emitirFatura(Integer atendimentoId, BigDecimal taxaIvaFallback) {
+    public Fatura emitirFatura(Integer atendimentoId) {
         Atendimento atendimento = carregarAtendimento(atendimentoId);
         List<AtendimentoProcedimento> procedimentos = obterProcedimentos(atendimento);
         return criarFatura(atendimento, procedimentos);

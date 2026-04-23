@@ -72,13 +72,13 @@ public class PacientesController {
         colAcoes.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("ver"));
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnVer = new Button("Ver ficha");
+            private final Button btnVer = new Button("Ver conta");
 
             {
                 btnVer.getStyleClass().add("agenda-action-button");
                 btnVer.setOnAction(event -> {
                     PacienteLinha linha = getTableView().getItems().get(getIndex());
-                    mostrarAlerta(linha.getResumo());
+                    abrirPerfilPaciente(linha.getId());
                 });
             }
 
@@ -88,6 +88,42 @@ public class PacientesController {
                 setGraphic(empty ? null : btnVer);
             }
         });
+    }
+
+    private void abrirPerfilPaciente(Integer pacienteId) {
+        try {
+            var resource = getClass().getResource("/fxml/PacienteView.fxml");
+            if (resource == null) {
+                mostrarAlerta("A pagina de perfil do paciente nao esta disponivel.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(resource);
+            if (MainFX.getSpringContext() != null) {
+                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
+            }
+
+            Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
+            boolean estavaMaximizada = stage.isMaximized();
+            double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
+            double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+
+            Parent root = loader.load();
+            PacientePerfilController controller = loader.getController();
+            controller.setPacienteId(pacienteId);
+
+            Scene scene = new Scene(root, larguraAtual, alturaAtual);
+            aplicarStylesheet(scene, "/fxml/PacienteView.fxml");
+            stage.setScene(scene);
+            if (!estavaMaximizada) {
+                stage.setWidth(larguraAtual);
+                stage.setHeight(alturaAtual);
+            }
+            stage.setMaximized(estavaMaximizada);
+            stage.show();
+        } catch (Exception ex) {
+            mostrarAlerta(ex.getMessage() != null ? ex.getMessage() : "Nao foi possivel abrir o perfil do paciente.");
+        }
     }
 
     private void carregarPacientes() {
@@ -215,18 +251,25 @@ public class PacientesController {
             loader.setControllerFactory(MainFX.getSpringContext()::getBean);
         }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        aplicarStylesheet(scene, fxmlPath);
         Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
+        boolean estavaMaximizada = stage.isMaximized();
+        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
+        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+        Parent root = loader.load();
+        Scene scene = new Scene(root, larguraAtual, alturaAtual);
+        aplicarStylesheet(scene, fxmlPath);
         stage.setScene(scene);
-        stage.setMaximized(true);
+        if (!estavaMaximizada) {
+            stage.setWidth(larguraAtual);
+            stage.setHeight(alturaAtual);
+        }
+        stage.setMaximized(estavaMaximizada);
         stage.show();
     }
 
     private void aplicarStylesheet(Scene scene, String fxmlPath) {
         String cssPath = switch (fxmlPath) {
-            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml" -> "/css/dashboard-style.css";
+            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml", "/fxml/PacienteView.fxml" -> "/css/dashboard-style.css";
             case "/fxml/payment-view.fxml" -> "/css/payment-style.css";
             case "/fxml/login-view.fxml" -> "/css/login-style.css";
             default -> null;

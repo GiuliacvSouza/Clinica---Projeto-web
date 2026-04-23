@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -18,7 +19,7 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controller.NovaMarcacaoController"
       spacing="14.0"
-      prefWidth="460.0"
+      prefWidth="540.0"
       styleClass="nova-marcacao-root">
 
     <padding>
@@ -27,12 +28,19 @@
 
     <HBox alignment="CENTER_LEFT">
         <VBox spacing="2.0">
-            <Label text="Nova Marcação" styleClass="nova-marcacao-title" />
-            <Label text="Agende uma nova consulta para o paciente" styleClass="nova-marcacao-subtitle" />
+            <Label text="Nova Marcacao" styleClass="nova-marcacao-title" />
+            <Label text="Pesquise um paciente existente ou registe um novo antes de marcar." styleClass="nova-marcacao-subtitle" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="×" onAction="#fecharModal" styleClass="nova-marcacao-close" />
+        <Button text="X" onAction="#fecharModal" styleClass="nova-marcacao-close" />
     </HBox>
+
+    <VBox spacing="8.0">
+        <Label text="Pesquisar paciente registado" styleClass="nova-marcacao-label" />
+        <TextField fx:id="txtPesquisaPaciente" promptText="Pesquisar por nome ou NIF" styleClass="nova-marcacao-campo" />
+        <Label fx:id="lblPacienteSelecionado" styleClass="nova-marcacao-helper" text="Nao encontrou o paciente? Preencha os campos abaixo para registar e marcar." wrapText="true" />
+        <ListView fx:id="lstPacientesEncontrados" prefHeight="130.0" styleClass="nova-marcacao-resultados" visible="false" managed="false" />
+    </VBox>
 
     <GridPane hgap="18.0" vgap="14.0" styleClass="nova-marcacao-grid">
         <columnConstraints>
@@ -45,17 +53,17 @@
             <TextField fx:id="txtNome" promptText="Introduza o nome" styleClass="nova-marcacao-campo" />
         </VBox>
         <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-            <Label text="Último Nome *" styleClass="nova-marcacao-label" />
-            <TextField fx:id="txtUltimoNome" promptText="Introduza o último nome" styleClass="nova-marcacao-campo" />
+            <Label text="Ultimo Nome *" styleClass="nova-marcacao-label" />
+            <TextField fx:id="txtUltimoNome" promptText="Introduza o ultimo nome" styleClass="nova-marcacao-campo" />
         </VBox>
 
         <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <Label text="NIF *" styleClass="nova-marcacao-label" />
-            <TextField fx:id="txtNif" promptText="9 dígitos" styleClass="nova-marcacao-campo" />
+            <TextField fx:id="txtNif" promptText="9 digitos" styleClass="nova-marcacao-campo" />
         </VBox>
         <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            <Label text="Telemóvel *" styleClass="nova-marcacao-label" />
-            <TextField fx:id="txtTelemovel" promptText="9xxxxxxx" styleClass="nova-marcacao-campo" />
+            <Label text="Telemovel *" styleClass="nova-marcacao-label" />
+            <TextField fx:id="txtTelemovel" promptText="9 digitos" styleClass="nova-marcacao-campo" />
         </VBox>
 
         <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
@@ -73,7 +81,7 @@
         </VBox>
         <VBox spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
             <Label text="Hora *" styleClass="nova-marcacao-label" />
-            <TextField fx:id="txtHora" promptText="--:--" styleClass="nova-marcacao-campo" />
+            <ComboBox fx:id="cbHora" promptText="Selecione a hora" styleClass="nova-marcacao-combo" />
         </VBox>
 
         <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
@@ -86,7 +94,7 @@
         </VBox>
 
         <VBox spacing="8.0" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
-            <Label text="Observações" styleClass="nova-marcacao-label" />
+            <Label text="Observacoes" styleClass="nova-marcacao-label" />
             <TextArea fx:id="txtObservacoes" prefRowCount="4" styleClass="nova-marcacao-textarea" />
         </VBox>
     </GridPane>

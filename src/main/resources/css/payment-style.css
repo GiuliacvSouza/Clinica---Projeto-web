@@ -34,8 +34,10 @@
     -fx-font-family: "Poppins Medium";
     -fx-font-size: 14px;
     -fx-padding: 10 16;
+    -fx-min-width: 110;
     -fx-background-radius: 14;
     -fx-cursor: hand;
+    -fx-alignment: center;
 }
 
 .nav-button:hover {
@@ -48,8 +50,10 @@
     -fx-text-fill: white;
     -fx-font-family: "Poppins SemiBold";
     -fx-font-size: 14px;
-    -fx-padding: 10 18;
+    -fx-padding: 10 16;
+    -fx-min-width: 110;
     -fx-background-radius: 14;
+    -fx-alignment: center;
 }
 
 .icon-button {
@@ -254,6 +258,24 @@
     -fx-border-color: #4c948c;
 }
 
+.procedures-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.procedures-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.payment-footer-card {
+    -fx-background-color: linear-gradient(to bottom, #f7fbfa 0%, #eff6f4 100%);
+    -fx-background-radius: 18;
+    -fx-border-color: #dce7e4;
+    -fx-border-radius: 18;
+    -fx-padding: 14 14 16 14;
+}
+
 .value-row {
     -fx-background-color: #f4f8f7;
     -fx-background-radius: 16;
@@ -329,6 +351,7 @@
     -fx-font-size: 14px;
     -fx-background-radius: 16;
     -fx-padding: 16 18;
+    -fx-pref-height: 52;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(41, 87, 82, 0.18), 18, 0.2, 0, 4);
 }

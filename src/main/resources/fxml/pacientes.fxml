@@ -103,39 +103,5 @@
                 </TableView>
             </VBox>
         </VBox>
-
-        <VBox prefWidth="320.0" spacing="16.0">
-            <VBox spacing="10.0" styleClass="section-card">
-                <Label styleClass="section-title" text="Indicadores" />
-                <VBox spacing="10.0">
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="68 pacientes com seguro" />
-                        <Label styleClass="info-meta" text="Maior adesao: SmileCare e Medidental" />
-                    </VBox>
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="14 novos este mes" />
-                        <Label styleClass="info-meta" text="Crescimento estavel face ao mes anterior" />
-                    </VBox>
-                </VBox>
-            </VBox>
-
-            <VBox spacing="10.0" styleClass="section-card" VBox.vgrow="ALWAYS">
-                <Label styleClass="section-title" text="Acompanhamento" />
-                <VBox spacing="10.0">
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="Marta Oliveira" />
-                        <Label styleClass="info-meta" text="Revisao pendente apos 6 meses" />
-                    </VBox>
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="Ricardo Lopes" />
-                        <Label styleClass="info-meta" text="Seguro expira dentro de 10 dias" />
-                    </VBox>
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="Leonor Santos" />
-                        <Label styleClass="info-meta" text="Confirmar contacto telefonico" />
-                    </VBox>
-                </VBox>
-            </VBox>
-        </VBox>
     </HBox>
 </VBox>

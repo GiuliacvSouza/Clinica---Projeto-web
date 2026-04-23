@@ -2,8 +2,8 @@ package bll;
 
 import dal.UtilizadorRepository;
 import model.Utilizador;
-import org.springframework.beans.factory.annotation.Autowired; // Não esqueça o import!
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Import do encoder
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +14,6 @@ public class UtilizadorService {
     private final UtilizadorRepository repository;
     private final BCryptPasswordEncoder encoder;
 
-    // Melhor prática: Injeção via construtor (garante que o Spring forneça ambos)
     @Autowired
     public UtilizadorService(UtilizadorRepository repository, BCryptPasswordEncoder encoder) {
         this.repository = repository;
@@ -22,57 +21,85 @@ public class UtilizadorService {
     }
 
     public Utilizador salvar(Utilizador utilizador) {
-        // 1. Validações básicas antes de processar
         if (utilizador.getPrimeiroNome() == null || utilizador.getPrimeiroNome().isBlank()) {
-            throw new RuntimeException("Primeiro nome é obrigatório.");
+            throw new RuntimeException("Primeiro nome e obrigatorio.");
         }
         if (utilizador.getEmail() == null || utilizador.getEmail().isBlank()) {
-            throw new RuntimeException("Email é obrigatório.");
+            throw new RuntimeException("Email e obrigatorio.");
         }
+
+        utilizador.setPrimeiroNome(utilizador.getPrimeiroNome().trim());
+        if (utilizador.getUltimoNome() != null) {
+            utilizador.setUltimoNome(utilizador.getUltimoNome().trim());
+        }
+
+        Integer utilizadorId = utilizador.getId();
+        String email = utilizador.getEmail().trim().toLowerCase();
+        utilizador.setEmail(email);
+
+        if (utilizador.getNif() != null && !utilizador.getNif().isBlank()) {
+            String nif = utilizador.getNif().trim();
+            if (!nif.matches("\\d{9}")) {
+                throw new RuntimeException("NIF deve conter exatamente 9 digitos.");
+            }
+
+            boolean nifDuplicado = utilizadorId == null
+                    ? repository.existsByNif(nif)
+                    : repository.existsByNifAndIdNot(nif, utilizadorId);
+            if (nifDuplicado) {
+                throw new RuntimeException("NIF ja registado.");
+            }
+            utilizador.setNif(nif);
+        }
+
+        boolean emailDuplicado = utilizadorId == null
+                ? repository.existsByEmail(email)
+                : repository.existsByEmailAndIdNot(email, utilizadorId);
+        if (emailDuplicado) {
+            throw new RuntimeException("Email ja registado.");
+        }
+
         if (utilizador.getSenha() == null || utilizador.getSenha().isBlank()) {
-            throw new RuntimeException("Senha é obrigatória.");
+            if (utilizadorId == null) {
+                throw new RuntimeException("Senha e obrigatoria.");
+            }
+
+            String senhaExistente = repository.findById(utilizadorId)
+                    .map(Utilizador::getSenha)
+                    .orElseThrow(() -> new RuntimeException("Utilizador nao encontrado."));
+            utilizador.setSenha(senhaExistente);
         }
 
-        // 2. Verifica duplicidade de email
-        boolean duplicado = utilizador.getId() == null
-                && repository.existsByEmail(utilizador.getEmail());
-
-        if (duplicado) {
-            throw new RuntimeException("Email já registado.");
-        }
-
-        // 3. CRIPTOGRAFIA (Só faz o hash se a senha não estiver criptografada ainda)
-        // Dica: Verificamos se a senha começa com $2a$ (prefixo do BCrypt) para evitar re-criptografar
-        if (!utilizador.getSenha().startsWith("$2a$")) {
-            String senhaHash = encoder.encode(utilizador.getSenha());
-            utilizador.setSenha(senhaHash);
+        if (!utilizador.getSenha().startsWith("$2a$")
+                && !utilizador.getSenha().startsWith("$2b$")
+                && !utilizador.getSenha().startsWith("$2y$")) {
+            utilizador.setSenha(encoder.encode(utilizador.getSenha()));
         }
 
         return repository.save(utilizador);
     }
 
-    public Utilizador autenticar(String email, String palavraPasseInserida){
+    public Utilizador autenticar(String email, String palavraPasseInserida) {
         if (email == null || email.isBlank() || palavraPasseInserida == null || palavraPasseInserida.isBlank()) {
             return null;
         }
-        
+
         try {
             Utilizador utilizador = repository.findByEmail(email).orElse(null);
-            
             if (utilizador == null) {
-                System.err.println("Utilizador não encontrado: " + email);
+                System.err.println("Utilizador nao encontrado: " + email);
                 return null;
             }
-            
+
             if (encoder.matches(palavraPasseInserida, utilizador.getSenha())) {
                 System.out.println("Login bem-sucedido para: " + email);
                 return utilizador;
-            } else {
-                System.err.println("Senha incorreta para: " + email);
-                return null;
             }
+
+            System.err.println("Senha incorreta para: " + email);
+            return null;
         } catch (Exception e) {
-            System.err.println("Erro na autenticação: " + e.getMessage());
+            System.err.println("Erro na autenticacao: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -84,11 +111,11 @@ public class UtilizadorService {
 
     public Utilizador buscarPorId(Integer id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado."));
+                .orElseThrow(() -> new RuntimeException("Utilizador nao encontrado."));
     }
 
     public void excluir(Integer id) {
-        Utilizador u = buscarPorId(id);
-        repository.delete(u);
+        Utilizador utilizador = buscarPorId(id);
+        repository.delete(utilizador);
     }
 }

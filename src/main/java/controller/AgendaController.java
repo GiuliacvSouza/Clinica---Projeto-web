@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -33,11 +32,14 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class AgendaController {
+
+    private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @FXML private Label nomeUtilizador;
     @FXML private TableView<ConsultaAgendadaDTO> tblConsultas;
@@ -68,42 +70,43 @@ public class AgendaController {
         }
 
         configurarTabela();
+        atualizarEstilosFiltro(btnTodas);
         carregarConsultas();
     }
 
     private void configurarTabela() {
-        colHora.setCellValueFactory(cellData -> {
-            LocalDateTime dataHora = LocalDateTime.ofInstant(
-                    cellData.getValue().getDataHoraInicio(),
-                    ZoneId.systemDefault()
-            );
-            return new javafx.beans.property.SimpleObjectProperty<>(dataHora);
-        });
+        colHora.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(
+                converterParaDataHora(cellData.getValue() != null ? cellData.getValue().getDataHoraInicio() : null)
+        ));
 
         colHora.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.format(DateTimeFormatter.ofPattern("HH:mm")));
+                setText(empty || item == null ? null : item.format(HORA_FORMATTER));
             }
         });
 
         colPaciente.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleStringProperty(
-                        cellData.getValue().getNomePaciente() != null ? cellData.getValue().getNomePaciente() : "Desconhecido"
+                        valorOuPadrao(cellData.getValue() != null ? cellData.getValue().getNomePaciente() : null)
                 )
         );
 
         colDentista.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleStringProperty(
-                        cellData.getValue().getNomeDentista() != null ? cellData.getValue().getNomeDentista() : "Desconhecido"
+                        valorOuPadrao(cellData.getValue() != null ? cellData.getValue().getNomeDentista() : null)
                 )
         );
 
         colProcedimento.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getProcedimento()));
+                new javafx.beans.property.SimpleStringProperty(
+                        valorOuPadrao(cellData.getValue() != null ? cellData.getValue().getProcedimento() : null)
+                ));
 
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colEstado.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(
+                cellData.getValue() != null ? cellData.getValue().getStatus() : null
+        ));
         colEstado.setCellFactory(col -> new TableCell<>() {
             private final Label statusLabel = new Label();
             private final StackPane wrapper = new StackPane(statusLabel);
@@ -148,12 +151,12 @@ public class AgendaController {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
+                ConsultaAgendadaDTO consulta = getTableRow() != null ? getTableRow().getItem() : null;
+                if (empty || consulta == null) {
                     setGraphic(null);
                     return;
                 }
 
-                ConsultaAgendadaDTO consulta = getTableView().getItems().get(getIndex());
                 configurarBotoesAcao(consulta);
                 setGraphic(actionsBox);
             }
@@ -229,22 +232,54 @@ public class AgendaController {
 
     private void carregarConsultas() {
         try {
+            List<ConsultaAgendadaDTO> consultas = buscarConsultasParaAgenda();
+
+            if (consultasCarregadas == null) {
+                consultasCarregadas = FXCollections.observableArrayList();
+                tblConsultas.setItems(consultasCarregadas);
+            }
+
+            consultasCarregadas.setAll(consultas);
+            tblConsultas.setPlaceholder(new Label("Nenhuma consulta encontrada."));
+            tblConsultas.refresh();
+        } catch (Exception e) {
+            System.err.println("[AGENDA] Erro ao carregar consultas: " + e.getMessage());
+            e.printStackTrace();
+            if (consultasCarregadas != null) {
+                consultasCarregadas.clear();
+            }
+            tblConsultas.setPlaceholder(new Label("Nao foi possivel carregar as consultas."));
+        }
+    }
+
+    private List<ConsultaAgendadaDTO> buscarConsultasParaAgenda() {
+        try {
             List<ConsultaAgendadaDTO> consultas = filtroAtual == null
                     ? consultaService.listarTodasAgendadas()
                     : consultaService.listarPorStatusAgendadas(filtroAtual);
 
-            consultasCarregadas = FXCollections.observableArrayList(consultas);
-            tblConsultas.setItems(consultasCarregadas);
-        } catch (Exception e) {
-            System.err.println("[AGENDA] Erro ao carregar consultas: " + e.getMessage());
-            e.printStackTrace();
+            if (!consultas.isEmpty()) {
+                return consultas;
+            }
+        } catch (Exception ex) {
+            System.err.println("[AGENDA] Falha na listagem DTO, a usar fallback local: " + ex.getMessage());
         }
+
+        List<Consulta> consultasBase = filtroAtual == null
+                ? consultaService.listarTodas()
+                : consultaService.listarPorStatus(filtroAtual);
+
+        return consultasBase.stream()
+                .sorted(Comparator.comparing(Consulta::getDataHoraInicio, Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(this::toConsultaAgendadaDTO)
+                .toList();
     }
 
     private void executarAcaoComFeedback(Runnable acao, String mensagemSucesso) {
         try {
             acao.run();
             carregarConsultas();
+            tblConsultas.refresh();
             mostrarAlerta(mensagemSucesso);
         } catch (Exception ex) {
             mostrarErro(ex.getMessage());
@@ -285,7 +320,7 @@ public class AgendaController {
                 LocalTime hora = LocalTime.parse(horaField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
                 return LocalDateTime.of(datePicker.getValue(), hora);
             } catch (DateTimeParseException ex) {
-                throw new IllegalArgumentException("Hora inválida. Use o formato HH:mm.");
+                throw new IllegalArgumentException("Hora invalida. Use o formato HH:mm.");
             }
         });
 
@@ -343,7 +378,7 @@ public class AgendaController {
         return "NIF: " + nif + "\n"
                 + "Email: " + email + "\n"
                 + "Telefone: " + telefone + "\n"
-                + "Telemóvel: " + telemovel + "\n"
+                + "Telemovel: " + telemovel + "\n"
                 + "Data de nascimento: " + dataNascimento + "\n"
                 + "Status do paciente: " + statusPaciente + "\n"
                 + "Consulta: " + valorOuPadrao(consulta.getTipo()) + "\n"
@@ -368,7 +403,7 @@ public class AgendaController {
 
     private String getTextoEstado(EstadoConsulta estado) {
         return switch (estado) {
-            case CONCLUIDA -> "Concluído";
+            case CONCLUIDA -> "Concluida";
             case EM_CONSULTA -> "Em consulta";
             case EM_ESPERA -> "Sala de Espera";
             case CONFIRMADA -> "Confirmado";
@@ -424,17 +459,22 @@ public class AgendaController {
     }
 
     private void atualizarEstilosFiltro(Button botaoSelecionado) {
-        btnTodas.getStyleClass().remove("filter-chip-active");
-        btnPendentes.getStyleClass().remove("filter-chip-active");
-        btnEmEspera.getStyleClass().remove("filter-chip-active");
-        btnEmConsulta.getStyleClass().remove("filter-chip-active");
-        btnConcluidas.getStyleClass().remove("filter-chip-active");
-        botaoSelecionado.getStyleClass().add("filter-chip-active");
+        List<Button> botoes = List.of(btnTodas, btnPendentes, btnEmEspera, btnEmConsulta, btnConcluidas);
+        for (Button botao : botoes) {
+            if (!botao.getStyleClass().contains("filter-chip")) {
+                botao.getStyleClass().add("filter-chip");
+            }
+            botao.getStyleClass().remove("filter-chip-active");
+        }
+
+        if (!botaoSelecionado.getStyleClass().contains("filter-chip-active")) {
+            botaoSelecionado.getStyleClass().add("filter-chip-active");
+        }
     }
 
     @FXML
     private void abrirAgenda() {
-        // Página atual
+        // Pagina atual
     }
 
     @FXML
@@ -452,7 +492,7 @@ public class AgendaController {
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.initOwner(nomeUtilizador.getScene().getWindow());
             modalStage.setResizable(false);
-            modalStage.setTitle("Nova Marcação");
+            modalStage.setTitle("Nova Marcacao");
 
             Scene scene = new Scene(root);
             var css = getClass().getResource("/css/dashboard-style.css");
@@ -501,12 +541,19 @@ public class AgendaController {
             loader.setControllerFactory(MainFX.getSpringContext()::getBean);
         }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        aplicarStylesheet(scene, fxmlPath);
         Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
+        boolean estavaMaximizada = stage.isMaximized();
+        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
+        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+        Parent root = loader.load();
+        Scene scene = new Scene(root, larguraAtual, alturaAtual);
+        aplicarStylesheet(scene, fxmlPath);
         stage.setScene(scene);
-        stage.setMaximized(true);
+        if (!estavaMaximizada) {
+            stage.setWidth(larguraAtual);
+            stage.setHeight(alturaAtual);
+        }
+        stage.setMaximized(estavaMaximizada);
         stage.show();
     }
 
@@ -540,7 +587,45 @@ public class AgendaController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");
         alert.setHeaderText(null);
-        alert.setContentText(mensagem != null && !mensagem.isBlank() ? mensagem : "Não foi possível concluir a operação.");
+        alert.setContentText(mensagem != null && !mensagem.isBlank() ? mensagem : "Nao foi possivel concluir a operacao.");
         alert.showAndWait();
+    }
+
+    private ConsultaAgendadaDTO toConsultaAgendadaDTO(Consulta consulta) {
+        if (consulta == null) {
+            return new ConsultaAgendadaDTO();
+        }
+
+        return new ConsultaAgendadaDTO(
+                consulta.getId(),
+                formatarNome(consulta.getIdPaciente() != null ? consulta.getIdPaciente().getUtilizador() : null),
+                formatarNome(consulta.getIdDentista() != null ? consulta.getIdDentista().getUtilizador() : null),
+                resolverProcedimento(consulta),
+                consulta.getDataHoraInicio(),
+                consulta.getStatus()
+        );
+    }
+
+    private LocalDateTime converterParaDataHora(Instant instante) {
+        if (instante == null) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(instante, ZoneId.systemDefault());
+    }
+
+    private String resolverProcedimento(Consulta consulta) {
+        if (consulta == null) {
+            return null;
+        }
+
+        if (consulta.getObservacoes() != null) {
+            for (String linha : consulta.getObservacoes().split("\\R")) {
+                if (linha != null && linha.startsWith("Procedimento:")) {
+                    return linha.substring("Procedimento:".length()).trim();
+                }
+            }
+        }
+
+        return consulta.getTipo();
     }
 }

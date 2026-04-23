@@ -83,7 +83,7 @@
             </HBox>
 
             <HBox spacing="10.0" fx:id="filterBox">
-                <Button fx:id="btnTodas" mnemonicParsing="false" styleClass="filter-chip filter-chip-active" text="Todas" onAction="#filtrarTodas" />
+                <Button fx:id="btnTodas" mnemonicParsing="false" styleClass="filter-chip" text="Todas" onAction="#filtrarTodas" />
                 <Button fx:id="btnPendentes" mnemonicParsing="false" styleClass="filter-chip" text="Pendentes" onAction="#filtrarPendentes" />
                 <Button fx:id="btnEmEspera" mnemonicParsing="false" styleClass="filter-chip" text="Em espera" onAction="#filtrarEmEspera" />
                 <Button fx:id="btnEmConsulta" mnemonicParsing="false" styleClass="filter-chip" text="Em consulta" onAction="#filtrarEmConsulta" />

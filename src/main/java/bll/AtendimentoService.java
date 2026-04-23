@@ -25,7 +25,7 @@ public class AtendimentoService {
         if (Boolean.TRUE.equals(atendimento.getRetorno())
                 && atendimento.getPeriodoRetorno() == null) {
 
-            throw new RuntimeException("Período de retorno deve ser informado.");
+            throw new RuntimeException("Periodo de retorno deve ser informado.");
         }
 
         return repository.save(atendimento);
@@ -37,8 +37,8 @@ public class AtendimentoService {
 
     public Atendimento buscarPorId(Integer id) {
 
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
+        return repository.findByIdComDetalhes(id)
+                .orElseThrow(() -> new RuntimeException("Atendimento nao encontrado"));
     }
 
     public Atendimento buscarPorConsulta(Consulta consulta) {
@@ -46,7 +46,7 @@ public class AtendimentoService {
             return null;
         }
 
-        return repository.findByIdConsulta_Id(consulta.getId())
+        return repository.findByConsultaIdComDetalhes(consulta.getId())
                 .orElse(null);
     }
 

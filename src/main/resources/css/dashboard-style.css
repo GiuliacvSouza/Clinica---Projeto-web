@@ -24,8 +24,10 @@
     -fx-font-family: "Poppins Medium";
     -fx-font-size: 14px;
     -fx-padding: 10 16;
+    -fx-min-width: 110;
     -fx-background-radius: 14;
     -fx-cursor: hand;
+    -fx-alignment: center;
 }
 
 .nav-button:hover {
@@ -38,8 +40,10 @@
     -fx-text-fill: white;
     -fx-font-family: "Poppins SemiBold";
     -fx-font-size: 14px;
-    -fx-padding: 10 18;
+    -fx-padding: 10 16;
+    -fx-min-width: 110;
     -fx-background-radius: 14;
+    -fx-alignment: center;
 }
 
 .icon-button {
@@ -325,6 +329,12 @@
     -fx-text-fill: #646464;
 }
 
+.nova-marcacao-helper {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 11px;
+    -fx-text-fill: #5f7470;
+}
+
 .nova-marcacao-close {
     -fx-background-color: transparent;
     -fx-text-fill: #9b9b9b;
@@ -372,6 +382,24 @@
     -fx-padding: 10;
 }
 
+.nova-marcacao-resultados {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dce7e4;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.nova-marcacao-resultados .list-cell {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-padding: 10 12;
+}
+
+.nova-marcacao-resultados .list-cell:filled:selected {
+    -fx-background-color: #e6f2ef;
+    -fx-text-fill: #17312e;
+}
+
 .nova-marcacao-confirmar {
     -fx-background-color: #78b2ac;
     -fx-text-fill: white;
@@ -412,4 +440,167 @@
     -fx-font-family: "Poppins";
     -fx-font-size: 11px;
     -fx-text-fill: #768987;
+}
+
+.info-meta-strong {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 18px;
+    -fx-text-fill: #17312e;
+}
+
+.profile-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.profile-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.profile-summary-card {
+    -fx-padding: 20;
+}
+
+.profile-icon-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.profile-icon-shell {
+    -fx-min-width: 38;
+    -fx-min-height: 38;
+    -fx-pref-width: 38;
+    -fx-pref-height: 38;
+    -fx-background-color: #eef5f3;
+    -fx-background-radius: 19;
+    -fx-border-color: #d8e5e1;
+    -fx-border-radius: 19;
+}
+
+.profile-icon-button:hover .profile-icon-shell {
+    -fx-background-color: #e3efec;
+}
+
+.profile-avatar-shell {
+    -fx-min-width: 120;
+    -fx-min-height: 120;
+    -fx-pref-width: 120;
+    -fx-pref-height: 120;
+    -fx-background-color: linear-gradient(to bottom right, #4c948c 0%, #2f6f69 100%);
+    -fx-background-radius: 60;
+}
+
+.profile-avatar-text {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 34px;
+    -fx-text-fill: white;
+}
+
+.profile-patient-name {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 22px;
+    -fx-text-fill: #163330;
+}
+
+.profile-patient-meta {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-text-fill: #70827f;
+}
+
+.profile-highlight-row {
+    -fx-background-color: #f7fbfa;
+    -fx-background-radius: 14;
+    -fx-border-color: #e4eeeb;
+    -fx-border-radius: 14;
+    -fx-padding: 12 14;
+}
+
+.profile-highlight-label {
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #466763;
+}
+
+.profile-highlight-value {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #163330;
+}
+
+.profile-form-grid {
+    -fx-padding: 2 0 0 0;
+}
+
+.profile-field-label {
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #446562;
+}
+
+.profile-input {
+    -fx-pref-height: 44;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d8e5e1;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-padding: 0 14;
+    -fx-font-family: "Poppins";
+    -fx-font-size: 13px;
+    -fx-text-fill: #17312e;
+}
+
+.profile-input:focused {
+    -fx-border-color: #4c948c;
+    -fx-border-width: 1.5;
+}
+
+.profile-input:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #f5faf9;
+    -fx-text-fill: #456460;
+}
+
+.profile-date:disabled,
+.profile-combo:disabled {
+    -fx-opacity: 1;
+}
+
+.profile-combo .list-cell,
+.profile-date .text-field {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 13px;
+}
+
+.patient-history-card {
+    -fx-background-color: #f9fcfb;
+    -fx-background-radius: 18;
+    -fx-border-color: #dce7e4;
+    -fx-border-radius: 18;
+    -fx-padding: 16;
+}
+
+.patient-history-title {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #17312e;
+}
+
+.patient-history-subtitle {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-text-fill: #738683;
+}
+
+.patient-history-label {
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: #5e7672;
+}
+
+.patient-history-value {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-text-fill: #17312e;
 }

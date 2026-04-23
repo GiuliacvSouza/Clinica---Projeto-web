@@ -1,16 +1,23 @@
 package model;
 
-import jakarta.persistence.*;
-import model.enums.EstadoFatura;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import model.enums.EstadoFatura;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "fatura")
@@ -27,8 +34,8 @@ public class Fatura {
     @Column(name = "dataEmissao")
     private LocalDate dataEmissao;
 
-    @Column(name = "valor_final", precision = 10, scale = 2)
-    @Generated(GenerationTime.INSERT)
+    @Column(name = "valor_final", precision = 10, scale = 2, insertable = false, updatable = false)
+    @Generated(event = {EventType.INSERT, EventType.UPDATE})
     private BigDecimal valorFinal;
 
     @Column(name = "valor_base")
@@ -95,10 +102,6 @@ public class Fatura {
             ).setScale(2, RoundingMode.HALF_UP);
         }
         return valorFinal;
-    }
-
-    public void setValorFinal(BigDecimal valorFinal) {
-        this.valorFinal = valorFinal;
     }
 
     public void setAtendimento(Atendimento atendimento) {

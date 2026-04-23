@@ -1,6 +1,9 @@
 package bll;
 
 import dal.ConsultaRepository;
+import dal.DentistaRepository;
+import dal.PacienteRepository;
+import jakarta.transaction.Transactional;
 import model.Consulta;
 import model.Dentista;
 import model.Paciente;
@@ -9,10 +12,11 @@ import model.dto.ConsultaAgendadaDTO;
 import model.enums.EstadoConsulta;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,26 +24,46 @@ import java.util.stream.Collectors;
 public class ConsultaService {
 
     private final ConsultaRepository repository;
+    private final PacienteRepository pacienteRepository;
+    private final DentistaRepository dentistaRepository;
 
-    public ConsultaService(ConsultaRepository repository) {
+    public ConsultaService(
+            ConsultaRepository repository,
+            PacienteRepository pacienteRepository,
+            DentistaRepository dentistaRepository
+    ) {
         this.repository = repository;
+        this.pacienteRepository = pacienteRepository;
+        this.dentistaRepository = dentistaRepository;
     }
 
+    @Transactional
     public Consulta agendarConsulta(Consulta consulta) {
-
-        if (consulta.getIdPaciente() == null) {
+        if (consulta.getIdPaciente() == null || consulta.getIdPaciente().getId() == null) {
             throw new RuntimeException("Consulta deve ter um paciente.");
         }
-
-        if (consulta.getIdDentista() == null) {
+        if (consulta.getIdDentista() == null || consulta.getIdDentista().getId() == null) {
             throw new RuntimeException("Consulta deve ter um dentista.");
         }
-
-        if (consulta.getDataHoraInicio().isBefore(Instant.now())) {
-            throw new RuntimeException("Não é possível agendar consulta no passado.");
+        if (consulta.getDataHoraInicio() == null || consulta.getDataHoraInicio().isBefore(Instant.now())) {
+            throw new RuntimeException("Nao e possivel agendar consulta no passado.");
         }
 
-        return repository.save(consulta);
+        Paciente paciente = pacienteRepository.findById(consulta.getIdPaciente().getId())
+                .orElseThrow(() -> new RuntimeException("Paciente nao encontrado."));
+        Dentista dentista = dentistaRepository.findById(consulta.getIdDentista().getId())
+                .orElseThrow(() -> new RuntimeException("Dentista nao encontrado."));
+
+        consulta.setIdPaciente(paciente);
+        consulta.setIdDentista(dentista);
+        validarConflitoHorario(consulta, consulta.getDataHoraInicio());
+
+        Consulta consultaGuardada = repository.saveAndFlush(consulta);
+        if (consultaGuardada.getId() == null) {
+            throw new RuntimeException("Nao foi possivel guardar a consulta.");
+        }
+
+        return consultaGuardada;
     }
 
     public List<Consulta> listarTodas() {
@@ -47,7 +71,17 @@ public class ConsultaService {
     }
 
     public List<ConsultaAgendadaDTO> listarTodasAgendadas() {
+        try {
+            List<ConsultaAgendadaDTO> consultas = repository.findAllAgendadas();
+            if (!consultas.isEmpty() || repository.count() == 0) {
+                return consultas;
+            }
+        } catch (Exception ignored) {
+            // Fallback para proteger a agenda quando a query DTO falha silenciosamente.
+        }
+
         return repository.findAllEager().stream()
+                .sorted(Comparator.comparing(Consulta::getDataHoraInicio, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(this::toConsultaAgendadaDTO)
                 .collect(Collectors.toList());
     }
@@ -56,21 +90,46 @@ public class ConsultaService {
         return repository.findByStatus(status);
     }
 
+    public List<Consulta> listarPorPaciente(Integer pacienteId) {
+        if (pacienteId == null) {
+            return List.of();
+        }
+        return repository.findByPacienteIdEager(pacienteId);
+    }
+
     public List<ConsultaAgendadaDTO> listarPorStatusAgendadas(EstadoConsulta status) {
+        try {
+            List<ConsultaAgendadaDTO> consultas = repository.findByStatusAgendadas(status);
+            if (!consultas.isEmpty() || repository.findByStatus(status).isEmpty()) {
+                return consultas;
+            }
+        } catch (Exception ignored) {
+            // Fallback para manter a agenda funcional mesmo com problema na query DTO.
+        }
+
         return repository.findByStatus(status).stream()
+                .sorted(Comparator.comparing(Consulta::getDataHoraInicio, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(this::toConsultaAgendadaDTO)
                 .collect(Collectors.toList());
     }
 
+    public List<Consulta> listarPorDentistaEDia(Integer dentistaId, LocalDate data) {
+        if (dentistaId == null || data == null) {
+            return List.of();
+        }
+
+        Instant inicio = data.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant fim = data.plusDays(1).atStartOfDay(ZoneId.systemDefault()).minusNanos(1).toInstant();
+        return repository.findByDentistaEDia(dentistaId, inicio, fim);
+    }
+
     public Consulta buscarPorId(Integer id) {
         return repository.findByIdEager(id)
-                .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Consulta nao encontrada"));
     }
 
     public Consulta atualizar(Consulta consulta) {
-
         buscarPorId(consulta.getId());
-
         return repository.save(consulta);
     }
 
@@ -90,11 +149,10 @@ public class ConsultaService {
         validarTransicao(consulta.getStatus(), EstadoConsulta.AGENDADA);
 
         if (novaDataHoraInicio == null) {
-            throw new RuntimeException("A nova data da consulta é obrigatória.");
+            throw new RuntimeException("A nova data da consulta e obrigatoria.");
         }
-
         if (novaDataHoraInicio.isBefore(Instant.now())) {
-            throw new RuntimeException("Não é possível reagendar consulta para o passado.");
+            throw new RuntimeException("Nao e possivel reagendar consulta para o passado.");
         }
 
         validarConflitoHorario(consulta, novaDataHoraInicio);
@@ -145,7 +203,7 @@ public class ConsultaService {
                 consulta.getId(),
                 getNomePaciente(consulta.getIdPaciente()),
                 getNomeDentista(consulta.getIdDentista()),
-                consulta.getTipo(),
+                resolverProcedimento(consulta),
                 consulta.getDataHoraInicio(),
                 consulta.getStatus()
         );
@@ -170,9 +228,35 @@ public class ConsultaService {
         return nomeCompleto.isEmpty() ? null : nomeCompleto;
     }
 
+    private String resolverProcedimento(Consulta consulta) {
+        if (consulta == null) {
+            return null;
+        }
+
+        String procedimentoNasObservacoes = extrairLinhaPrefixada(consulta.getObservacoes(), "Procedimento:");
+        if (procedimentoNasObservacoes != null && !procedimentoNasObservacoes.isBlank()) {
+            return procedimentoNasObservacoes;
+        }
+
+        return consulta.getTipo();
+    }
+
+    private String extrairLinhaPrefixada(String texto, String prefixo) {
+        if (texto == null || texto.isBlank()) {
+            return null;
+        }
+
+        for (String linha : texto.split("\\R")) {
+            if (linha != null && linha.startsWith(prefixo)) {
+                return linha.substring(prefixo.length()).trim();
+            }
+        }
+        return null;
+    }
+
     private void validarTransicao(EstadoConsulta statusAtual, EstadoConsulta novoStatus) {
         if (statusAtual == null || novoStatus == null) {
-            throw new RuntimeException("Status da consulta inválido.");
+            throw new RuntimeException("Status da consulta invalido.");
         }
 
         if (statusAtual == novoStatus) {
@@ -190,7 +274,7 @@ public class ConsultaService {
         };
 
         if (!transicaoValida) {
-            throw new RuntimeException("Transição de estado inválida: " + statusAtual + " -> " + novoStatus);
+            throw new RuntimeException("Transicao de estado invalida: " + statusAtual + " -> " + novoStatus);
         }
     }
 
@@ -204,10 +288,10 @@ public class ConsultaService {
                     .anyMatch(conflito -> !conflito.getId().equals(consulta.getId()));
 
             if (horarioOcupado) {
-                throw new RuntimeException("O dentista já possui consulta marcada para esse horário.");
+                throw new RuntimeException("O dentista ja possui consulta marcada para esse horario.");
             }
         } catch (DataIntegrityViolationException ex) {
-            throw new RuntimeException("Não foi possível validar o novo horário da consulta.", ex);
+            throw new RuntimeException("Nao foi possivel validar o novo horario da consulta.", ex);
         }
     }
 }
