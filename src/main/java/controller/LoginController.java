@@ -1,6 +1,7 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.RecepcionistaService;
 import bll.UtilizadorService;
@@ -162,24 +163,14 @@ public class LoginController {
 
     private void openAgenda() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Agenda.fxml"));
-            if (MainFX.getSpringContext() != null) {
-                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-            }
-
-            Parent root = loader.load();
             Stage stage = (Stage) btnEntrar.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-
-            var css = getClass().getResource("/css/dashboard-style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-
-            stage.setScene(scene);
             stage.setTitle("Clinica Dentaria - Agenda");
-            stage.setMaximized(true);
-            stage.show();
+            
+            // Inicializar o gerenciador de cenas na primeira vez
+            SceneManager.setMainStage(stage);
+            
+            // Carregar Agenda com estilo maximizado
+            SceneManager.trocarTelaMaximizado("/fxml/Agenda.fxml", "/css/dashboard-style.css");
         } catch (Exception e) {
             e.printStackTrace();
             showError("Erro ao carregar a agenda: " + e.getMessage());

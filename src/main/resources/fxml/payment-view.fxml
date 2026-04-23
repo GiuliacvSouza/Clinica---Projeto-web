@@ -57,7 +57,7 @@
         </HBox>
     </HBox>
 
-    <HBox spacing="0.0" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.60" VBox.vgrow="ALWAYS">
         <VBox spacing="20.0" styleClass="main-content" HBox.hgrow="ALWAYS">
             <padding>
                 <Insets top="24.0" right="36.0" bottom="24.0" left="36.0" />
@@ -72,7 +72,11 @@
             <ListView fx:id="consultasListView" styleClass="consultas-list" VBox.vgrow="ALWAYS" />
         </VBox>
 
-        <VBox prefWidth="390.0" styleClass="sidebar">
+        <VBox styleClass="sidebar">
+            <padding>
+                <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
+            </padding>
+
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="sidebar-header">
                 <StackPane styleClass="sidebar-icon-shell">
                     <SVGPath content="M7 3h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2zm2 5h6M9 11h6M9 14h4" styleClass="sidebar-icon" />
@@ -224,5 +228,5 @@
                 </VBox>
             </StackPane>
         </VBox>
-    </HBox>
+    </SplitPane>
 </VBox>

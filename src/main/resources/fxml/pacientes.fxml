@@ -70,7 +70,7 @@
             <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
         </padding>
 
-        <VBox spacing="18.0" HBox.hgrow="ALWAYS">
+        <VBox spacing="18.0" HBox.hgrow="ALWAYS" minWidth="500.0">
             <VBox spacing="4.0">
                 <Label styleClass="page-title" text="Pacientes" />
                 <Label styleClass="page-subtitle" text="Gerencie historico, seguradoras e dados de contacto." />
@@ -104,7 +104,7 @@
             </VBox>
         </VBox>
 
-        <VBox prefWidth="320.0" spacing="16.0">
+        <VBox minWidth="280.0" prefWidth="320.0" spacing="16.0" styleClass="responsive-sidebar">
             <VBox spacing="10.0" styleClass="section-card">
                 <Label styleClass="section-title" text="Indicadores" />
                 <VBox spacing="10.0">
@@ -121,7 +121,7 @@
 
             <VBox spacing="10.0" styleClass="section-card" VBox.vgrow="ALWAYS">
                 <Label styleClass="section-title" text="Acompanhamento" />
-                <VBox spacing="10.0">
+                <VBox spacing="10.0" VBox.vgrow="ALWAYS">
                     <VBox spacing="4.0" styleClass="info-item">
                         <Label styleClass="info-title" text="Marta Oliveira" />
                         <Label styleClass="info-meta" text="Revisao pendente apos 6 meses" />

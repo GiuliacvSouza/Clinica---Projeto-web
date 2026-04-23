@@ -1,6 +1,7 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.PacienteService;
 import bll.PacientexSeguroService;
@@ -191,7 +192,7 @@ public class PacientesController {
 
     @FXML
     private void abrirAgenda() throws IOException {
-        trocarTela("/fxml/Agenda.fxml");
+        SceneManager.trocarTela("/fxml/Agenda.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
@@ -237,53 +238,16 @@ public class PacientesController {
 
     @FXML
     private void abrirFaturacao() throws IOException {
-        trocarTela("/fxml/payment-view.fxml");
+        SceneManager.trocarTela("/fxml/payment-view.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void fazerLogout() throws IOException {
         SessionContext.limparSessao();
-        trocarTela("/fxml/login-view.fxml");
+        SceneManager.trocarTelaMaximizado("/fxml/login-view.fxml", "/css/login-style.css");
     }
 
-    private void trocarTela(String fxmlPath) throws IOException {
-        var resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            mostrarAlerta("A tela solicitada nao esta disponivel.");
-            return;
-        }
 
-        FXMLLoader loader = new FXMLLoader(resource);
-        if (MainFX.getSpringContext() != null) {
-            loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-        }
-
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        aplicarStylesheet(scene, fxmlPath);
-        Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
-    }
-
-    private void aplicarStylesheet(Scene scene, String fxmlPath) {
-        String cssPath = switch (fxmlPath) {
-            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml" -> "/css/dashboard-style.css";
-            case "/fxml/payment-view.fxml" -> "/css/payment-style.css";
-            case "/fxml/login-view.fxml" -> "/css/login-style.css";
-            default -> null;
-        };
-
-        if (cssPath == null) {
-            return;
-        }
-
-        var cssResource = getClass().getResource(cssPath);
-        if (cssResource != null) {
-            scene.getStylesheets().add(cssResource.toExternalForm());
-        }
-    }
 
     private void mostrarAlerta(String mensagem) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

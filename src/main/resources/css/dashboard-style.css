@@ -484,3 +484,57 @@
     -fx-padding: 12 18;
     -fx-cursor: hand;
 }
+
+/* ──── SPLIT PANE & RESPONSIVIDADE ──── */
+
+.split-pane {
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.split-pane:horizontal .split-pane-divider {
+    -fx-border-color: #dce7e4;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-min-width: 1;
+    -fx-pref-width: 1;
+    -fx-max-width: 1;
+    -fx-cursor: h-resize;
+}
+
+.split-pane-content {
+    -fx-background-color: transparent;
+    -fx-min-width: 400;
+}
+
+.split-pane-sidebar {
+    -fx-background-color: transparent;
+    -fx-min-width: 260;
+    -fx-pref-width: 320;
+}
+
+.responsive-sidebar {
+    -fx-min-width: 280;
+    -fx-pref-width: 320;
+    -fx-max-width: 450;
+}
+
+/* Tabelas e campos mais responsivos */
+.dashboard-table .table-column {
+    -fx-min-width: 80;
+}
+
+.search-field {
+    -fx-min-width: 200;
+}
+
+/* Melhor comportamento em telas pequenas */
+.page-title {
+    -fx-wrap-text: true;
+}
+
+.page-subtitle {
+    -fx-wrap-text: true;
+}
