@@ -18,6 +18,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Paciente;
 import model.Utilizador;
@@ -51,6 +52,7 @@ public class PacientesController {
     private PacientexSeguroService pacientexSeguroService;
 
     private FilteredList<PacienteLinha> pacientesFiltrados;
+    private boolean listenerPesquisaConfigurado;
 
     @FXML
     public void initialize() {
@@ -104,9 +106,14 @@ public class PacientesController {
         pacientesFiltrados = new FilteredList<>(linhas, paciente -> true);
         tblPacientes.setItems(pacientesFiltrados);
 
-        if (txtPesquisa != null) {
+        if (txtPesquisa != null && !listenerPesquisaConfigurado) {
             txtPesquisa.textProperty().addListener((obs, oldValue, newValue) ->
                     pacientesFiltrados.setPredicate(paciente -> correspondePesquisa(paciente, newValue)));
+            listenerPesquisaConfigurado = true;
+        }
+
+        if (txtPesquisa != null) {
+            pacientesFiltrados.setPredicate(paciente -> correspondePesquisa(paciente, txtPesquisa.getText()));
         }
 
         atualizarTotalPacientes(linhas.size());
@@ -190,6 +197,42 @@ public class PacientesController {
     @FXML
     private void abrirPacientes() {
         // Pagina atual.
+    }
+
+    @FXML
+    private void abrirModalAdicionarPaciente() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/registo-paciente-modal.fxml"));
+            if (MainFX.getSpringContext() != null) {
+                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
+            }
+
+            Parent root = loader.load();
+            RegistoPacienteController controller = loader.getController();
+
+            Stage modalStage = new Stage();
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner(nomeUtilizador.getScene().getWindow());
+            modalStage.setResizable(false);
+            modalStage.setTitle("Registo de Paciente");
+
+            Scene scene = new Scene(root);
+            var css = getClass().getResource("/css/dashboard-style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            controller.setStage(modalStage);
+            modalStage.setScene(scene);
+            modalStage.showAndWait();
+
+            if (controller.isSaved()) {
+                carregarPacientes();
+            }
+        } catch (Exception ex) {
+            Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+            mostrarAlerta(causa.getMessage());
+        }
     }
 
     @FXML
