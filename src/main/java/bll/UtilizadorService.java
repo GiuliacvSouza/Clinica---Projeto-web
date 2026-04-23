@@ -52,12 +52,29 @@ public class UtilizadorService {
     }
 
     public Utilizador autenticar(String email, String palavraPasseInserida){
-        Utilizador utilizador = repository.findByEmail(email).orElseThrow(()-> new RuntimeException("Utilizador não encontrado."));
-
-        if(encoder.matches(palavraPasseInserida, utilizador.getSenha())){
-            return utilizador;
-        } else{
-            throw new RuntimeException("Palavra-passe incorreta.");
+        if (email == null || email.isBlank() || palavraPasseInserida == null || palavraPasseInserida.isBlank()) {
+            return null;
+        }
+        
+        try {
+            Utilizador utilizador = repository.findByEmail(email).orElse(null);
+            
+            if (utilizador == null) {
+                System.err.println("Utilizador não encontrado: " + email);
+                return null;
+            }
+            
+            if (encoder.matches(palavraPasseInserida, utilizador.getSenha())) {
+                System.out.println("Login bem-sucedido para: " + email);
+                return utilizador;
+            } else {
+                System.err.println("Senha incorreta para: " + email);
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Erro na autenticação: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 

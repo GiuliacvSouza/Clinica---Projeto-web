@@ -36,7 +36,7 @@ public class PacientexSeguroService {
     }
 
     public List<PacientexSeguro> listarTodos() {
-        return repository.findAll();
+        return repository.findAllComRelacionamentos();
     }
 
     public PacientexSeguro buscarPorId(model.PacientexSeguroId id) {

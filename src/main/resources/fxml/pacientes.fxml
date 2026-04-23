@@ -77,7 +77,7 @@
             </VBox>
 
             <HBox spacing="14.0">
-                <TextField promptText="Pesquisar por nome, NIF ou telemovel" styleClass="search-field" HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtPesquisa" promptText="Pesquisar por nome, NIF ou telemovel" styleClass="search-field" HBox.hgrow="ALWAYS" />
                 <Button mnemonicParsing="false" styleClass="primary-button" text="+ Adicionar Paciente" />
             </HBox>
 
@@ -85,17 +85,17 @@
                 <HBox alignment="CENTER_LEFT">
                     <Label styleClass="section-title" text="Lista de Pacientes" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Label styleClass="section-caption" text="254 pacientes ativos" />
+                    <Label fx:id="lblTotalPacientes" styleClass="section-caption" text="0 pacientes" />
                 </HBox>
 
-                <TableView prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tblPacientes" prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn prefWidth="220.0" text="Nome" />
-                        <TableColumn prefWidth="120.0" text="NIF" />
-                        <TableColumn prefWidth="170.0" text="Seguro" />
-                        <TableColumn prefWidth="150.0" text="Ultima Visita" />
-                        <TableColumn prefWidth="220.0" text="Contacto" />
-                        <TableColumn prefWidth="160.0" text="Acoes" />
+                        <TableColumn fx:id="colNome" prefWidth="220.0" text="Nome" />
+                        <TableColumn fx:id="colNif" prefWidth="120.0" text="NIF" />
+                        <TableColumn fx:id="colSeguro" prefWidth="170.0" text="Seguro" />
+                        <TableColumn fx:id="colUltimaVisita" prefWidth="150.0" text="Ultima Visita" />
+                        <TableColumn fx:id="colContacto" prefWidth="220.0" text="Contacto" />
+                        <TableColumn fx:id="colAcoes" prefWidth="160.0" text="Acoes" />
                     </columns>
                     <placeholder>
                         <Label text="Nenhum paciente encontrado." />

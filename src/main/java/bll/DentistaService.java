@@ -37,7 +37,7 @@ public class DentistaService {
         return repository.save(dentista);
     }
 
-    public List<Dentista> listarTodos() { return repository.findAll(); }
+    public List<Dentista> listarTodos() { return repository.findAllComUtilizador(); }
 
     public Dentista buscarPorId(Integer id) {
         return repository.findById(id)

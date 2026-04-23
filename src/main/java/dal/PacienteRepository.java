@@ -9,6 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
+    @Query("SELECT p FROM Paciente p LEFT JOIN FETCH p.utilizador ORDER BY p.utilizador.primeiroNome, p.utilizador.ultimoNome")
+    List<Paciente> findAllComUtilizador();
+
     // buscar por NIF (RF15)
     @Query("SELECT p FROM Paciente p WHERE p.utilizador.nif = :nif")
     Optional<Paciente> findByNif(@Param("nif") String nif);

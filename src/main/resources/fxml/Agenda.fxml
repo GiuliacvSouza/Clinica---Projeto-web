@@ -79,15 +79,15 @@
             <HBox spacing="14.0">
                 <TextField promptText="Pesquisar por paciente, NIF ou dentista" styleClass="search-field" HBox.hgrow="ALWAYS" />
                 <Button mnemonicParsing="false" styleClass="secondary-button" text="Hoje" />
-                <Button mnemonicParsing="false" styleClass="primary-button" text="+ Nova Marcacao" />
+                <Button mnemonicParsing="false" onAction="#abrirNovaMarcacao" styleClass="primary-button" text="+ Nova Marcacao" />
             </HBox>
 
-            <HBox spacing="10.0">
-                <Button mnemonicParsing="false" styleClass="filter-chip filter-chip-active" text="Todas" />
-                <Button mnemonicParsing="false" styleClass="filter-chip" text="Pendentes" />
-                <Button mnemonicParsing="false" styleClass="filter-chip" text="Em espera" />
-                <Button mnemonicParsing="false" styleClass="filter-chip" text="Em consulta" />
-                <Button mnemonicParsing="false" styleClass="filter-chip" text="Concluidas" />
+            <HBox spacing="10.0" fx:id="filterBox">
+                <Button fx:id="btnTodas" mnemonicParsing="false" styleClass="filter-chip filter-chip-active" text="Todas" onAction="#filtrarTodas" />
+                <Button fx:id="btnPendentes" mnemonicParsing="false" styleClass="filter-chip" text="Pendentes" onAction="#filtrarPendentes" />
+                <Button fx:id="btnEmEspera" mnemonicParsing="false" styleClass="filter-chip" text="Em espera" onAction="#filtrarEmEspera" />
+                <Button fx:id="btnEmConsulta" mnemonicParsing="false" styleClass="filter-chip" text="Em consulta" onAction="#filtrarEmConsulta" />
+                <Button fx:id="btnConcluidas" mnemonicParsing="false" styleClass="filter-chip" text="Concluidas" onAction="#filtrarConcluidas" />
             </HBox>
 
             <VBox spacing="12.0" styleClass="section-card" VBox.vgrow="ALWAYS">
@@ -97,14 +97,14 @@
                     <Label styleClass="section-caption" text="23 de marco de 2026" />
                 </HBox>
 
-                <TableView prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tblConsultas" prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn prefWidth="100.0" text="Hora" />
-                        <TableColumn prefWidth="220.0" text="Paciente" />
-                        <TableColumn prefWidth="180.0" text="Dentista" />
-                        <TableColumn prefWidth="260.0" text="Procedimento" />
-                        <TableColumn prefWidth="160.0" text="Estado" />
-                        <TableColumn prefWidth="180.0" text="Acoes" />
+                        <TableColumn fx:id="colHora" prefWidth="100.0" text="Hora" />
+                        <TableColumn fx:id="colPaciente" prefWidth="220.0" text="Paciente" />
+                        <TableColumn fx:id="colDentista" prefWidth="180.0" text="Dentista" />
+                        <TableColumn fx:id="colProcedimento" prefWidth="260.0" text="Procedimento" />
+                        <TableColumn fx:id="colEstado" prefWidth="180.0" text="Estado" />
+                        <TableColumn fx:id="colAcoes" prefWidth="560.0" text="Acoes" />
                     </columns>
                     <placeholder>
                         <Label text="Nenhuma consulta encontrada." />

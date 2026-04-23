@@ -219,12 +219,179 @@
     -fx-font-size: 12px;
     -fx-text-fill: #17312e;
     -fx-border-color: transparent;
+    -fx-alignment: CENTER-LEFT;
 }
 
 .status-pill {
     -fx-background-color: #edf5f2;
     -fx-background-radius: 999;
     -fx-padding: 4 10;
+}
+
+.agenda-status-pill {
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: #101010;
+    -fx-padding: 7 16;
+    -fx-background-radius: 12;
+    -fx-alignment: CENTER;
+}
+
+.agenda-status-concluido {
+    -fx-background-color: #c8ffb8;
+}
+
+.agenda-status-em-consulta {
+    -fx-background-color: #fff2a2;
+}
+
+.agenda-status-sala-espera {
+    -fx-background-color: #f8d7b1;
+}
+
+.agenda-status-confirmado {
+    -fx-background-color: #a7e7ff;
+}
+
+.agenda-status-agendado {
+    -fx-background-color: #a7efe7;
+}
+
+.agenda-status-default {
+    -fx-background-color: #edf5f2;
+}
+
+.agenda-actions-box {
+    -fx-alignment: CENTER-LEFT;
+}
+
+.agenda-action-button {
+    -fx-background-color: #539d99;
+    -fx-text-fill: white;
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 12px;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.agenda-action-button:hover {
+    -fx-background-color: #468b86;
+}
+
+.agenda-link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff2a2a;
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 12px;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.agenda-link-button:hover {
+    -fx-underline: true;
+}
+
+.nova-marcacao-dialog {
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+
+.nova-marcacao-root {
+    -fx-background-color: white;
+}
+
+.nova-marcacao-dialog .header-panel {
+    -fx-padding: 0;
+}
+
+.nova-marcacao-dialog .button-bar {
+    -fx-padding: 16 0 0 0;
+}
+
+.nova-marcacao-content {
+    -fx-padding: 4 0 0 0;
+}
+
+.nova-marcacao-title {
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 22px;
+    -fx-text-fill: #161616;
+}
+
+.nova-marcacao-subtitle {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-text-fill: #646464;
+}
+
+.nova-marcacao-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9b9b9b;
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 28px;
+    -fx-padding: 0 0 8 0;
+    -fx-cursor: hand;
+}
+
+.nova-marcacao-grid {
+    -fx-background-color: white;
+}
+
+.nova-marcacao-label {
+    -fx-font-family: "Poppins Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #151515;
+}
+
+.nova-marcacao-campo,
+.nova-marcacao-combo,
+.nova-marcacao-date {
+    -fx-pref-height: 40;
+    -fx-background-color: #fbfbfb;
+    -fx-border-color: #e5e5e5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 0 12;
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+}
+
+.nova-marcacao-combo .list-cell {
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+}
+
+.nova-marcacao-textarea {
+    -fx-background-color: #fbfbfb;
+    -fx-border-color: #e5e5e5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-font-family: "Poppins";
+    -fx-font-size: 12px;
+    -fx-padding: 10;
+}
+
+.nova-marcacao-confirmar {
+    -fx-background-color: #78b2ac;
+    -fx-text-fill: white;
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 12px;
+    -fx-background-radius: 10;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.nova-marcacao-cancelar {
+    -fx-background-color: white;
+    -fx-text-fill: #111111;
+    -fx-font-family: "Poppins SemiBold";
+    -fx-font-size: 12px;
+    -fx-border-color: #e5e5e5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
 }
 
 .info-item {

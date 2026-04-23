@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface DentistaRepository extends JpaRepository<Dentista, Integer> {
+    @Query("SELECT d FROM Dentista d LEFT JOIN FETCH d.utilizador ORDER BY d.utilizador.primeiroNome, d.utilizador.ultimoNome")
+    List<Dentista> findAllComUtilizador();
+
     List<Dentista> findByAtivo(Boolean ativo);
     // dentistas disponíveis num horário (RF02)
     @Query("SELECT d FROM Dentista d WHERE d.horarioEntrada <= :hora AND d.horarioSaida >= :hora AND d.ativo = true")

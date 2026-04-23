@@ -34,7 +34,7 @@ public class PacienteService {
         return repository.save(paciente);
     }
 
-    public List<Paciente> listarTodos() { return repository.findAll(); }
+    public List<Paciente> listarTodos() { return repository.findAllComUtilizador(); }
 
     public Paciente buscarPorId(Integer id) {
         return repository.findById(id)

@@ -31,10 +31,10 @@ public class Fatura {
     @Generated(GenerationTime.INSERT)
     private BigDecimal valorFinal;
 
-    @Column(name = "valor_base", nullable = false)
+    @Column(name = "valor_base")
     private BigDecimal valorBase;
 
-    @Column(name = "taxa_iva", nullable = false)
+    @Column(name = "taxa_iva")
     private BigDecimal taxaIva = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
