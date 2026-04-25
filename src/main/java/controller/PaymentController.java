@@ -34,8 +34,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 import model.Atendimento;
 import model.AtendimentoProcedimento;
 import model.Consulta;
@@ -50,9 +50,9 @@ import model.enums.EstadoConsulta;
 import model.enums.EstadoFatura;
 import model.enums.MetodoPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -72,8 +72,9 @@ import java.util.stream.Collectors;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PaymentController {
 
-    private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final Locale LOCALE_PT = Locale.forLanguageTag("pt-PT");
+    private static final DateTimeFormatter DATA_HORA_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter DATA_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Autowired private ConsultaService consultaService;
     @Autowired private AtendimentoService atendimentoService;
@@ -84,19 +85,23 @@ public class PaymentController {
     @FXML private TextField pesquisarField;
     @FXML private ListView<Consulta> consultasListView;
     @FXML private Label nomeUtilizador;
+    @FXML private Label consultasResumoLabel;
     @FXML private Label pacienteNome;
     @FXML private Label pacienteNif;
+    @FXML private Label consultaMetaLabel;
+    @FXML private Label estadoFaturaLabel;
+    @FXML private Label dataEmissaoLabel;
     @FXML private VBox procedimentosContainer;
     @FXML private Label valorPagarLabel;
     @FXML private ComboBox<Seguro> seguroCombo;
     @FXML private ToggleButton numerarioBtn;
     @FXML private ToggleButton multibancoBtn;
     @FXML private ToggleButton mbwayBtn;
-    @FXML private ToggleGroup pagamentoGroup;
     @FXML private Button emitirReciboBtn;
     @FXML private VBox paymentSkeleton;
     @FXML private VBox paymentDetailsContent;
 
+    private ToggleGroup pagamentoGroup;
     private FilteredList<Consulta> filteredConsultas;
     private Atendimento atendimentoSelecionado;
     private Fatura faturaAtual;
@@ -104,23 +109,34 @@ public class PaymentController {
 
     @FXML
     public void initialize() {
-        if (pagamentoGroup == null) {
-            pagamentoGroup = new ToggleGroup();
-        }
+        configurarToggleGroup();
+        configurarUtilizador();
+        configurarSeguroCombo();
+        configurarSkeleton();
+        configurarPesquisa();
+        configurarLista();
+        carregarConsultasConcluidas();
+        limparResumo();
+    }
 
+    private void configurarToggleGroup() {
+        pagamentoGroup = new ToggleGroup();
         numerarioBtn.setToggleGroup(pagamentoGroup);
         multibancoBtn.setToggleGroup(pagamentoGroup);
         mbwayBtn.setToggleGroup(pagamentoGroup);
+    }
 
+    private void configurarUtilizador() {
         Utilizador utilizadorLogado = SessionContext.getUtilizadorLogado();
         if (utilizadorLogado == null) {
             mostrarAlerta("Sessao expirada. Faca login novamente.");
             return;
         }
-        if (utilizadorLogado != null) {
-            nomeUtilizador.setText(utilizadorLogado.getPrimeiroNome() + " " + utilizadorLogado.getUltimoNome());
-        }
 
+        nomeUtilizador.setText(formatarNome(utilizadorLogado));
+    }
+
+    private void configurarSeguroCombo() {
         seguroCombo.setDisable(true);
         seguroCombo.setConverter(new StringConverter<>() {
             @Override
@@ -133,50 +149,22 @@ public class PaymentController {
                 return null;
             }
         });
+    }
 
-        if (consultaService == null
-                || atendimentoService == null
-                || faturaService == null
-                || pacientexSeguroService == null
-                || pagamentoService == null) {
-            return;
-        }
+    private void configurarPesquisa() {
+        pesquisarField.textProperty().addListener((obs, oldValue, newValue) -> aplicarFiltro(newValue));
+    }
 
-        configurarSkeleton();
-
-        List<Consulta> consultas = consultaService.listarPorStatus(EstadoConsulta.CONCLUIDA)
-                .stream()
-                .filter(this::consultaDisponivelParaPagamentoSeguro)
-                .collect(Collectors.toList());
-
-        filteredConsultas = new FilteredList<>(FXCollections.observableArrayList(consultas), consulta -> true);
-        consultasListView.setItems(filteredConsultas);
-
-        pesquisarField.textProperty().addListener((obs, old, newVal) -> filteredConsultas.setPredicate(consulta -> {
-            if (newVal == null || newVal.isBlank()) {
-                return true;
-            }
-
-            Utilizador paciente = getPacienteUtilizador(consulta);
-            if (paciente == null) {
-                return false;
-            }
-
-            String filtro = newVal.toLowerCase();
-            return paciente.getPrimeiroNome().toLowerCase().contains(filtro)
-                    || paciente.getUltimoNome().toLowerCase().contains(filtro)
-                    || (paciente.getNif() != null && paciente.getNif().contains(filtro));
-        }));
-
-        consultasListView.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
-            if (selected != null) {
-                carregarDetalhesConsulta(selected);
-            } else {
+    private void configurarLista() {
+        consultasListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, selected) -> {
+            if (selected == null) {
                 limparResumo();
+            } else {
+                carregarDetalhesConsulta(selected);
             }
         });
 
-        consultasListView.setCellFactory(lv -> new ListCell<>() {
+        consultasListView.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Consulta consulta, boolean empty) {
                 super.updateItem(consulta, empty);
@@ -190,42 +178,88 @@ public class PaymentController {
                 Utilizador paciente = getPacienteUtilizador(consulta);
                 Utilizador dentista = getDentistaUtilizador(consulta);
 
-                VBox cell = new VBox(5);
-                HBox topRow = new HBox();
+                VBox card = new VBox(10);
+                card.getStyleClass().add("consulta-card");
 
-                Label nomeLabel = new Label(paciente != null
-                        ? paciente.getPrimeiroNome() + " " + paciente.getUltimoNome()
-                        : "Paciente sem dados");
-                nomeLabel.setStyle("-fx-font-weight: bold;");
+                HBox topRow = new HBox(10);
+                Label nomeLabel = new Label(formatarNome(paciente));
+                nomeLabel.getStyleClass().add("consulta-card-title");
 
-                String hora = consulta.getDataHoraInicio() != null
-                        ? consulta.getDataHoraInicio().atZone(ZoneId.systemDefault()).toLocalDateTime().format(HORA_FORMATTER)
-                        : "--:--";
-                Label horaLabel = new Label(hora);
-                horaLabel.setStyle("-fx-text-fill: #666;");
+                Label statusLabel = new Label("Concluida");
+                statusLabel.getStyleClass().addAll("agenda-status-pill", "agenda-status-concluido");
 
-                topRow.getChildren().addAll(nomeLabel, new Region(), horaLabel);
-                HBox.setHgrow(topRow.getChildren().get(1), Priority.ALWAYS);
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                topRow.getChildren().addAll(nomeLabel, spacer, statusLabel);
 
-                Label nifLabel = new Label("NIF: " + (paciente != null ? paciente.getNif() : "-"));
-                Label dentistaLabel = new Label("Dr. " + (dentista != null ? dentista.getUltimoNome() : "-"));
+                Label metaLabel = new Label(formatarMetaConsulta(consulta, dentista));
+                metaLabel.getStyleClass().add("consulta-card-meta");
+                metaLabel.setWrapText(true);
 
-                cell.getChildren().addAll(topRow, nifLabel, dentistaLabel);
+                HBox bottomRow = new HBox(8);
+                bottomRow.getStyleClass().add("consulta-card-tags");
 
-                if (consulta.getTipo() != null && !consulta.getTipo().isBlank()) {
-                    Label tipoLabel = new Label(consulta.getTipo());
-                    tipoLabel.setStyle("-fx-background-color: #D9EBE8; -fx-background-radius: 12; -fx-padding: 4 10;");
-                    cell.getChildren().add(tipoLabel);
-                }
+                Label nifLabel = new Label("NIF: " + valorOuPadrao(paciente != null ? paciente.getNif() : null));
+                nifLabel.getStyleClass().add("consulta-chip");
 
-                setGraphic(cell);
+                Label tipoLabel = new Label(valorOuPadrao(consulta.getTipo()));
+                tipoLabel.getStyleClass().add("consulta-chip");
+
+                bottomRow.getChildren().addAll(nifLabel, tipoLabel);
+                card.getChildren().addAll(topRow, metaLabel, bottomRow);
+
+                setText(null);
+                setGraphic(card);
             }
         });
+    }
 
-        limparResumo();
+    private void carregarConsultasConcluidas() {
+        List<Consulta> consultas = consultaService.listarPorStatus(EstadoConsulta.CONCLUIDA).stream()
+                .filter(this::consultaDisponivelParaPagamentoSeguro)
+                .collect(Collectors.toList());
+
+        filteredConsultas = new FilteredList<>(FXCollections.observableArrayList(consultas), consulta -> true);
+        consultasListView.setItems(filteredConsultas);
+        atualizarResumoLista();
+    }
+
+    private void aplicarFiltro(String filtroTexto) {
+        if (filteredConsultas == null) {
+            return;
+        }
+
+        filteredConsultas.setPredicate(consulta -> {
+            if (filtroTexto == null || filtroTexto.isBlank()) {
+                return true;
+            }
+
+            Utilizador paciente = getPacienteUtilizador(consulta);
+            if (paciente == null) {
+                return false;
+            }
+
+            String filtro = filtroTexto.trim().toLowerCase(LOCALE_PT);
+            return formatarNome(paciente).toLowerCase(LOCALE_PT).contains(filtro)
+                    || (paciente.getNif() != null && paciente.getNif().toLowerCase(LOCALE_PT).contains(filtro));
+        });
+
+        atualizarResumoLista();
+    }
+
+    private boolean consultaDisponivelParaPagamentoSeguro(Consulta consulta) {
+        try {
+            return consultaDisponivelParaPagamento(consulta);
+        } catch (RuntimeException ignored) {
+            return false;
+        }
     }
 
     private boolean consultaDisponivelParaPagamento(Consulta consulta) {
+        if (consulta == null || consulta.getStatus() != EstadoConsulta.CONCLUIDA) {
+            return false;
+        }
+
         Atendimento atendimento = atendimentoService.buscarPorConsulta(consulta);
         if (atendimento == null) {
             return false;
@@ -235,92 +269,51 @@ public class PaymentController {
         return fatura == null || fatura.getEstado() != EstadoFatura.PAGA;
     }
 
-    private boolean consultaDisponivelParaPagamentoSeguro(Consulta consulta) {
-        try {
-            return consultaDisponivelParaPagamento(consulta);
-        } catch (RuntimeException e) {
-            return true;
-        }
-    }
-
     private void carregarDetalhesConsulta(Consulta consulta) {
         mostrarSkeleton(true);
 
         Utilizador paciente = getPacienteUtilizador(consulta);
-
-        pacienteNome.setText(paciente != null ? paciente.getPrimeiroNome() + " " + paciente.getUltimoNome() : "-");
-        pacienteNif.setText("NIF: " + (paciente != null ? paciente.getNif() : "-"));
+        pacienteNome.setText(formatarNome(paciente));
+        pacienteNif.setText("NIF: " + valorOuPadrao(paciente != null ? paciente.getNif() : null));
+        consultaMetaLabel.setText(formatarMetaConsulta(consulta, getDentistaUtilizador(consulta)));
 
         try {
             atendimentoSelecionado = atendimentoService.buscarPorConsulta(consulta);
-        } catch (RuntimeException e) {
-            limparResumoFinanceiro();
-            mostrarAlerta(e.getMessage());
-            return;
-        }
-
-        if (atendimentoSelecionado == null) {
-            limparResumoFinanceiro();
-            mostrarAlerta("A consulta ainda nao tem atendimento associado.");
-            return;
-        }
-        if (atendimentoSelecionado == null) {
-            limparResumoFinanceiro();
-            mostrarAlerta("A consulta ainda nÃƒÆ’Ã‚Â£o tem atendimento associado.");
-            return;
-        }
-
-        try {
-            faturaAtual = faturaService.buscarOuEmitirPorAtendimento(atendimentoSelecionado);
-        } catch (RuntimeException e) {
-            limparResumoFinanceiro();
-            mostrarAlerta(e.getMessage());
-            return;
-        }
-
-        carregarSegurosPaciente(consulta.getIdPaciente());
-        preencherProcedimentos();
-        atualizarTotais();
-        mostrarSkeleton(false);
-    }
-
-    private void configurarSkeleton() {
-        if (paymentSkeleton == null) {
-            return;
-        }
-
-        skeletonPulse = new FadeTransition(Duration.millis(950), paymentSkeleton);
-        skeletonPulse.setFromValue(0.55);
-        skeletonPulse.setToValue(1.0);
-        skeletonPulse.setAutoReverse(true);
-        skeletonPulse.setCycleCount(Animation.INDEFINITE);
-        mostrarSkeleton(true);
-    }
-
-    private void mostrarSkeleton(boolean mostrar) {
-        if (paymentSkeleton != null) {
-            paymentSkeleton.setVisible(mostrar);
-            paymentSkeleton.setManaged(mostrar);
-            paymentSkeleton.setOpacity(1.0);
-        }
-
-        if (paymentDetailsContent != null) {
-            paymentDetailsContent.setVisible(!mostrar);
-            paymentDetailsContent.setManaged(!mostrar);
-        }
-
-        if (skeletonPulse != null) {
-            if (mostrar) {
-                skeletonPulse.play();
-            } else {
-                skeletonPulse.stop();
-                paymentSkeleton.setOpacity(1.0);
+            if (atendimentoSelecionado == null) {
+                throw new RuntimeException("A consulta ainda nao tem atendimento associado.");
             }
+
+            faturaAtual = faturaService.buscarPorAtendimento(atendimentoSelecionado.getId());
+            preencherResumoFatura();
+            carregarSegurosPaciente(consulta.getIdPaciente());
+            preencherProcedimentos();
+            atualizarTotais();
+            atualizarEstadoAcao();
+            mostrarSkeleton(false);
+        } catch (RuntimeException e) {
+            limparResumoFinanceiro();
+            mostrarSkeleton(false);
+            mostrarAlerta(e.getMessage());
         }
+    }
+
+    private void preencherResumoFatura() {
+        if (faturaAtual == null) {
+            estadoFaturaLabel.setText("Pronta a emitir");
+            dataEmissaoLabel.setText("-");
+            return;
+        }
+
+        estadoFaturaLabel.setText(faturaAtual.getEstado() == null ? "-" : formatarEstadoFatura(faturaAtual.getEstado()));
+        dataEmissaoLabel.setText(faturaAtual.getDataEmissao() == null ? "-" : faturaAtual.getDataEmissao().format(DATA_FORMATTER));
     }
 
     private void preencherProcedimentos() {
         procedimentosContainer.getChildren().clear();
+
+        if (atendimentoSelecionado == null || atendimentoSelecionado.getProcedimentos() == null) {
+            return;
+        }
 
         for (AtendimentoProcedimento item : atendimentoSelecionado.getProcedimentos()) {
             Procedimento procedimento = item.getProcedimento();
@@ -340,10 +333,10 @@ public class PaymentController {
                     BigDecimal.ONE.add(taxaIva.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP))
             ).setScale(2, RoundingMode.HALF_UP);
 
-            GridPane linhaProcedimento = new GridPane();
-            linhaProcedimento.setHgap(10);
-            linhaProcedimento.getStyleClass().add("procedure-row");
-            linhaProcedimento.getColumnConstraints().addAll(
+            GridPane linha = new GridPane();
+            linha.getStyleClass().add("procedure-row");
+            linha.setHgap(10);
+            linha.getColumnConstraints().addAll(
                     criarColunaProcedimento(38),
                     criarColunaProcedimento(22),
                     criarColunaProcedimento(14),
@@ -354,25 +347,23 @@ public class PaymentController {
             procedimentoLabel.getStyleClass().add("procedure-cell-primary");
             procedimentoLabel.setWrapText(true);
 
-            Label tipoLabel = new Label(procedimento.getTipo() != null && !procedimento.getTipo().isBlank()
-                    ? procedimento.getTipo()
-                    : "-");
+            Label tipoLabel = new Label(valorOuPadrao(procedimento.getTipo()));
             tipoLabel.getStyleClass().add("procedure-cell");
             tipoLabel.setWrapText(true);
 
             Label ivaLabel = new Label(formatarPercentual(taxaIva));
             ivaLabel.getStyleClass().add("procedure-cell");
 
-            Label valorFinalLabel = new Label(formatarMoedaLegivel(valorFinalItem));
-            valorFinalLabel.getStyleClass().add("procedure-cell-value");
+            Label valorLabel = new Label(formatarMoeda(valorFinalItem));
+            valorLabel.getStyleClass().add("procedure-cell-value");
 
-            linhaProcedimento.add(procedimentoLabel, 0, 0);
-            linhaProcedimento.add(tipoLabel, 1, 0);
-            linhaProcedimento.add(ivaLabel, 2, 0);
-            linhaProcedimento.add(valorFinalLabel, 3, 0);
-            GridPane.setHalignment(valorFinalLabel, HPos.RIGHT);
+            linha.add(procedimentoLabel, 0, 0);
+            linha.add(tipoLabel, 1, 0);
+            linha.add(ivaLabel, 2, 0);
+            linha.add(valorLabel, 3, 0);
+            GridPane.setHalignment(valorLabel, HPos.RIGHT);
 
-            procedimentosContainer.getChildren().add(linhaProcedimento);
+            procedimentosContainer.getChildren().add(linha);
         }
     }
 
@@ -407,63 +398,57 @@ public class PaymentController {
 
     @FXML
     private void emitirRecibo() {
-        if (faturaAtual == null) {
-            mostrarAlerta("Selecione uma consulta primeiro.");
+        Consulta consultaSelecionada = consultasListView.getSelectionModel().getSelectedItem();
+        if (consultaSelecionada == null || atendimentoSelecionado == null) {
+            mostrarAlerta("Selecione uma consulta concluida primeiro.");
             return;
         }
 
-        if (pagamentoGroup.getSelectedToggle() == null) {
-            mostrarAlerta("Selecione um metodo de pagamento.");
+        if (consultaSelecionada.getStatus() == EstadoConsulta.FATURADA
+                || (faturaAtual != null && faturaAtual.getEstado() == EstadoFatura.PAGA)) {
+            mostrarAlerta("Esta consulta ja foi faturada.", Alert.AlertType.INFORMATION);
+            atualizarEstadoAcao();
             return;
         }
 
-        Utilizador utilizadorLogadoSeguro = SessionContext.getUtilizadorLogado();
-        if (utilizadorLogadoSeguro == null) {
-            mostrarAlerta("Sessao expirada. Faca login novamente.");
-            return;
-        }
-
-        if (faturaAtual.getEstado() == EstadoFatura.PAGA) {
-            mostrarAlerta("Esta fatura ja foi paga.", Alert.AlertType.INFORMATION);
-            return;
-        }
-
-        if (pagamentoGroup.getSelectedToggle() == null) {
-            mostrarAlerta("Selecione um mÃƒÆ’Ã‚Â©todo de pagamento.");
+        MetodoPagamento metodoSelecionado;
+        try {
+            metodoSelecionado = getMetodoSelecionado();
+        } catch (RuntimeException e) {
+            mostrarAlerta(e.getMessage());
             return;
         }
 
         Utilizador utilizadorLogado = SessionContext.getUtilizadorLogado();
         if (utilizadorLogado == null) {
-            mostrarAlerta("SessÃƒÆ’Ã‚Â£o expirada. FaÃƒÆ’Ã‚Â§a login novamente.");
-            return;
-        }
-
-        if (faturaAtual.getEstado() == EstadoFatura.PAGA) {
-            mostrarAlerta("Esta fatura jÃƒÆ’Ã‚Â¡ foi paga.", Alert.AlertType.INFORMATION);
+            mostrarAlerta("Sessao expirada. Faca login novamente.");
             return;
         }
 
         Pagamento pagamento = new Pagamento();
-        pagamento.setIdFatura(faturaAtual);
-        pagamento.setIdUtilizador(utilizadorLogadoSeguro);
+        pagamento.setIdUtilizador(utilizadorLogado);
         pagamento.setDataPagamento(LocalDate.now());
         pagamento.setValorPago(obterValorAPagar());
-        pagamento.setMetodo(getMetodoSelecionadoSeguro());
+        pagamento.setMetodo(metodoSelecionado);
 
+        if (faturaAtual == null) {
+            faturaAtual = faturaService.emitirFaturaPorAtendimento(atendimentoSelecionado);
+        }
+
+        pagamento.setIdFatura(faturaAtual);
         pagamentoService.registrarPagamento(pagamento);
 
         faturaAtual.setEstado(EstadoFatura.PAGA);
         faturaAtual = faturaService.salvar(faturaAtual);
+        consultaService.faturarConsulta(consultaSelecionada.getId());
 
-        Consulta consultaSelecionada = consultasListView.getSelectionModel().getSelectedItem();
-        if (consultaSelecionada != null) {
-            filteredConsultas.getSource().remove(consultaSelecionada);
-        }
-
+        filteredConsultas.getSource().remove(consultaSelecionada);
         consultasListView.getSelectionModel().clearSelection();
+        atualizarResumoLista();
         limparResumo();
-        mostrarAlerta("Pagamento registado com sucesso! Fatura emitida.", Alert.AlertType.INFORMATION);
+
+        mostrarAlerta("Fatura-recibo emitida com sucesso. A consulta passou para o estado Faturada.",
+                Alert.AlertType.INFORMATION);
     }
 
     private MetodoPagamento getMetodoSelecionado() {
@@ -477,11 +462,11 @@ public class PaymentController {
         if (selectedToggle == mbwayBtn) {
             return MetodoPagamento.MBWAY;
         }
-        throw new RuntimeException("Selecione um mÃƒÆ’Ã‚Â©todo de pagamento.");
+        throw new RuntimeException("Selecione um metodo de pagamento.");
     }
 
     private BigDecimal obterValorAPagar() {
-        BigDecimal valor = faturaAtual != null ? faturaAtual.getValorFinal() : BigDecimal.ZERO;
+        BigDecimal valor = faturaAtual != null ? faturaAtual.getValorFinal() : calcularValorAtendimento();
         if (valor == null) {
             valor = BigDecimal.ZERO;
         }
@@ -489,8 +474,70 @@ public class PaymentController {
     }
 
     private void atualizarTotais() {
-        BigDecimal total = obterValorAPagar();
-        valorPagarLabel.setText(formatarMoedaLegivel(total));
+        valorPagarLabel.setText(formatarMoeda(obterValorAPagar()));
+    }
+
+    private void atualizarEstadoAcao() {
+        boolean semSelecao = atendimentoSelecionado == null;
+        boolean jaFaturada = faturaAtual != null && faturaAtual.getEstado() == EstadoFatura.PAGA;
+
+        emitirReciboBtn.setDisable(semSelecao || jaFaturada);
+        emitirReciboBtn.setText(jaFaturada ? "FATURA JA EMITIDA" : "EMITIR FATURA / RECIBO");
+    }
+
+    private void atualizarResumoLista() {
+        if (consultasResumoLabel == null || filteredConsultas == null) {
+            return;
+        }
+
+        int total = filteredConsultas.size();
+        consultasResumoLabel.setText(total == 1
+                ? "1 consulta concluida pronta para faturacao"
+                : total + " consultas concluidas prontas para faturacao");
+    }
+
+    private void configurarSkeleton() {
+        skeletonPulse = new FadeTransition(Duration.millis(950), paymentSkeleton);
+        skeletonPulse.setFromValue(0.55);
+        skeletonPulse.setToValue(1.0);
+        skeletonPulse.setAutoReverse(true);
+        skeletonPulse.setCycleCount(Animation.INDEFINITE);
+        mostrarSkeleton(false);
+    }
+
+    private void mostrarSkeleton(boolean mostrar) {
+        paymentSkeleton.setVisible(mostrar);
+        paymentSkeleton.setManaged(mostrar);
+        paymentDetailsContent.setVisible(!mostrar);
+        paymentDetailsContent.setManaged(!mostrar);
+
+        if (mostrar) {
+            skeletonPulse.play();
+        } else {
+            skeletonPulse.stop();
+            paymentSkeleton.setOpacity(1.0);
+        }
+    }
+
+    private void limparResumoFinanceiro() {
+        atendimentoSelecionado = null;
+        faturaAtual = null;
+        procedimentosContainer.getChildren().clear();
+        estadoFaturaLabel.setText("-");
+        dataEmissaoLabel.setText("-");
+        valorPagarLabel.setText(formatarMoeda(BigDecimal.ZERO));
+        seguroCombo.getItems().clear();
+        seguroCombo.getSelectionModel().clearSelection();
+        seguroCombo.setDisable(true);
+        pagamentoGroup.selectToggle(null);
+        atualizarEstadoAcao();
+    }
+
+    private void limparResumo() {
+        pacienteNome.setText("-");
+        pacienteNif.setText("NIF: -");
+        consultaMetaLabel.setText("Selecione uma consulta concluida para emitir a fatura.");
+        limparResumoFinanceiro();
     }
 
     private Utilizador getPacienteUtilizador(Consulta consulta) {
@@ -501,27 +548,64 @@ public class PaymentController {
         return consulta != null && consulta.getIdDentista() != null ? consulta.getIdDentista().getUtilizador() : null;
     }
 
-    private void limparResumoFinanceiro() {
-        atendimentoSelecionado = null;
-        faturaAtual = null;
-        procedimentosContainer.getChildren().clear();
-        valorPagarLabel.setText(formatarMoedaLegivel(BigDecimal.ZERO));
-        seguroCombo.getItems().clear();
-        seguroCombo.getSelectionModel().clearSelection();
-        seguroCombo.setDisable(true);
-        pagamentoGroup.selectToggle(null);
-        mostrarSkeleton(false);
+    private String formatarNome(Utilizador utilizador) {
+        if (utilizador == null) {
+            return "Paciente sem dados";
+        }
+
+        String primeiroNome = utilizador.getPrimeiroNome() != null ? utilizador.getPrimeiroNome().trim() : "";
+        String ultimoNome = utilizador.getUltimoNome() != null ? utilizador.getUltimoNome().trim() : "";
+        String nomeCompleto = (primeiroNome + " " + ultimoNome).trim();
+        return nomeCompleto.isBlank() ? "Paciente sem dados" : nomeCompleto;
     }
 
-    private void limparResumo() {
-        pacienteNome.setText("-");
-        pacienteNif.setText("NIF: -");
-        limparResumoFinanceiro();
+    private String formatarMetaConsulta(Consulta consulta, Utilizador dentista) {
+        String dataHora = consulta != null && consulta.getDataHoraInicio() != null
+                ? consulta.getDataHoraInicio().atZone(ZoneId.systemDefault()).toLocalDateTime().format(DATA_HORA_FORMATTER)
+                : "--/--/---- --:--";
+        String dentistaNome = valorOuPadrao(dentista != null ? formatarNome(dentista) : null);
+        String tipo = valorOuPadrao(consulta != null ? consulta.getTipo() : null);
+        return dataHora + "  |  " + tipo + "  |  " + dentistaNome;
     }
 
-    private String formatarMoeda(BigDecimal valor) {
-        BigDecimal valorFormatado = valor != null ? valor.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        return "Ã¢â€šÂ¬ " + valorFormatado.toPlainString();
+    private String formatarEstadoFatura(EstadoFatura estado) {
+        return switch (estado) {
+            case PENDENTE -> "Pendente";
+            case PAGA -> "Paga";
+            case CANCELADA -> "Cancelada";
+            case ANULADA -> "Anulada";
+        };
+    }
+
+    private BigDecimal calcularValorAtendimento() {
+        if (atendimentoSelecionado == null || atendimentoSelecionado.getProcedimentos() == null) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (AtendimentoProcedimento item : atendimentoSelecionado.getProcedimentos()) {
+            Procedimento procedimento = item.getProcedimento();
+            if (procedimento == null || procedimento.getValor() == null) {
+                continue;
+            }
+
+            int quantidade = item.getQuantidade() != null ? item.getQuantidade() : 1;
+            BigDecimal desconto = item.getDesconto() != null ? item.getDesconto() : BigDecimal.ZERO;
+            BigDecimal taxaIva = procedimento.getTaxaIva() != null ? procedimento.getTaxaIva() : BigDecimal.ZERO;
+
+            BigDecimal subtotal = procedimento.getValor().multiply(BigDecimal.valueOf(quantidade));
+            BigDecimal valorBase = subtotal.multiply(
+                    BigDecimal.ONE.subtract(desconto.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP))
+            );
+            BigDecimal valorFinal = valorBase.multiply(
+                    BigDecimal.ONE.add(taxaIva.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP))
+            );
+
+            total = total.add(valorFinal);
+        }
+
+        return total.setScale(2, RoundingMode.HALF_UP);
     }
 
     private String formatarPercentual(BigDecimal valor) {
@@ -529,28 +613,19 @@ public class PaymentController {
         return valorFormatado.toPlainString() + "%";
     }
 
-    private String formatarMoedaLegivel(BigDecimal valor) {
+    private String formatarMoeda(BigDecimal valor) {
         BigDecimal valorFormatado = valor != null
                 ? valor.setScale(2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+
         NumberFormat formatador = NumberFormat.getNumberInstance(LOCALE_PT);
         formatador.setMinimumFractionDigits(2);
         formatador.setMaximumFractionDigits(2);
         return "EUR " + formatador.format(valorFormatado);
     }
 
-    private MetodoPagamento getMetodoSelecionadoSeguro() {
-        Toggle selectedToggle = pagamentoGroup.getSelectedToggle();
-        if (selectedToggle == numerarioBtn) {
-            return MetodoPagamento.DINHEIRO;
-        }
-        if (selectedToggle == multibancoBtn) {
-            return MetodoPagamento.CARTAO;
-        }
-        if (selectedToggle == mbwayBtn) {
-            return MetodoPagamento.MBWAY;
-        }
-        throw new RuntimeException("Selecione um metodo de pagamento.");
+    private String valorOuPadrao(String valor) {
+        return valor == null || valor.isBlank() ? "-" : valor;
     }
 
     @FXML
@@ -572,7 +647,7 @@ public class PaymentController {
     private void trocarTela(String fxmlPath) throws IOException {
         var resource = getClass().getResource(fxmlPath);
         if (resource == null) {
-            mostrarAlerta("A tela solicitada ainda nÃƒÆ’Ã‚Â£o estÃƒÆ’Ã‚Â¡ disponÃƒÆ’Ã‚Â­vel.", Alert.AlertType.INFORMATION);
+            mostrarAlerta("A tela solicitada ainda nao esta disponivel.", Alert.AlertType.INFORMATION);
             return;
         }
 
@@ -615,17 +690,15 @@ public class PaymentController {
         }
     }
 
-    private void mostrarAlerta(String msg) {
-        mostrarAlerta(msg, Alert.AlertType.ERROR);
+    private void mostrarAlerta(String mensagem) {
+        mostrarAlerta(mensagem, Alert.AlertType.ERROR);
     }
 
-    private void mostrarAlerta(String msg, Alert.AlertType tipo) {
+    private void mostrarAlerta(String mensagem, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
         alert.setTitle("Informacao");
-        alert.setTitle("InformaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o");
-        alert.setTitle("Informacao");
         alert.setHeaderText(null);
-        alert.setContentText(msg);
+        alert.setContentText(mensagem);
         alert.showAndWait();
     }
 }

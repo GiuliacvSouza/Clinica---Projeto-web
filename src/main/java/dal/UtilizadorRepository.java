@@ -2,6 +2,8 @@ package dal;
 
 import model.Utilizador;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,6 +12,12 @@ import java.util.Optional;
 @Repository
 public interface UtilizadorRepository extends JpaRepository<Utilizador, Integer> {
     Optional<Utilizador> findByEmail(String email);
+    Optional<Utilizador> findByEmailIgnoreCase(String email);
+
+    @Query("SELECT u FROM Utilizador u WHERE LOWER(TRIM(u.email)) = LOWER(TRIM(:email))")
+    Optional<Utilizador> findByEmailNormalized(@Param("email") String email);
+
+    List<Utilizador> findByEmailContainingIgnoreCase(String fragment);
 
     Optional<Utilizador> findByNif(String nif);
 

@@ -185,6 +185,11 @@ public class ConsultaService {
     }
 
     @Transactional
+    public Consulta faturarConsulta(Integer id) {
+        return atualizarStatus(id, EstadoConsulta.FATURADA);
+    }
+
+    @Transactional
     public Consulta atualizarStatus(Integer id, EstadoConsulta novoStatus) {
         Consulta consulta = buscarPorId(id);
         validarTransicao(consulta.getStatus(), novoStatus);
@@ -270,7 +275,8 @@ public class ConsultaService {
             case CONFIRMADA -> novoStatus == EstadoConsulta.EM_ESPERA;
             case EM_ESPERA -> novoStatus == EstadoConsulta.EM_CONSULTA;
             case EM_CONSULTA -> novoStatus == EstadoConsulta.CONCLUIDA;
-            case CONCLUIDA, CANCELADA, FALTA, PENDENTE, EM_ATENDIMENTO -> false;
+            case CONCLUIDA -> novoStatus == EstadoConsulta.FATURADA;
+            case FATURADA, CANCELADA, FALTA, PENDENTE, EM_ATENDIMENTO -> false;
         };
 
         if (!transicaoValida) {

@@ -5,6 +5,7 @@ public enum EstadoConsulta {
     CONFIRMADA("Confirmada"),
     EM_ATENDIMENTO("Em Atendimento"),
     CONCLUIDA("Concluída"),
+    FATURADA("Faturada"),
     CANCELADA("Cancelada"),
     FALTA("Falta"),
     PENDENTE("Pendente"),

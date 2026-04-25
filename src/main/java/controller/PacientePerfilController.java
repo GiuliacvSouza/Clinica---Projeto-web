@@ -411,6 +411,7 @@ public class PacientePerfilController {
 
         return switch (estado) {
             case CONCLUIDA -> "Concluida";
+            case FATURADA -> "Faturada";
             case EM_CONSULTA -> "Em consulta";
             case EM_ESPERA -> "Em espera";
             case CONFIRMADA -> "Confirmada";
@@ -429,6 +430,7 @@ public class PacientePerfilController {
 
         return switch (estado) {
             case CONCLUIDA -> "agenda-status-concluido";
+            case FATURADA -> "agenda-status-confirmado";
             case EM_CONSULTA -> "agenda-status-em-consulta";
             case EM_ESPERA -> "agenda-status-sala-espera";
             case CONFIRMADA -> "agenda-status-confirmado";

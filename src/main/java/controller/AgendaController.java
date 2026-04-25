@@ -566,6 +566,7 @@ public class AgendaController {
     private String getTextoEstado(EstadoConsulta estado) {
         return switch (estado) {
             case CONCLUIDA -> "Concluida";
+            case FATURADA -> "Faturada";
             case EM_CONSULTA -> "Em consulta";
             case EM_ESPERA -> "Sala de Espera";
             case CONFIRMADA -> "Confirmado";
@@ -577,6 +578,7 @@ public class AgendaController {
     private String getClasseEstado(EstadoConsulta estado) {
         return switch (estado) {
             case CONCLUIDA -> "agenda-status-concluido";
+            case FATURADA -> "agenda-status-confirmado";
             case EM_CONSULTA -> "agenda-status-em-consulta";
             case EM_ESPERA -> "agenda-status-sala-espera";
             case CONFIRMADA -> "agenda-status-confirmado";

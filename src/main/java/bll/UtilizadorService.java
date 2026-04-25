@@ -83,20 +83,57 @@ public class UtilizadorService {
         if (email == null || email.isBlank() || palavraPasseInserida == null || palavraPasseInserida.isBlank()) {
             return null;
         }
+        // normalizar email para corresponder ao formato guardado (trim + lower-case)
+        String emailNorm = email.trim().toLowerCase();
 
         try {
-            Utilizador utilizador = repository.findByEmail(email).orElse(null);
+            Utilizador utilizador = null;
+
+            System.err.println("[AUTH DEBUG] autenticar() - raw='" + email + "' norm='" + emailNorm + "'");
+            try { System.err.println("[AUTH DEBUG] existsByEmail(raw norm)=" + repository.existsByEmail(emailNorm)); } catch (Exception ignored) {}
+
+            // tentativa direta
+            try { utilizador = repository.findByEmail(emailNorm).orElse(null); } catch (Exception ignored) { utilizador = null; }
+            if (utilizador != null) {
+                System.err.println("[AUTH DEBUG] encontrado via findByEmail");
+            } else {
+                // tentativa fallback: pesquisa case-insensitive
+                try { utilizador = repository.findByEmailIgnoreCase(emailNorm).orElse(null); } catch (Exception ignored) { utilizador = null; }
+                if (utilizador != null) {
+                    System.err.println("[AUTH DEBUG] encontrado via findByEmailIgnoreCase");
+                } else {
+                    // tentativa final: usar query normalizada (TRIM + LOWER) para cobrir spaces invisiveis
+                    try { utilizador = repository.findByEmailNormalized(emailNorm).orElse(null); } catch (Exception ignored) { utilizador = null; }
+                    if (utilizador != null) {
+                        System.err.println("[AUTH DEBUG] encontrado via findByEmailNormalized");
+                    }
+                }
+            }
+
             if (utilizador == null) {
-                System.err.println("Utilizador nao encontrado: " + email);
+                System.err.println("Utilizador nao encontrado: " + emailNorm);
+                // busca candidatos semelhantes para ajudar a diagnosticar
+                try {
+                    String localPart = emailNorm.contains("@") ? emailNorm.substring(0, emailNorm.indexOf('@')) : emailNorm;
+                    System.err.println("[AUTH DEBUG] procurando candidatos contendo: '" + localPart + "'");
+                    var candidatos = repository.findByEmailContainingIgnoreCase(localPart);
+                    System.err.println("[AUTH DEBUG] candidatos encontrados: " + (candidatos == null ? 0 : candidatos.size()));
+                    if (candidatos != null) {
+                        for (Utilizador c : candidatos) {
+                            System.err.println("[AUTH DEBUG] candidato.email='" + c.getEmail() + "'");
+                        }
+                    }
+                } catch (Exception ignored) {}
+
                 return null;
             }
 
             if (encoder.matches(palavraPasseInserida, utilizador.getSenha())) {
-                System.out.println("Login bem-sucedido para: " + email);
+                System.out.println("Login bem-sucedido para: " + emailNorm);
                 return utilizador;
             }
 
-            System.err.println("Senha incorreta para: " + email);
+            System.err.println("Senha incorreta para: " + emailNorm);
             return null;
         } catch (Exception e) {
             System.err.println("Erro na autenticacao: " + e.getMessage());

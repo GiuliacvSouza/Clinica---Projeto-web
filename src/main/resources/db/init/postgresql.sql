@@ -73,6 +73,7 @@ ALTER TABLE consulta
         'CONFIRMADA',
         'EM_ATENDIMENTO',
         'CONCLUIDA',
+        'FATURADA',
         'CANCELADA',
         'FALTA',
         'PENDENTE',
