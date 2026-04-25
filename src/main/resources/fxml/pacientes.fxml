@@ -78,7 +78,7 @@
 
             <HBox spacing="14.0">
                 <TextField fx:id="txtPesquisa" promptText="Pesquisar por nome, NIF ou telemovel" styleClass="search-field" HBox.hgrow="ALWAYS" />
-                <Button mnemonicParsing="false" styleClass="primary-button" text="+ Adicionar Paciente" />
+                <Button mnemonicParsing="false" onAction="#abrirRegistoPaciente" styleClass="primary-button" text="+ Adicionar Paciente" />
             </HBox>
 
             <VBox spacing="12.0" styleClass="section-card" VBox.vgrow="ALWAYS">

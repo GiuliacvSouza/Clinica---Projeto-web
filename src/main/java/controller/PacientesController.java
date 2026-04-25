@@ -20,6 +20,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 import model.Paciente;
 import model.Utilizador;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,7 +257,7 @@ public class PacientesController {
 
     private void aplicarStylesheet(Scene scene, String fxmlPath) {
         String cssPath = switch (fxmlPath) {
-            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml", "/fxml/PacienteView.fxml" -> "/css/dashboard-style.css";
+            case "/fxml/Agenda.fxml", "/fxml/pacientes.fxml", "/fxml/PacienteView.fxml", "/fxml/registo-paciente-modal.fxml" -> "/css/dashboard-style.css";
             case "/fxml/payment-view.fxml" -> "/css/payment-style.css";
             case "/fxml/login-view.fxml" -> "/css/login-style.css";
             default -> null;
@@ -269,6 +270,45 @@ public class PacientesController {
         var cssResource = getClass().getResource(cssPath);
         if (cssResource != null) {
             scene.getStylesheets().add(cssResource.toExternalForm());
+        }
+    }
+
+    @FXML
+    private void abrirRegistoPaciente() {
+        try {
+            var resource = getClass().getResource("/fxml/registo-paciente-modal.fxml");
+            if (resource == null) {
+                mostrarAlerta("A pagina de registo de paciente nao esta disponivel.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(resource);
+            if (MainFX.getSpringContext() != null) {
+                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
+            }
+
+            Parent root = loader.load();
+            RegistoPacienteController controller = loader.getController();
+
+            Scene scene = new Scene(root);
+            aplicarStylesheet(scene, "/fxml/registo-paciente-modal.fxml");
+
+            Stage modal = new Stage();
+            modal.initOwner(nomeUtilizador.getScene().getWindow());
+            modal.initModality(Modality.APPLICATION_MODAL);
+            modal.setResizable(false);
+            modal.setScene(scene);
+
+            controller.setStage(modal);
+
+            modal.showAndWait();
+
+            if (controller.isSaved()) {
+                carregarPacientes();
+                mostrarAlerta("Paciente registado com sucesso.");
+            }
+        } catch (Exception ex) {
+            mostrarAlerta(ex.getMessage() != null ? ex.getMessage() : "Nao foi possivel abrir o formulario de registo.");
         }
     }
 

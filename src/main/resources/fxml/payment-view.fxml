@@ -15,22 +15,17 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox prefHeight="768.0" prefWidth="1366.0"
-      xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.PaymentController"
-      stylesheets="@../css/payment-style.css"
-      styleClass="root">
+<VBox prefHeight="768.0" prefWidth="1366.0" styleClass="root" stylesheets="@../css/payment-style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PaymentController">
 
     <HBox alignment="CENTER_LEFT" spacing="28.0" styleClass="header">
         <padding>
-            <Insets top="14.0" right="28.0" bottom="14.0" left="28.0" />
+            <Insets bottom="14.0" left="28.0" right="28.0" top="14.0" />
         </padding>
 
         <StackPane styleClass="logo-shell">
@@ -71,10 +66,10 @@
         </HBox>
     </HBox>
 
-    <SplitPane dividerPositions="0.64" styleClass="dashboard-body" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.6449296600234466" styleClass="dashboard-body" VBox.vgrow="ALWAYS">
         <VBox spacing="18.0" styleClass="split-pane-content">
             <padding>
-                <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
+                <Insets bottom="24.0" left="28.0" right="28.0" top="24.0" />
             </padding>
 
             <VBox spacing="4.0">
@@ -83,10 +78,7 @@
             </VBox>
 
             <HBox spacing="14.0">
-                <TextField fx:id="pesquisarField"
-                           promptText="Pesquisar por paciente ou NIF"
-                           styleClass="search-field"
-                           HBox.hgrow="ALWAYS" />
+                <TextField fx:id="pesquisarField" promptText="Pesquisar por paciente ou NIF" styleClass="search-field" HBox.hgrow="ALWAYS" />
             </HBox>
 
             <VBox spacing="12.0" styleClass="section-card" VBox.vgrow="ALWAYS">
@@ -102,10 +94,10 @@
 
         <VBox spacing="16.0" styleClass="split-pane-sidebar">
             <padding>
-                <Insets top="24.0" right="28.0" bottom="24.0" left="0.0" />
+                <Insets bottom="24.0" left="0.0" right="28.0" top="24.0" />
             </padding>
 
-            <VBox spacing="10.0" styleClass="section-card">
+               <VBox spacing="10.0" styleClass="section-card">
                 <Label styleClass="section-title" text="Resumo da Emissao" />
                 <VBox spacing="10.0">
                     <VBox spacing="4.0" styleClass="info-item">
@@ -152,9 +144,9 @@
                         </VBox>
 
                         <HBox spacing="10.0">
-                            <Region HBox.hgrow="ALWAYS" prefHeight="84.0" styleClass="skeleton-block" />
-                            <Region HBox.hgrow="ALWAYS" prefHeight="84.0" styleClass="skeleton-block" />
-                            <Region HBox.hgrow="ALWAYS" prefHeight="84.0" styleClass="skeleton-block" />
+                            <Region prefHeight="84.0" styleClass="skeleton-block" HBox.hgrow="ALWAYS" />
+                            <Region prefHeight="84.0" styleClass="skeleton-block" HBox.hgrow="ALWAYS" />
+                            <Region prefHeight="84.0" styleClass="skeleton-block" HBox.hgrow="ALWAYS" />
                         </HBox>
 
                         <Region prefHeight="54.0" styleClass="skeleton-block skeleton-button" />
@@ -181,16 +173,15 @@
                                     <ColumnConstraints percentWidth="26.0" />
                                 </columnConstraints>
                                 <Label styleClass="procedure-table-heading" text="Procedimento" />
-                                <Label GridPane.columnIndex="1" styleClass="procedure-table-heading" text="Tipo" />
-                                <Label GridPane.columnIndex="2" styleClass="procedure-table-heading" text="IVA" />
-                                <Label GridPane.columnIndex="3" styleClass="procedure-table-heading procedure-table-heading-right" text="Valor Final" />
+                                <Label styleClass="procedure-table-heading" text="Tipo" GridPane.columnIndex="1" />
+                                <Label styleClass="procedure-table-heading" text="IVA" GridPane.columnIndex="2" />
+                                <Label styleClass="procedure-table-heading procedure-table-heading-right" text="Valor Final" GridPane.columnIndex="3" />
+                        <rowConstraints>
+                           <RowConstraints />
+                        </rowConstraints>
                             </GridPane>
 
-                            <ScrollPane fitToWidth="true"
-                                        hbarPolicy="NEVER"
-                                        prefHeight="220.0"
-                                        styleClass="procedures-scroll"
-                                        vbarPolicy="AS_NEEDED">
+                            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="220.0" styleClass="procedures-scroll" vbarPolicy="AS_NEEDED">
                                 <content>
                                     <VBox fx:id="procedimentosContainer" spacing="8.0" />
                                 </content>
@@ -199,10 +190,7 @@
 
                         <VBox spacing="6.0">
                             <Label styleClass="sub-section-title" text="Seguro" />
-                            <ComboBox fx:id="seguroCombo"
-                                      maxWidth="Infinity"
-                                      promptText="Selecionar seguro"
-                                      styleClass="insurance-combo" />
+                            <ComboBox fx:id="seguroCombo" maxWidth="Infinity" promptText="Selecionar seguro" styleClass="insurance-combo" />
                         </VBox>
 
                         <VBox spacing="14.0" styleClass="payment-footer-card">
@@ -216,16 +204,7 @@
                                 <Label styleClass="small-text" text="Metodo de Pagamento" />
 
                                 <HBox spacing="10.0">
-                                    <ToggleButton fx:id="numerarioBtn"
-                                                  alignment="CENTER"
-                                                  contentDisplay="TOP"
-                                                  maxWidth="Infinity"
-                                                  mnemonicParsing="false"
-                                                  styleClass="payment-btn"
-                                                  text="Numerario"
-                                                  textAlignment="CENTER"
-                                                  wrapText="true"
-                                                  HBox.hgrow="ALWAYS">
+                                    <ToggleButton fx:id="numerarioBtn" alignment="CENTER" contentDisplay="TOP" maxWidth="Infinity" mnemonicParsing="false" styleClass="payment-btn" text="Numerario" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
                                         <graphic>
                                             <StackPane styleClass="payment-icon-shell">
                                                 <SVGPath content="M4 8h16v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8zm0 0a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3M15.5 12.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3z" styleClass="payment-icon" />
@@ -233,16 +212,7 @@
                                         </graphic>
                                     </ToggleButton>
 
-                                    <ToggleButton fx:id="multibancoBtn"
-                                                  alignment="CENTER"
-                                                  contentDisplay="TOP"
-                                                  maxWidth="Infinity"
-                                                  mnemonicParsing="false"
-                                                  styleClass="payment-btn"
-                                                  text="Cartao"
-                                                  textAlignment="CENTER"
-                                                  wrapText="true"
-                                                  HBox.hgrow="ALWAYS">
+                                    <ToggleButton fx:id="multibancoBtn" alignment="CENTER" contentDisplay="TOP" maxWidth="Infinity" mnemonicParsing="false" styleClass="payment-btn" text="Cartao" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
                                         <graphic>
                                             <StackPane styleClass="payment-icon-shell">
                                                 <SVGPath content="M3 7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7zm0 2.5h18M7 15h4" styleClass="payment-icon" />
@@ -250,16 +220,7 @@
                                         </graphic>
                                     </ToggleButton>
 
-                                    <ToggleButton fx:id="mbwayBtn"
-                                                  alignment="CENTER"
-                                                  contentDisplay="TOP"
-                                                  maxWidth="Infinity"
-                                                  mnemonicParsing="false"
-                                                  styleClass="payment-btn"
-                                                  text="MB WAY"
-                                                  textAlignment="CENTER"
-                                                  wrapText="true"
-                                                  HBox.hgrow="ALWAYS">
+                                    <ToggleButton fx:id="mbwayBtn" alignment="CENTER" contentDisplay="TOP" maxWidth="Infinity" mnemonicParsing="false" styleClass="payment-btn" text="MB WAY" textAlignment="CENTER" wrapText="true" HBox.hgrow="ALWAYS">
                                         <graphic>
                                             <StackPane styleClass="payment-icon-shell">
                                                 <SVGPath content="M9 3.5h6A2.5 2.5 0 0 1 17.5 6v12A2.5 2.5 0 0 1 15 20.5H9A2.5 2.5 0 0 1 6.5 18V6A2.5 2.5 0 0 1 9 3.5zm1 2.5h4M12 17h.01" styleClass="payment-icon" />
@@ -269,12 +230,7 @@
                                 </HBox>
                             </VBox>
 
-                            <Button fx:id="emitirReciboBtn"
-                                    maxWidth="Infinity"
-                                    mnemonicParsing="false"
-                                    onAction="#emitirRecibo"
-                                    styleClass="main-action-button"
-                                    text="EMITIR FATURA / RECIBO" />
+                            <Button fx:id="emitirReciboBtn" maxWidth="Infinity" mnemonicParsing="false" onAction="#emitirRecibo" styleClass="main-action-button" text="EMITIR FATURA / RECIBO" />
                         </VBox>
                     </VBox>
                 </StackPane>
