@@ -1,30 +1,29 @@
 package controller;
 
-import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.RecepcionistaService;
 import bll.UtilizadorService;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.Recepcionista;
 import model.Utilizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.time.Instant;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class LoginController {
 
     @FXML private TextField txtEmail;
@@ -162,31 +161,8 @@ public class LoginController {
 
     private void openAgenda() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Agenda.fxml"));
-            if (MainFX.getSpringContext() != null) {
-                loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-            }
-
-            Parent root = loader.load();
-            Stage stage = (Stage) btnEntrar.getScene().getWindow();
-            boolean estavaMaximizada = stage.isMaximized();
-            double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
-            double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
-            Scene scene = new Scene(root, larguraAtual, alturaAtual);
-
-            var css = getClass().getResource("/css/dashboard-style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-
-            stage.setScene(scene);
-            stage.setTitle("Clinica Dentaria - Agenda");
-            if (!estavaMaximizada) {
-                stage.setWidth(larguraAtual);
-                stage.setHeight(alturaAtual);
-            }
-            stage.setMaximized(estavaMaximizada);
-            stage.show();
+            SceneManager.trocarTela("/fxml/Agenda.fxml", "/css/dashboard-style.css");
+            SceneManager.getMainStage().setTitle("Clinica Dentaria - Agenda");
         } catch (Exception e) {
             e.printStackTrace();
             showError("Erro ao carregar a agenda: " + e.getMessage());

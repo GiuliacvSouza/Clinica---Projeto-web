@@ -46,8 +46,13 @@ public class AtendimentoService {
             return null;
         }
 
-        return repository.findByConsultaIdComDetalhes(consulta.getId())
-                .orElse(null);
+        List<Atendimento> atendimentos = repository.findByConsultaIdComDetalhes(consulta.getId());
+        if (atendimentos == null || atendimentos.isEmpty()) {
+            return null;
+        }
+
+        // Se houver multiplos atendimentos para a mesma consulta, retorna o mais recente (ordenado no repo)
+        return atendimentos.get(0);
     }
 
     public void excluir(Integer id) {

@@ -51,6 +51,8 @@ import model.enums.EstadoFatura;
 import model.enums.MetodoPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -67,6 +69,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PaymentController {
 
     private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -143,7 +146,7 @@ public class PaymentController {
 
         List<Consulta> consultas = consultaService.listarPorStatus(EstadoConsulta.CONCLUIDA)
                 .stream()
-                .filter(this::consultaDisponivelParaPagamento)
+                .filter(this::consultaDisponivelParaPagamentoSeguro)
                 .collect(Collectors.toList());
 
         filteredConsultas = new FilteredList<>(FXCollections.observableArrayList(consultas), consulta -> true);
@@ -232,6 +235,14 @@ public class PaymentController {
         return fatura == null || fatura.getEstado() != EstadoFatura.PAGA;
     }
 
+    private boolean consultaDisponivelParaPagamentoSeguro(Consulta consulta) {
+        try {
+            return consultaDisponivelParaPagamento(consulta);
+        } catch (RuntimeException e) {
+            return true;
+        }
+    }
+
     private void carregarDetalhesConsulta(Consulta consulta) {
         mostrarSkeleton(true);
 
@@ -240,7 +251,14 @@ public class PaymentController {
         pacienteNome.setText(paciente != null ? paciente.getPrimeiroNome() + " " + paciente.getUltimoNome() : "-");
         pacienteNif.setText("NIF: " + (paciente != null ? paciente.getNif() : "-"));
 
-        atendimentoSelecionado = atendimentoService.buscarPorConsulta(consulta);
+        try {
+            atendimentoSelecionado = atendimentoService.buscarPorConsulta(consulta);
+        } catch (RuntimeException e) {
+            limparResumoFinanceiro();
+            mostrarAlerta(e.getMessage());
+            return;
+        }
+
         if (atendimentoSelecionado == null) {
             limparResumoFinanceiro();
             mostrarAlerta("A consulta ainda nao tem atendimento associado.");

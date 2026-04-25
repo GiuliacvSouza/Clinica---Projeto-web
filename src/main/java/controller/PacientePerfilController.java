@@ -1,6 +1,7 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.ConsultaService;
 import bll.PacienteService;
@@ -30,6 +31,8 @@ import model.Utilizador;
 import model.enums.EstadoConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -41,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PacientePerfilController {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -467,57 +471,30 @@ public class PacientePerfilController {
 
     @FXML
     private void voltarPacientes() throws IOException {
-        trocarTela("/fxml/pacientes.fxml");
+        SceneManager.trocarTela("/fxml/pacientes.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void abrirAgenda() throws IOException {
-        trocarTela("/fxml/Agenda.fxml");
+        SceneManager.trocarTela("/fxml/Agenda.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void abrirPacientes() throws IOException {
-        trocarTela("/fxml/pacientes.fxml");
+        SceneManager.trocarTela("/fxml/pacientes.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void abrirFaturacao() throws IOException {
-        trocarTela("/fxml/payment-view.fxml");
+        SceneManager.trocarTela("/fxml/payment-view.fxml", "/css/payment-style.css");
     }
 
     @FXML
     private void fazerLogout() throws IOException {
         SessionContext.limparSessao();
-        trocarTela("/fxml/login-view.fxml");
+        SceneManager.trocarTelaMaximizado("/fxml/login-view.fxml", "/css/login-style.css");
     }
-
-    private void trocarTela(String fxmlPath) throws IOException {
-        var resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            mostrarErro("A tela solicitada nao esta disponivel.");
-            return;
-        }
-
-        FXMLLoader loader = new FXMLLoader(resource);
-        if (MainFX.getSpringContext() != null) {
-            loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-        }
-
-        Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
-        boolean estavaMaximizada = stage.isMaximized();
-        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
-        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
-        Parent root = loader.load();
-        Scene scene = new Scene(root, larguraAtual, alturaAtual);
-        aplicarStylesheet(scene, fxmlPath);
-        stage.setScene(scene);
-        if (!estavaMaximizada) {
-            stage.setWidth(larguraAtual);
-            stage.setHeight(alturaAtual);
-        }
-        stage.setMaximized(estavaMaximizada);
-        stage.show();
-    }
+    
 
     private void aplicarStylesheet(Scene scene, String fxmlPath) {
         String cssPath = switch (fxmlPath) {

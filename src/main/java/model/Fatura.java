@@ -38,6 +38,9 @@ public class Fatura {
     @Generated(event = {EventType.INSERT, EventType.UPDATE})
     private BigDecimal valorFinal;
 
+    @Column(name = "valor_iva", precision = 10, scale = 2)
+    private BigDecimal valorIva;
+
     @Column(name = "valor_base")
     private BigDecimal valorBase;
 
@@ -108,4 +111,15 @@ public class Fatura {
         this.idAtendimento = atendimento;
     }
 
+    public BigDecimal getValorIva() {
+        return valorIva;
+    }
+
+    public void setValorIva(BigDecimal valorIva) {
+        this.valorIva = valorIva;
+    }
+
+    public void setValorFinal(BigDecimal valorFinal) {
+        this.valorFinal = valorFinal;
+    }
 }

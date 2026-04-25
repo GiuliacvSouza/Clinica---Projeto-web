@@ -127,8 +127,16 @@ public class FaturaService {
             return null;
         }
 
-        return repository.findByIdAtendimento_Id(atendimentoId)
-                .orElse(null);
+        List<Fatura> faturas = repository.findByIdAtendimento_IdOrderByDataEmissaoDesc(atendimentoId);
+        if (faturas == null || faturas.isEmpty()) {
+            return null;
+        }
+
+        // Se existirem multiplas faturas, preferir uma paga ou a mais recente
+        return faturas.stream()
+                .filter(f -> f.getEstado() == EstadoFatura.PAGA)
+                .findFirst()
+                .orElse(faturas.get(0));
     }
 
     @Transactional

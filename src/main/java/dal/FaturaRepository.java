@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface FaturaRepository extends JpaRepository<Fatura, Integer> {
-    Optional<Fatura> findByIdAtendimento_Id(Integer idAtendimento);
+    // Retornar possivelmente multiplas faturas para um mesmo atendimento (protege contra dados duplicados)
+    List<Fatura> findByIdAtendimento_IdOrderByDataEmissaoDesc(Integer idAtendimento);
     List<Fatura> findByEstado(EstadoFatura estado);
 }

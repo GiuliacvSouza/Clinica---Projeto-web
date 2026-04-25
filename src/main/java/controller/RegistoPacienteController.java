@@ -19,11 +19,14 @@ import model.Seguro;
 import model.Utilizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RegistoPacienteController {
 
     @FXML private TextField txtNome;

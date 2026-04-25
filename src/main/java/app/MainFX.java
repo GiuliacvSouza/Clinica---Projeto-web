@@ -7,16 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EntityScan(basePackages = "model")
-@SpringBootApplication
-@ComponentScan(basePackages = {"app", "bll", "dal", "controller"})
-@EnableJpaRepositories(basePackages = "dal")
 public class MainFX extends Application {
 
     private static ConfigurableApplicationContext springContext;
@@ -28,7 +20,7 @@ public class MainFX extends Application {
     @Override
     public void init() {
 
-        springContext = SpringApplication.run(MainFX.class);
+        springContext = SpringApplication.run(MainApplication.class);
 
         String[] weights = {
                 "Regular", "Bold", "Light", "Medium",
@@ -59,6 +51,7 @@ public class MainFX extends Application {
         stage.setTitle("Clínica Dentária");
         stage.setMaximized(true); // abre em fullscreen desktop
         stage.setScene(scene);
+        SceneManager.setMainStage(stage);
         stage.show();
     }
 

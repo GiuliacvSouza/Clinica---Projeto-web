@@ -28,18 +28,21 @@ public class SceneManager {
     }
 
     /**
-     * Troca a cena mantendo uniformidade: sempre maximizado/fullscreen.
+     * Troca a cena preservando tamanho, posição e estado da janela.
      *
      * @param fxmlPath     Caminho do FXML a carregar (ex: "/fxml/Agenda.fxml")
      * @param cssPath      Caminho do CSS a aplicar (ex: "/css/dashboard-style.css")
      */
     public static void trocarTela(String fxmlPath, String cssPath) throws IOException {
+        System.out.println("[SCENEMANAGER] trocarTela request: " + fxmlPath + ", css=" + cssPath);
         if (mainStage == null) {
+            System.err.println("[SCENEMANAGER] ERRO: mainStage ainda nao inicializado.");
             throw new RuntimeException("SceneManager nao foi inicializado. Chame setMainStage() primeiro.");
         }
 
         var resource = SceneManager.class.getResource(fxmlPath);
         if (resource == null) {
+            System.err.println("[SCENEMANAGER] ERRO: FXML nao encontrado: " + fxmlPath);
             throw new RuntimeException("FXML nao encontrado: " + fxmlPath);
         }
 
@@ -48,41 +51,16 @@ public class SceneManager {
             loader.setControllerFactory(MainFX.getSpringContext()::getBean);
         }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-
-        // Aplicar CSS se fornecido
-        if (cssPath != null && !cssPath.isEmpty()) {
-            var cssResource = SceneManager.class.getResource(cssPath);
-            if (cssResource != null) {
-                scene.getStylesheets().add(cssResource.toExternalForm());
-            }
+        Parent root;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            System.err.println("[SCENEMANAGER] ERRO ao carregar FXML: " + fxmlPath);
+            e.printStackTrace();
+            throw e;
         }
 
-        // Manter estado de maximizado/fullscreen e dimensões
-        boolean eraMaximizado = mainStage.isMaximized();
-        boolean eraFullScreen = mainStage.isFullScreen();
-        double largura = mainStage.getWidth();
-        double altura = mainStage.getHeight();
-        double x = mainStage.getX();
-        double y = mainStage.getY();
-
-        mainStage.setScene(scene);
-
-        // Restaurar estado anterior (máximizado/fullscreen)
-        if (eraFullScreen) {
-            mainStage.setFullScreen(true);
-        } else if (eraMaximizado) {
-            mainStage.setMaximized(true);
-        } else {
-            // Se não estava maximizado, mantém a mesma posição e tamanho
-            mainStage.setWidth(largura);
-            mainStage.setHeight(altura);
-            mainStage.setX(x);
-            mainStage.setY(y);
-        }
-
-        mainStage.show();
+        aplicarCenaPreservandoJanela(root, cssPath);
     }
 
     /**
@@ -100,15 +78,19 @@ public class SceneManager {
     }
 
     /**
-     * Define a cena e maximiza a janela (comportamento padrão das telas do app).
+     * Mantida por compatibilidade com controllers existentes.
+     * Atualmente preserva o estado da janela em vez de forçar maximização.
      */
     public static void trocarTelaMaximizado(String fxmlPath, String cssPath) throws IOException {
+        System.out.println("[SCENEMANAGER] trocarTelaMaximizado request: " + fxmlPath + ", css=" + cssPath);
         if (mainStage == null) {
+            System.err.println("[SCENEMANAGER] ERRO: mainStage ainda nao inicializado (maximizado).");
             throw new RuntimeException("SceneManager nao foi inicializado.");
         }
 
         var resource = SceneManager.class.getResource(fxmlPath);
         if (resource == null) {
+            System.err.println("[SCENEMANAGER] ERRO: FXML nao encontrado (maximizado): " + fxmlPath);
             throw new RuntimeException("FXML nao encontrado: " + fxmlPath);
         }
 
@@ -117,9 +99,29 @@ public class SceneManager {
             loader.setControllerFactory(MainFX.getSpringContext()::getBean);
         }
 
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
+        Parent root;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            System.err.println("[SCENEMANAGER] ERRO ao carregar FXML (maximizado): " + fxmlPath);
+            e.printStackTrace();
+            throw e;
+        }
 
+        aplicarCenaPreservandoJanela(root, cssPath);
+    }
+
+    private static void aplicarCenaPreservandoJanela(Parent root, String cssPath) {
+        boolean eraMaximizado = mainStage.isMaximized();
+        boolean eraFullScreen = mainStage.isFullScreen();
+        double larguraCena = larguraCenaAtual();
+        double alturaCena = alturaCenaAtual();
+        double larguraJanela = larguraJanelaAtual(larguraCena);
+        double alturaJanela = alturaJanelaAtual(alturaCena);
+        double x = mainStage.getX();
+        double y = mainStage.getY();
+
+        Scene scene = new Scene(root, larguraCena, alturaCena);
         if (cssPath != null && !cssPath.isEmpty()) {
             var cssResource = SceneManager.class.getResource(cssPath);
             if (cssResource != null) {
@@ -128,7 +130,40 @@ public class SceneManager {
         }
 
         mainStage.setScene(scene);
-        mainStage.setMaximized(true);
+
+        if (eraFullScreen) {
+            mainStage.setFullScreen(true);
+        } else if (eraMaximizado) {
+            mainStage.setMaximized(true);
+        } else {
+            mainStage.setX(x);
+            mainStage.setY(y);
+            mainStage.setWidth(larguraJanela);
+            mainStage.setHeight(alturaJanela);
+        }
+
         mainStage.show();
+    }
+
+    private static double larguraCenaAtual() {
+        if (mainStage.getScene() != null && mainStage.getScene().getWidth() > 0) {
+            return mainStage.getScene().getWidth();
+        }
+        return Math.max(mainStage.getWidth(), 1);
+    }
+
+    private static double alturaCenaAtual() {
+        if (mainStage.getScene() != null && mainStage.getScene().getHeight() > 0) {
+            return mainStage.getScene().getHeight();
+        }
+        return Math.max(mainStage.getHeight(), 1);
+    }
+
+    private static double larguraJanelaAtual(double fallback) {
+        return mainStage.getWidth() > 0 ? mainStage.getWidth() : fallback;
+    }
+
+    private static double alturaJanelaAtual(double fallback) {
+        return mainStage.getHeight() > 0 ? mainStage.getHeight() : fallback;
     }
 }

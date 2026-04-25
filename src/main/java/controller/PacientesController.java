@@ -1,6 +1,7 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.PacienteService;
 import bll.PacientexSeguroService;
@@ -23,6 +24,8 @@ import model.Paciente;
 import model.Utilizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -31,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PacientesController {
 
     @FXML private Label nomeUtilizador;
@@ -105,21 +109,31 @@ public class PacientesController {
 
             Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
             boolean estavaMaximizada = stage.isMaximized();
-            double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
-            double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
+            boolean estavaTelaCheia = stage.isFullScreen();
+            double larguraCenaAtual = stage.getScene() != null && stage.getScene().getWidth() > 0
+                    ? stage.getScene().getWidth()
+                    : Math.max(stage.getWidth(), 1);
+            double alturaCenaAtual = stage.getScene() != null && stage.getScene().getHeight() > 0
+                    ? stage.getScene().getHeight()
+                    : Math.max(stage.getHeight(), 1);
+            double larguraJanelaAtual = stage.getWidth() > 0 ? stage.getWidth() : larguraCenaAtual;
+            double alturaJanelaAtual = stage.getHeight() > 0 ? stage.getHeight() : alturaCenaAtual;
 
             Parent root = loader.load();
             PacientePerfilController controller = loader.getController();
             controller.setPacienteId(pacienteId);
 
-            Scene scene = new Scene(root, larguraAtual, alturaAtual);
+            Scene scene = new Scene(root, larguraCenaAtual, alturaCenaAtual);
             aplicarStylesheet(scene, "/fxml/PacienteView.fxml");
             stage.setScene(scene);
-            if (!estavaMaximizada) {
-                stage.setWidth(larguraAtual);
-                stage.setHeight(alturaAtual);
+            if (estavaTelaCheia) {
+                stage.setFullScreen(true);
+            } else if (estavaMaximizada) {
+                stage.setMaximized(true);
+            } else {
+                stage.setWidth(larguraJanelaAtual);
+                stage.setHeight(alturaJanelaAtual);
             }
-            stage.setMaximized(estavaMaximizada);
             stage.show();
         } catch (Exception ex) {
             mostrarAlerta(ex.getMessage() != null ? ex.getMessage() : "Nao foi possivel abrir o perfil do paciente.");
@@ -220,7 +234,7 @@ public class PacientesController {
 
     @FXML
     private void abrirAgenda() throws IOException {
-        trocarTela("/fxml/Agenda.fxml");
+        SceneManager.trocarTela("/fxml/Agenda.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
@@ -230,42 +244,15 @@ public class PacientesController {
 
     @FXML
     private void abrirFaturacao() throws IOException {
-        trocarTela("/fxml/payment-view.fxml");
+        SceneManager.trocarTela("/fxml/payment-view.fxml", "/css/payment-style.css");
     }
 
     @FXML
     private void fazerLogout() throws IOException {
         SessionContext.limparSessao();
-        trocarTela("/fxml/login-view.fxml");
+        SceneManager.trocarTelaMaximizado("/fxml/login-view.fxml", "/css/login-style.css");
     }
-
-    private void trocarTela(String fxmlPath) throws IOException {
-        var resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            mostrarAlerta("A tela solicitada nao esta disponivel.");
-            return;
-        }
-
-        FXMLLoader loader = new FXMLLoader(resource);
-        if (MainFX.getSpringContext() != null) {
-            loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-        }
-
-        Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
-        boolean estavaMaximizada = stage.isMaximized();
-        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
-        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
-        Parent root = loader.load();
-        Scene scene = new Scene(root, larguraAtual, alturaAtual);
-        aplicarStylesheet(scene, fxmlPath);
-        stage.setScene(scene);
-        if (!estavaMaximizada) {
-            stage.setWidth(larguraAtual);
-            stage.setHeight(alturaAtual);
-        }
-        stage.setMaximized(estavaMaximizada);
-        stage.show();
-    }
+    
 
     private void aplicarStylesheet(Scene scene, String fxmlPath) {
         String cssPath = switch (fxmlPath) {

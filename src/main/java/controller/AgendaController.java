@@ -1,8 +1,10 @@
 package controller;
 
 import app.MainFX;
+import app.SceneManager;
 import app.SessionContext;
 import bll.ConsultaService;
+import bll.AtendimentoService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,6 +25,8 @@ import model.dto.ConsultaAgendadaDTO;
 import model.enums.EstadoConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -35,8 +39,10 @@ import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import model.Atendimento;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AgendaController {
 
     private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -55,12 +61,16 @@ public class AgendaController {
     @FXML private Button btnEmEspera;
     @FXML private Button btnEmConsulta;
     @FXML private Button btnConcluidas;
+    @FXML private Button btnHoje;
 
     @Autowired
     private ConsultaService consultaService;
+    @Autowired
+    private AtendimentoService atendimentoService;
 
     private EstadoConsulta filtroAtual = null;
     private ObservableList<ConsultaAgendadaDTO> consultasCarregadas;
+    private java.time.LocalDate dataFiltro;
 
     @FXML
     public void initialize() {
@@ -71,7 +81,21 @@ public class AgendaController {
 
         configurarTabela();
         atualizarEstilosFiltro(btnTodas);
+
+        // inicializa o filtro de data para hoje e atualiza o rótulo do botão
+        dataFiltro = java.time.LocalDate.now();
+        atualizarLabelHoje();
         carregarConsultas();
+    }
+
+    private void atualizarLabelHoje() {
+        if (btnHoje != null) {
+            if (dataFiltro == null) {
+                btnHoje.setText("Hoje");
+            } else {
+                btnHoje.setText("Hoje: " + dataFiltro.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            }
+        }
     }
 
     private void configurarTabela() {
@@ -234,6 +258,11 @@ public class AgendaController {
         try {
             List<ConsultaAgendadaDTO> consultas = buscarConsultasParaAgenda();
 
+            System.out.println("[AGENDA] Consultas retornadas pelo serviço: " + (consultas != null ? consultas.size() : 0));
+            if (consultas != null && !consultas.isEmpty()) {
+                System.out.println("[AGENDA] Exemplo de entrada: id=" + consultas.get(0).getIdConsulta() + ", paciente=" + consultas.get(0).getNomePaciente());
+            }
+
             if (consultasCarregadas == null) {
                 consultasCarregadas = FXCollections.observableArrayList();
                 tblConsultas.setItems(consultasCarregadas);
@@ -241,6 +270,12 @@ public class AgendaController {
 
             consultasCarregadas.setAll(consultas);
             tblConsultas.setPlaceholder(new Label("Nenhuma consulta encontrada."));
+            System.out.println("[AGENDA] tblConsultas items size after setAll: " + (tblConsultas.getItems() != null ? tblConsultas.getItems().size() : 0));
+            System.out.println("[AGENDA] tblConsultas visible=" + tblConsultas.isVisible() + ", managed=" + tblConsultas.isManaged());
+            System.out.println("[AGENDA] tblConsultas scene present=" + (tblConsultas.getScene() != null));
+            if (tblConsultas.getScene() != null && tblConsultas.getScene().getRoot() != null) {
+                System.out.println("[AGENDA] Scene root: " + tblConsultas.getScene().getRoot().getClass().getName());
+            }
             tblConsultas.refresh();
         } catch (Exception e) {
             System.err.println("[AGENDA] Erro ao carregar consultas: " + e.getMessage());
@@ -259,6 +294,12 @@ public class AgendaController {
                     : consultaService.listarPorStatusAgendadas(filtroAtual);
 
             if (!consultas.isEmpty()) {
+                // aplicar filtro de data se definido
+                if (dataFiltro != null) {
+                    return consultas.stream()
+                            .filter(c -> c.getDataHoraInicio() != null && java.time.LocalDateTime.ofInstant(c.getDataHoraInicio(), java.time.ZoneId.systemDefault()).toLocalDate().equals(dataFiltro))
+                            .toList();
+                }
                 return consultas;
             }
         } catch (Exception ex) {
@@ -269,10 +310,47 @@ public class AgendaController {
                 ? consultaService.listarTodas()
                 : consultaService.listarPorStatus(filtroAtual);
 
-        return consultasBase.stream()
+        List<ConsultaAgendadaDTO> converted = consultasBase.stream()
                 .sorted(Comparator.comparing(Consulta::getDataHoraInicio, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(this::toConsultaAgendadaDTO)
                 .toList();
+
+        if (dataFiltro != null) {
+            return converted.stream()
+                    .filter(c -> c.getDataHoraInicio() != null && java.time.LocalDateTime.ofInstant(c.getDataHoraInicio(), java.time.ZoneId.systemDefault()).toLocalDate().equals(dataFiltro))
+                    .toList();
+        }
+
+        return converted;
+    }
+
+    @FXML
+    private void escolherDia() {
+        Dialog<java.time.LocalDate> dialog = new Dialog<>();
+        dialog.setTitle("Selecionar dia");
+        dialog.setHeaderText("Escolha o dia cujas consultas pretende ver.");
+
+        ButtonType confirmar = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirmar, ButtonType.CANCEL);
+
+        DatePicker datePicker = new DatePicker(dataFiltro != null ? dataFiltro : java.time.LocalDate.now());
+        dialog.getDialogPane().setContent(datePicker);
+
+        dialog.setResultConverter(btn -> btn == confirmar ? datePicker.getValue() : null);
+
+        dialog.showAndWait().ifPresent(selected -> {
+            dataFiltro = selected;
+            atualizarLabelHoje();
+            carregarConsultas();
+        });
+    }
+
+    /**
+     * Reseta o filtro de data para hoje (usar ao entrar/logar na tela)
+     */
+    private void resetDataParaHoje() {
+        dataFiltro = java.time.LocalDate.now();
+        atualizarLabelHoje();
     }
 
     private void executarAcaoComFeedback(Runnable acao, String mensagemSucesso) {
@@ -287,57 +365,141 @@ public class AgendaController {
     }
 
     private void reagendarConsulta(ConsultaAgendadaDTO consultaDto) {
-        Dialog<LocalDateTime> dialog = new Dialog<>();
-        dialog.setTitle("Reagendar consulta");
-        dialog.setHeaderText("Informe a nova data e hora da consulta.");
-
-        ButtonType confirmar = new ButtonType("Confirmar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(confirmar, ButtonType.CANCEL);
-
-        DatePicker datePicker = new DatePicker(LocalDate.now().plusDays(1));
-        TextField horaField = new TextField();
-        horaField.setPromptText("HH:mm");
-
-        GridPane form = new GridPane();
-        form.setHgap(12);
-        form.setVgap(12);
-        form.add(new Label("Data"), 0, 0);
-        form.add(datePicker, 1, 0);
-        form.add(new Label("Hora"), 0, 1);
-        form.add(horaField, 1, 1);
-        dialog.getDialogPane().setContent(form);
-
-        dialog.setResultConverter(button -> {
-            if (button != confirmar) {
-                return null;
-            }
-
-            if (datePicker.getValue() == null || horaField.getText() == null || horaField.getText().isBlank()) {
-                throw new IllegalArgumentException("Informe data e hora para reagendar.");
-            }
-
-            try {
-                LocalTime hora = LocalTime.parse(horaField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
-                return LocalDateTime.of(datePicker.getValue(), hora);
-            } catch (DateTimeParseException ex) {
-                throw new IllegalArgumentException("Hora invalida. Use o formato HH:mm.");
-            }
-        });
-
         try {
-            Optional<LocalDateTime> resultado = dialog.showAndWait();
-            if (resultado.isEmpty()) {
+            Consulta consulta = consultaService.buscarPorId(consultaDto.getIdConsulta());
+            if (consulta == null || consulta.getIdDentista() == null) {
+                mostrarErro("Nao foi possivel determinar o dentista da consulta.");
                 return;
             }
+
+            LocalDate dataPadrao = consulta.getDataHoraInicio() != null
+                    ? consulta.getDataHoraInicio().atZone(ZoneId.systemDefault()).toLocalDate()
+                    : LocalDate.now().plusDays(1);
+
+            Dialog<LocalDateTime> dialog = new Dialog<>();
+            dialog.setTitle("Reagendar consulta");
+            dialog.setHeaderText("Escolha uma nova data e um horario disponivel.");
+
+            ButtonType confirmar = new ButtonType("Confirmar", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(confirmar, ButtonType.CANCEL);
+
+            DatePicker datePicker = new DatePicker(dataPadrao);
+            ComboBox<String> cbHora = new ComboBox<>();
+            cbHora.setPrefWidth(150);
+
+            GridPane form = new GridPane();
+            form.setHgap(12);
+            form.setVgap(12);
+            form.add(new Label("Data"), 0, 0);
+            form.add(datePicker, 1, 0);
+            form.add(new Label("Hora"), 0, 1);
+            form.add(cbHora, 1, 1);
+            dialog.getDialogPane().setContent(form);
+
+            // atualizar horarios quando a data for alterada
+            Runnable atualizar = () -> {
+                try {
+                    LocalDate data = datePicker.getValue();
+                    int duracao = 30;
+                    Atendimento atendimento = atendimentoService.buscarPorConsulta(consulta);
+                    if (atendimento != null && atendimento.getProcedimentos() != null && !atendimento.getProcedimentos().isEmpty()) {
+                        Integer d = atendimento.getProcedimentos().get(0).getProcedimento().getDuracaoEstimada();
+                        if (d != null && d > 0) duracao = d;
+                    }
+
+                    List<String> horarios = calcularHorariosDisponiveis(consulta.getIdDentista().getHorarioEntrada(),
+                            consulta.getIdDentista().getHorarioSaida(),
+                            consulta.getIdDentista().getId(), data, duracao, consulta.getId());
+
+                    cbHora.setItems(FXCollections.observableArrayList(horarios));
+                    if (!horarios.isEmpty()) {
+                        cbHora.setValue(horarios.get(0));
+                    }
+                } catch (Exception ex) {
+                    cbHora.setItems(FXCollections.observableArrayList());
+                }
+            };
+
+            datePicker.valueProperty().addListener((obs, oldV, newV) -> atualizar.run());
+            atualizar.run();
+
+            dialog.setResultConverter(button -> {
+                if (button != confirmar) return null;
+                LocalDate data = datePicker.getValue();
+                String horaStr = cbHora.getValue();
+                if (data == null || horaStr == null || horaStr.isBlank()) {
+                    throw new IllegalArgumentException("Escolha data e hora disponiveis para reagendar.");
+                }
+                LocalTime hora = LocalTime.parse(horaStr, HORA_FORMATTER);
+                return LocalDateTime.of(data, hora);
+            });
+
+            Optional<LocalDateTime> resultado = dialog.showAndWait();
+            if (resultado.isEmpty()) return;
 
             Instant novaDataHora = resultado.get().atZone(ZoneId.systemDefault()).toInstant();
             executarAcaoComFeedback(
                     () -> consultaService.reagendar(consultaDto.getIdConsulta(), novaDataHora),
                     "Consulta reagendada com sucesso."
             );
+
         } catch (IllegalArgumentException ex) {
             mostrarErro(ex.getMessage());
+        } catch (Exception ex) {
+            mostrarErro("Nao foi possivel reagendar a consulta: " + ex.getMessage());
         }
+    }
+
+    private List<String> calcularHorariosDisponiveis(LocalTime horarioEntrada, LocalTime horarioSaida,
+                                                     Integer dentistaId, LocalDate data, int duracaoMinutos, Integer idConsultaAtual) {
+        if (data == null || dentistaId == null) return List.of();
+
+        LocalTime inicio = horarioEntrada != null ? horarioEntrada : LocalTime.of(8,0);
+        LocalTime fim = horarioSaida != null ? horarioSaida : LocalTime.of(18,0);
+
+        inicio = ajustarInicioParaHoje(data, inicio);
+
+        List<Consulta> consultasNoDia = consultaService.listarPorDentistaEDia(dentistaId, data);
+        // remove a propria consulta que estamos a reagendar
+        consultasNoDia.removeIf(c -> c.getId() != null && c.getId().equals(idConsultaAtual));
+
+        java.util.List<String> disponiveis = new java.util.ArrayList<>();
+
+        for (LocalTime slot = inicio; !slot.plusMinutes(duracaoMinutos).isAfter(fim); slot = slot.plusMinutes(30)) {
+            LocalTime fimSlot = slot.plusMinutes(duracaoMinutos);
+            boolean conflito = false;
+            for (Consulta c : consultasNoDia) {
+                if (c.getDataHoraInicio() == null) continue;
+                LocalTime inicioExistente = c.getDataHoraInicio().atZone(ZoneId.systemDefault()).toLocalTime().withSecond(0).withNano(0);
+                int durExist = c.getDuracao() != null ? c.getDuracao() : 30;
+                LocalTime fimExistente = inicioExistente.plusMinutes(durExist);
+                if (slot.isBefore(fimExistente) && fimSlot.isAfter(inicioExistente)) {
+                    conflito = true;
+                    break;
+                }
+            }
+            if (!conflito) {
+                disponiveis.add(slot.format(HORA_FORMATTER));
+            }
+        }
+
+        return disponiveis;
+    }
+
+    private LocalTime ajustarInicioParaHoje(LocalDate data, LocalTime inicioPadrao) {
+        if (!LocalDate.now().equals(data)) {
+            return inicioPadrao;
+        }
+
+        LocalTime agora = LocalTime.now().plusMinutes(15);
+        int minutoArredondado = ((agora.getMinute() + 29) / 30) * 30;
+        LocalTime arredondado = agora.withMinute(0).withSecond(0).withNano(0);
+        if (minutoArredondado >= 60) {
+            arredondado = arredondado.plusHours(1);
+            minutoArredondado = 0;
+        }
+        arredondado = arredondado.withMinute(minutoArredondado);
+        return arredondado.isAfter(inicioPadrao) ? arredondado : inicioPadrao;
     }
 
     private void abrirFichaPaciente(ConsultaAgendadaDTO consultaDto) {
@@ -515,47 +677,20 @@ public class AgendaController {
 
     @FXML
     private void abrirPacientes() throws IOException {
-        trocarTela("/fxml/pacientes.fxml");
+        SceneManager.trocarTela("/fxml/pacientes.fxml", "/css/dashboard-style.css");
     }
 
     @FXML
     private void abrirFaturacao() throws IOException {
-        trocarTela("/fxml/payment-view.fxml");
+        SceneManager.trocarTela("/fxml/payment-view.fxml", "/css/payment-style.css");
     }
 
     @FXML
     private void fazerLogout() throws IOException {
         SessionContext.limparSessao();
-        trocarTela("/fxml/login-view.fxml");
+        SceneManager.trocarTelaMaximizado("/fxml/login-view.fxml", "/css/login-style.css");
     }
-
-    private void trocarTela(String fxmlPath) throws IOException {
-        var resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            mostrarAlerta("A tela solicitada nao esta disponivel.");
-            return;
-        }
-
-        FXMLLoader loader = new FXMLLoader(resource);
-        if (MainFX.getSpringContext() != null) {
-            loader.setControllerFactory(MainFX.getSpringContext()::getBean);
-        }
-
-        Stage stage = (Stage) nomeUtilizador.getScene().getWindow();
-        boolean estavaMaximizada = stage.isMaximized();
-        double larguraAtual = Math.max(stage.getWidth(), stage.getScene() != null ? stage.getScene().getWidth() : 0);
-        double alturaAtual = Math.max(stage.getHeight(), stage.getScene() != null ? stage.getScene().getHeight() : 0);
-        Parent root = loader.load();
-        Scene scene = new Scene(root, larguraAtual, alturaAtual);
-        aplicarStylesheet(scene, fxmlPath);
-        stage.setScene(scene);
-        if (!estavaMaximizada) {
-            stage.setWidth(larguraAtual);
-            stage.setHeight(alturaAtual);
-        }
-        stage.setMaximized(estavaMaximizada);
-        stage.show();
-    }
+    
 
     private void aplicarStylesheet(Scene scene, String fxmlPath) {
         String cssPath = switch (fxmlPath) {

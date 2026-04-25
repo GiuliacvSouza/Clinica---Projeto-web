@@ -32,6 +32,8 @@ import model.Utilizador;
 import model.enums.EstadoConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -45,6 +47,7 @@ import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NovaMarcacaoController {
 
     private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");

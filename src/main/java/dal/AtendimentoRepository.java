@@ -38,8 +38,9 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Intege
             LEFT JOIN FETCH a.procedimentos ap
             LEFT JOIN FETCH ap.idProcedimento
             WHERE c.id = :idConsulta
+            ORDER BY a.id DESC
             """)
-    Optional<Atendimento> findByConsultaIdComDetalhes(@Param("idConsulta") Integer idConsulta);
+    List<Atendimento> findByConsultaIdComDetalhes(@Param("idConsulta") Integer idConsulta);
 
     @Query("SELECT a FROM Atendimento a WHERE a.idConsulta.idPaciente.id = :idPaciente")
     List<Atendimento> findByPacienteId(@Param("idPaciente") Integer idPaciente);
