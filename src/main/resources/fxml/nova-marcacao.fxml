@@ -32,7 +32,7 @@
             <Label text="Pesquise um paciente existente ou registe um novo antes de marcar." styleClass="nova-marcacao-subtitle" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="X" onAction="#fecharModal" styleClass="nova-marcacao-close" />
+
     </HBox>
 
     <VBox spacing="8.0">
