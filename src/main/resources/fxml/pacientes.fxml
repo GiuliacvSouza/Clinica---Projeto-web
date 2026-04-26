@@ -90,12 +90,12 @@
 
                 <TableView fx:id="tblPacientes" prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colNome" prefWidth="220.0" text="Nome" />
-                        <TableColumn fx:id="colNif" prefWidth="120.0" text="NIF" />
-                        <TableColumn fx:id="colSeguro" prefWidth="170.0" text="Seguro" />
-                        <TableColumn fx:id="colUltimaVisita" prefWidth="150.0" text="Ultima Visita" />
-                        <TableColumn fx:id="colContacto" prefWidth="220.0" text="Contacto" />
-                        <TableColumn fx:id="colAcoes" prefWidth="160.0" text="Acoes" />
+                        <TableColumn fx:id="colNome" prefWidth="220.0" text="Nome" style="-fx-alignment: CENTER;" />
+                        <TableColumn fx:id="colNif" prefWidth="120.0" text="NIF" style="-fx-alignment: CENTER;" />
+                        <TableColumn fx:id="colSeguro" prefWidth="170.0" text="Seguro" style="-fx-alignment: CENTER;" />
+                        <TableColumn fx:id="colUltimaVisita" prefWidth="150.0" text="Ultima Visita" style="-fx-alignment: CENTER;" />
+                        <TableColumn fx:id="colContacto" prefWidth="220.0" text="Contacto" style="-fx-alignment: CENTER;" />
+                        <TableColumn fx:id="colAcoes" prefWidth="160.0" text="Acoes" style="-fx-alignment: CENTER;" />
                     </columns>
                     <placeholder>
                         <Label text="Nenhum paciente encontrado." />

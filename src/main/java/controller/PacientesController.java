@@ -76,21 +76,31 @@ public class PacientesController {
         colContacto.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getContacto()));
         colAcoes.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("ver"));
 
-        colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnVer = new Button("Ver conta");
-
-            {
-                btnVer.getStyleClass().add("agenda-action-button");
-                btnVer.setOnAction(event -> {
-                    PacienteLinha linha = getTableView().getItems().get(getIndex());
-                    abrirPerfilPaciente(linha.getId());
-                });
-            }
-
+        colAcoes.setCellFactory(col -> new TableCell<PacienteLinha, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btnVer);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Button btnVer = new Button("Ver conta");
+                    btnVer.getStyleClass().add("agenda-action-button");
+                    int index = getIndex();
+                    btnVer.setOnAction(event -> {
+                        try {
+                            if (index >= 0 && index < tblPacientes.getItems().size()) {
+                                PacienteLinha linha = tblPacientes.getItems().get(index);
+                                if (linha != null && linha.getId() != null) {
+                                    abrirPerfilPaciente(linha.getId());
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            mostrarAlerta("Erro ao abrir perfil: " + ex.getMessage());
+                        }
+                    });
+                    setGraphic(btnVer);
+                }
             }
         });
     }
@@ -137,7 +147,10 @@ public class PacientesController {
             }
             stage.show();
         } catch (Exception ex) {
-            mostrarAlerta(ex.getMessage() != null ? ex.getMessage() : "Nao foi possivel abrir o perfil do paciente.");
+            java.io.StringWriter sw = new java.io.StringWriter();
+            ex.printStackTrace(new java.io.PrintWriter(sw));
+            mostrarAlerta(sw.toString());
+            ex.printStackTrace();
         }
     }
 

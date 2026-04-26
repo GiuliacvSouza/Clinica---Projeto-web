@@ -61,7 +61,7 @@ public class PacientePerfilController {
     @FXML private Label lblResumoStatus;
     @FXML private Label lblHistoricoVazio;
     @FXML private TextField txtPrimeiroNome;
-    @FXML private TextField txtUltimoNome;
+    @FXML private TextField txtApelido;
     @FXML private TextField txtNif;
     @FXML private TextField txtEmail;
     @FXML private TextField txtTelemovel;
@@ -126,7 +126,7 @@ public class PacientePerfilController {
 
             Utilizador utilizador = pacienteAtual.getUtilizador();
             utilizador.setPrimeiroNome(txtPrimeiroNome.getText().trim());
-            utilizador.setUltimoNome(txtUltimoNome.getText().trim());
+            utilizador.setUltimoNome(txtApelido.getText().trim());
             utilizador.setNif(txtNif.getText().trim());
             utilizador.setEmail(txtEmail.getText().trim());
             utilizador.setTelemovel(valorOuNull(txtTelemovel.getText()));
@@ -179,7 +179,7 @@ public class PacientePerfilController {
     private void preencherFormulario() {
         Utilizador utilizador = pacienteAtual.getUtilizador();
         txtPrimeiroNome.setText(valorVazio(utilizador.getPrimeiroNome()));
-        txtUltimoNome.setText(valorVazio(utilizador.getUltimoNome()));
+        txtApelido.setText(valorVazio(utilizador.getUltimoNome()));
         txtNif.setText(valorVazio(utilizador.getNif()));
         txtEmail.setText(valorVazio(utilizador.getEmail()));
         txtTelemovel.setText(valorVazio(utilizador.getTelemovel()));
@@ -315,7 +315,7 @@ public class PacientePerfilController {
         if (txtPrimeiroNome.getText() == null || txtPrimeiroNome.getText().isBlank()) {
             throw new RuntimeException("Primeiro nome e obrigatorio.");
         }
-        if (txtUltimoNome.getText() == null || txtUltimoNome.getText().isBlank()) {
+        if (txtApelido.getText() == null || txtApelido.getText().isBlank()) {
             throw new RuntimeException("Ultimo nome e obrigatorio.");
         }
         if (txtNif.getText() == null || !txtNif.getText().trim().matches("\\d{9}")) {
@@ -342,7 +342,7 @@ public class PacientePerfilController {
 
         List<Control> campos = List.of(
                 txtPrimeiroNome,
-                txtUltimoNome,
+                txtApelido,
                 txtNif,
                 txtEmail,
                 txtTelemovel,
