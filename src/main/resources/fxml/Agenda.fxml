@@ -66,99 +66,50 @@
         </HBox>
     </HBox>
 
-    <SplitPane dividerPositions="0.65" styleClass="dashboard-body" VBox.vgrow="ALWAYS">
-        <VBox spacing="18.0" styleClass="split-pane-content">
-            <padding>
-                <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
-            </padding>
+    <VBox spacing="18.0" styleClass="split-pane-content" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="24.0" right="28.0" bottom="24.0" left="28.0" />
+        </padding>
 
-            <VBox spacing="4.0">
-                <Label styleClass="page-title" text="Agenda do Dia" />
-                <Label styleClass="page-subtitle" text="Acompanhe as consultas, estados e proximos encaixes." />
-            </VBox>
-
-            <HBox spacing="14.0">
-                <TextField promptText="Pesquisar por paciente, NIF ou dentista" styleClass="search-field" HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnHoje" mnemonicParsing="false" onAction="#escolherDia" styleClass="secondary-button" text="Hoje" />
-                <Button mnemonicParsing="false" onAction="#abrirNovaMarcacao" styleClass="primary-button" text="+ Nova Marcacao" />
-            </HBox>
-
-            <HBox spacing="10.0" fx:id="filterBox">
-                <Button fx:id="btnTodas" mnemonicParsing="false" styleClass="filter-chip" text="Todas" onAction="#filtrarTodas" />
-                <Button fx:id="btnPendentes" mnemonicParsing="false" styleClass="filter-chip" text="Pendentes" onAction="#filtrarPendentes" />
-                <Button fx:id="btnEmEspera" mnemonicParsing="false" styleClass="filter-chip" text="Em espera" onAction="#filtrarEmEspera" />
-                <Button fx:id="btnEmConsulta" mnemonicParsing="false" styleClass="filter-chip" text="Em consulta" onAction="#filtrarEmConsulta" />
-                <Button fx:id="btnConcluidas" mnemonicParsing="false" styleClass="filter-chip" text="Concluidas" onAction="#filtrarConcluidas" />
-            </HBox>
-
-            <VBox spacing="12.0" styleClass="section-card" VBox.vgrow="ALWAYS">
-                <HBox alignment="CENTER_LEFT">
-                    <Label styleClass="section-title" text="Consultas Agendadas" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Label styleClass="section-caption" text="23 de marco de 2026" />
-                </HBox>
-
-                <TableView fx:id="tblConsultas" prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colHora" prefWidth="100.0" text="Hora" />
-                        <TableColumn fx:id="colPaciente" prefWidth="220.0" text="Paciente" />
-                        <TableColumn fx:id="colDentista" prefWidth="180.0" text="Dentista" />
-                        <TableColumn fx:id="colProcedimento" prefWidth="260.0" text="Procedimento" />
-                        <TableColumn fx:id="colEstado" prefWidth="180.0" text="Estado" />
-                        <TableColumn fx:id="colAcoes" prefWidth="560.0" text="Acoes" />
-                    </columns>
-                    <placeholder>
-                        <Label text="Nenhuma consulta encontrada." />
-                    </placeholder>
-                </TableView>
-            </VBox>
+        <VBox spacing="4.0">
+            <Label styleClass="page-title" text="Agenda do Dia" />
+            <Label styleClass="page-subtitle" text="Acompanhe as consultas, estados e proximos encaixes." />
         </VBox>
 
-        <VBox spacing="16.0" styleClass="split-pane-sidebar">
-            <padding>
-                <Insets top="24.0" right="28.0" bottom="24.0" left="0.0" />
-            </padding>
+        <HBox spacing="14.0">
+            <TextField promptText="Pesquisar por paciente, NIF ou dentista" styleClass="search-field" HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnHoje" mnemonicParsing="false" onAction="#escolherDia" styleClass="secondary-button" text="Hoje" />
+            <Button mnemonicParsing="false" onAction="#abrirNovaMarcacao" styleClass="primary-button" text="+ Nova Marcacao" />
+        </HBox>
 
-            <VBox spacing="10.0" styleClass="section-card">
-                <Label styleClass="section-title" text="Resumo Rapido" />
-                <VBox spacing="10.0">
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="12 consultas hoje" />
-                        <Label styleClass="info-meta" text="4 confirmadas, 3 em espera, 5 concluidas" />
-                    </VBox>
-                    <VBox spacing="4.0" styleClass="info-item">
-                        <Label styleClass="info-title" text="2 dentistas em consulta" />
-                        <Label styleClass="info-meta" text="Dr. Costa e Dra. Matos ocupados neste momento" />
-                    </VBox>
-                </VBox>
-            </VBox>
+        <HBox spacing="10.0" fx:id="filterBox">
+            <Button fx:id="btnTodas" mnemonicParsing="false" styleClass="filter-chip" text="Todas" onAction="#filtrarTodas" />
+            <Button fx:id="btnPendentes" mnemonicParsing="false" styleClass="filter-chip" text="Pendentes" onAction="#filtrarPendentes" />
+            <Button fx:id="btnEmEspera" mnemonicParsing="false" styleClass="filter-chip" text="Em espera" onAction="#filtrarEmEspera" />
+            <Button fx:id="btnEmConsulta" mnemonicParsing="false" styleClass="filter-chip" text="Em consulta" onAction="#filtrarEmConsulta" />
+            <Button fx:id="btnConcluidas" mnemonicParsing="false" styleClass="filter-chip" text="Concluidas" onAction="#filtrarConcluidas" />
+        </HBox>
 
-            <VBox spacing="10.0" styleClass="section-card" VBox.vgrow="ALWAYS">
-                <Label styleClass="section-title" text="Lista de Espera" />
-                <VBox spacing="10.0" VBox.vgrow="ALWAYS">
-                    <HBox alignment="TOP_LEFT" styleClass="info-item">
-                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
-                            <Label styleClass="info-title" text="Fernando Mota" />
-                            <Label styleClass="info-meta" text="Implante" />
-                        </VBox>
-                        <Button mnemonicParsing="false" styleClass="secondary-button" text="Encaixar" />
-                    </HBox>
-                    <HBox alignment="TOP_LEFT" styleClass="info-item">
-                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
-                            <Label styleClass="info-title" text="Sofia Castro" />
-                            <Label styleClass="info-meta" text="Obturação" />
-                        </VBox>
-                        <Button mnemonicParsing="false" styleClass="secondary-button" text="Encaixar" />
-                    </HBox>
-                    <HBox alignment="TOP_LEFT" styleClass="info-item">
-                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
-                            <Label styleClass="info-title" text="Ana Maria" />
-                            <Label styleClass="info-meta" text="Limpeza" />
-                        </VBox>
-                        <Button mnemonicParsing="false" styleClass="secondary-button" text="Encaixar" />
-                    </HBox>
-                </VBox>
-            </VBox>
+        <VBox spacing="12.0" styleClass="section-card" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT">
+                <Label styleClass="section-title" text="Consultas Agendadas" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label styleClass="section-caption" text="23 de marco de 2026" />
+            </HBox>
+
+            <TableView fx:id="tblConsultas" prefHeight="200.0" styleClass="dashboard-table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colHora" prefWidth="100.0" text="Hora" />
+                    <TableColumn fx:id="colPaciente" prefWidth="220.0" text="Paciente" />
+                    <TableColumn fx:id="colDentista" prefWidth="180.0" text="Dentista" />
+                    <TableColumn fx:id="colProcedimento" prefWidth="260.0" text="Procedimento" />
+                    <TableColumn fx:id="colEstado" prefWidth="180.0" text="Estado" />
+                    <TableColumn fx:id="colAcoes" prefWidth="560.0" text="Acoes" />
+                </columns>
+                <placeholder>
+                    <Label text="Nenhuma consulta encontrada." />
+                </placeholder>
+            </TableView>
         </VBox>
-    </SplitPane>
+    </VBox>
 </VBox>
