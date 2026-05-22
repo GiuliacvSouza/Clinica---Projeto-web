@@ -11,6 +11,7 @@ public class ConsultaAgendadaDTO {
     private Instant dataHoraInicio;
     private EstadoConsulta status;
     private String nifPaciente;
+    private Integer idPaciente;
 
     public ConsultaAgendadaDTO() {}
 
@@ -28,6 +29,21 @@ public class ConsultaAgendadaDTO {
                                String procedimento, Instant dataHoraInicio, EstadoConsulta status, String nifPaciente) {
         this(idConsulta, nomePaciente, nomeDentista, procedimento, dataHoraInicio, status);
         this.nifPaciente = nifPaciente;
+    }
+
+    public ConsultaAgendadaDTO(Integer idConsulta, String nomePaciente, String nomeDentista,
+                               String procedimento, Instant dataHoraInicio, EstadoConsulta status,
+                               String nifPaciente, Integer idPaciente) {
+        this(idConsulta, nomePaciente, nomeDentista, procedimento, dataHoraInicio, status, nifPaciente);
+        this.idPaciente = idPaciente;
+    }
+
+    public Integer getIdPaciente() {
+        return idPaciente;
+    }
+
+    public void setIdPaciente(Integer idPaciente) {
+        this.idPaciente = idPaciente;
     }
 
     public String getNifPaciente() {

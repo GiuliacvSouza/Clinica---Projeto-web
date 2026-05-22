@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Perfil | Clinica Dentaria</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a5e0d7",
+                        "on-primary-fixed-variant": "#2a655e",
+                        "on-secondary-container": "#3d5653",
+                        "secondary-container": "#cce8e3",
+                        "on-error-container": "#6e0a12",
+                        "secondary-dim": "#3f5854",
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "error-dim": "#67040d",
+                        "primary-dim": "#205c55",
+                        "tertiary-dim": "#27596c",
+                        "error-container": "#fa746f",
+                        "primary-fixed": "#b3eee5",
+                        "primary": "#2e6861",
+                        "on-tertiary": "#f2faff",
+                        "on-secondary-fixed-variant": "#47605c",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-secondary-fixed": "#2b4440",
+                        "inverse-primary": "#bbf7ed",
+                        "on-tertiary-container": "#235669",
+                        "tertiary": "#346579",
+                        "surface-dim": "#d3dcdb",
+                        "on-background": "#2c3434",
+                        "surface-tint": "#2e6861",
+                        "outline": "#737c7c",
+                        "tertiary-fixed-dim": "#a8d9ef",
+                        "error": "#a83836",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#586160",
+                        "surface-container-highest": "#dbe4e3",
+                        "on-tertiary-fixed": "#084356",
+                        "on-tertiary-fixed-variant": "#2e6073",
+                        "surface-container-low": "#f0f5f4",
+                        "on-primary-container": "#1f5b54",
+                        "on-surface": "#2c3434",
+                        "secondary": "#4b6460",
+                        "secondary-fixed-dim": "#bedad5",
+                        "tertiary-container": "#b6e7fe",
+                        "inverse-on-surface": "#9a9e9d",
+                        "secondary-fixed": "#cce8e3",
+                        "background": "#f7faf9",
+                        "on-secondary": "#e2fff9",
+                        "on-primary-fixed": "#014842",
+                        "surface": "#f7faf9",
+                        "inverse-surface": "#0b0f0f",
+                        "tertiary-fixed": "#b6e7fe",
+                        "on-error": "#fff7f6",
+                        "surface-variant": "#dbe4e3",
+                        "surface-bright": "#f7faf9",
+                        "surface-container": "#e9efee"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"],
+                        body: ["Manrope"],
+                        label: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        h1, h2, h3, .brand-logo {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .signature-gradient {
+            background: linear-gradient(135deg, #2e6861 0%, #205c55 100%);
+        }
+
+        .ambient-glow {
+            box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<header class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50">
+    <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
+            Clinica Dentaria
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors font-body" th:href="@{/consultas}">Consultas</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors font-body" th:href="@{/marcar-consulta}">Marcar Consulta</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors font-body" th:href="@{/faturas}">Faturas</a>
+        </nav>
+        <a class="p-2 rounded-full bg-teal-50/70 dark:bg-teal-900/20 transition-all scale-95 duration-200 ease-out"
+           th:href="@{/perfil}" title="Perfil">
+            <span class="material-symbols-outlined text-teal-700 dark:text-teal-400">account_circle</span>
+        </a>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-8 py-12 lg:py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-4 space-y-8">
+            <div class="space-y-4">
+                <h1 class="text-display-lg text-5xl font-extrabold tracking-tight text-on-surface">O Meu Perfil</h1>
+                <p class="text-body-md text-on-surface-variant max-w-sm leading-relaxed">
+                    Bem-vindo ao seu santuario clinico. Aqui pode gerir os seus dados pessoais e manter a sua jornada de bem-estar atualizada.
+                </p>
+            </div>
+            <div class="relative group aspect-square max-w-[280px] rounded-2xl overflow-hidden bg-surface-container-high transition-transform duration-500 hover:scale-[1.02]">
+                <img alt="Foto de perfil" class="w-full h-full object-cover"
+                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1hl8pnQ6x37YuKAXZpgLzAoOd9OA73FcbG_XhlAqxL78BMNcg6-bEcUjRucDKqF23YbUo9A8CPel84ZsUTxFSZcl_bxeVWlCCDk7-_mLUprjXGGIBmcCHUxFhnVzlfxMUGAzeJOLXtS_No82U_Cw5hS36wUi3pd1KDKGDc_GiZJ5GzKe6_OHSk17EmjwwzI8xmhuQ7VtgCjTztWpdY8B_5RnVLB1pFY54hg8u92Wa4Y8FMJlS-fT6j3ES6RpWIcTWG-o5UGvhJLc"/>
+                <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300"></div>
+                <button class="absolute bottom-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md p-3 rounded-xl shadow-lg hover:bg-surface-container-lowest transition-all" type="button">
+                    <span class="material-symbols-outlined text-primary">photo_camera</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8">
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="post" th:action="@{/perfil}">
+                <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+                <div class="md:col-span-2 rounded-xl bg-primary-container/50 px-4 py-3 text-sm font-semibold text-on-primary-container"
+                     th:if="${perfilAtualizado}">
+                    Perfil atualizado com sucesso.
+                </div>
+
+                <div class="md:col-span-2 rounded-xl bg-error-container/20 px-4 py-3 text-sm font-semibold text-on-error-container"
+                     th:if="${erroPerfil != null}"
+                     th:text="${erroPerfil}">
+                    Nao foi possivel atualizar o perfil.
+                </div>
+
+                <div class="md:col-span-2 bg-surface-container-low p-8 rounded-3xl ambient-glow">
+                    <div class="flex items-center gap-3 mb-8">
+                        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person</span>
+                        <h2 class="text-headline-md font-bold tracking-tight">Informacoes Pessoais</h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-label-md font-semibold text-on-surface-variant ml-1">Nome Completo</label>
+                                <input class="w-full bg-surface-container-high/50 border-none rounded-xl px-4 py-3 text-on-surface opacity-70 cursor-not-allowed"
+                                       disabled th:value="${nomeCompleto}" type="text"/>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-label-md font-semibold text-on-surface-variant ml-1">Data de Nascimento</label>
+                                <input class="w-full bg-surface-container-high/50 border-none rounded-xl px-4 py-3 text-on-surface opacity-70 cursor-not-allowed"
+                                       disabled th:value="${dataNascimento}" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-3xl ambient-glow border border-primary/5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary">contact_page</span>
+                        <h3 class="text-title-lg font-bold">Contacto</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="phone">Telemovel</label>
+                            <input class="w-full bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary border-none rounded-xl px-4 py-3 transition-all duration-300"
+                                   id="phone" name="telemovel" th:value="${telemovel}" type="tel"/>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="email">Email</label>
+                            <input class="w-full bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary border-none rounded-xl px-4 py-3 transition-all duration-300"
+                                   id="email" name="email" required th:value="${email}" type="email"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-3xl ambient-glow border border-primary/5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="material-symbols-outlined text-primary">location_on</span>
+                        <h3 class="text-title-lg font-bold">Morada</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="address">Endereco</label>
+                            <textarea class="w-full bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary border-none rounded-xl px-4 py-3 transition-all duration-300 resize-none"
+                                      id="address" name="morada" rows="3" th:text="${morada}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
+                    <p class="text-label-md text-on-surface-variant italic">
+                        As alteracoes ficam guardadas na sua conta.
+                    </p>
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <a class="w-full sm:w-auto px-8 py-3.5 rounded-xl text-on-surface font-semibold hover:bg-surface-container-high transition-all duration-300 text-center"
+                           th:href="@{/consultas}">
+                            Cancelar
+                        </a>
+                        <button class="w-full sm:w-auto px-10 py-3.5 rounded-xl text-on-primary font-bold signature-gradient shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300" type="submit">
+                            Guardar Alteracoes
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <form class="mt-6 text-right" method="post" th:action="@{/logout}">
+                <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+                <button class="text-sm font-bold text-error hover:underline" type="submit">Sair da conta</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800 mt-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
+        <div class="space-y-4">
+            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">
+                Clinica Dentaria
+            </div>
+            <p class="text-zinc-500 dark:text-zinc-400 font-body text-sm max-w-xs">
+                © 2026 Clinica Dentaria. The Clinical Sanctuary.
+            </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300 font-body" href="#">Contacte-nos</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300 font-body" href="#">Politica de Privacidade</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300 font-body" href="#">Termos de Servico</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300 font-body" href="#">Cuidados de Emergencia</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

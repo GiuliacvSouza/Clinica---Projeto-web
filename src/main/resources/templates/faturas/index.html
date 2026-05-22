@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Faturas | Clinica Dentaria</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a5e0d7",
+                        "on-primary-fixed-variant": "#2a655e",
+                        "on-secondary-container": "#3d5653",
+                        "secondary-container": "#cce8e3",
+                        "on-error-container": "#6e0a12",
+                        "secondary-dim": "#3f5854",
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "error-dim": "#67040d",
+                        "primary-dim": "#205c55",
+                        "tertiary-dim": "#27596c",
+                        "error-container": "#fa746f",
+                        "primary-fixed": "#b3eee5",
+                        "primary": "#2e6861",
+                        "on-tertiary": "#f2faff",
+                        "on-secondary-fixed-variant": "#47605c",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-secondary-fixed": "#2b4440",
+                        "inverse-primary": "#bbf7ed",
+                        "on-tertiary-container": "#235669",
+                        "tertiary": "#346579",
+                        "surface-dim": "#d3dcdb",
+                        "on-background": "#2c3434",
+                        "surface-tint": "#2e6861",
+                        "outline": "#737c7c",
+                        "tertiary-fixed-dim": "#a8d9ef",
+                        "error": "#a83836",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#586160",
+                        "surface-container-highest": "#dbe4e3",
+                        "on-tertiary-fixed": "#084356",
+                        "on-tertiary-fixed-variant": "#2e6073",
+                        "surface-container-low": "#f0f5f4",
+                        "on-primary-container": "#1f5b54",
+                        "on-surface": "#2c3434",
+                        "secondary": "#4b6460",
+                        "secondary-fixed-dim": "#bedad5",
+                        "tertiary-container": "#b6e7fe",
+                        "inverse-on-surface": "#9a9e9d",
+                        "secondary-fixed": "#cce8e3",
+                        "background": "#f7faf9",
+                        "on-secondary": "#e2fff9",
+                        "on-primary-fixed": "#014842",
+                        "surface": "#f7faf9",
+                        "inverse-surface": "#0b0f0f",
+                        "tertiary-fixed": "#b6e7fe",
+                        "on-error": "#fff7f6",
+                        "surface-variant": "#dbe4e3",
+                        "surface-bright": "#f7faf9",
+                        "surface-container": "#e9efee"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"],
+                        body: ["Manrope"],
+                        label: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<header class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50">
+    <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
+            Clinica Dentaria
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/consultas}">Consultas</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/marcar-consulta}">Marcar Consulta</a>
+            <a class="text-teal-700 dark:text-teal-300 border-b-2 border-teal-600 pb-1 font-semibold" th:href="@{/faturas}">Faturas</a>
+        </nav>
+        <a class="material-symbols-outlined text-zinc-500 hover:bg-teal-50/50 p-2 rounded-full transition-all scale-95 duration-200 ease-out"
+           data-icon="account_circle" th:href="@{/perfil}" title="Perfil">account_circle</a>
+    </div>
+</header>
+
+<main class="flex-grow max-w-7xl w-full mx-auto px-8 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+        <div class="max-w-2xl">
+            <span class="text-primary font-semibold tracking-wider uppercase text-xs mb-4 block">Area Financeira</span>
+            <h1 class="text-5xl font-extrabold tracking-tighter text-on-surface mb-6">Faturas e Recibos</h1>
+            <p class="text-on-surface-variant text-lg leading-relaxed font-body">
+                Gerencie seu historico de pagamentos e acompanhe seus comprovantes fiscais.
+            </p>
+        </div>
+        <div class="bg-primary-container p-6 rounded-xl flex items-center gap-6 shadow-sm">
+            <div class="text-right">
+                <p class="text-label-md text-on-primary-container opacity-70">Saldo em Aberto</p>
+                <p class="text-3xl font-bold text-on-primary-container" th:text="${saldoAberto}">R$ 0,00</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary">
+                <span class="material-symbols-outlined" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-surface-container-low rounded-xl mb-4">
+            <div class="flex gap-4">
+                <button class="px-6 py-2 bg-surface-container-lowest rounded-lg text-primary font-semibold shadow-sm text-sm" type="button">Todos</button>
+                <button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm transition-all" type="button">2026</button>
+                <button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm transition-all" type="button">2025</button>
+            </div>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+                <input class="pl-10 pr-4 py-2 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary w-64 text-sm" placeholder="Buscar tratamento..." type="text"/>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-surface-container-low text-on-surface-variant">
+                        <th class="px-8 py-5 font-semibold text-sm">Tratamento</th>
+                        <th class="px-8 py-5 font-semibold text-sm">Data de Emissao</th>
+                        <th class="px-8 py-5 font-semibold text-sm">Valor</th>
+                        <th class="px-8 py-5 font-semibold text-sm">Status</th>
+                        <th class="px-8 py-5 font-semibold text-sm text-right">Acoes</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-container-low">
+                    <tr th:if="${#lists.isEmpty(faturas)}">
+                        <td class="px-8 py-12 text-center text-on-surface-variant" colspan="5">
+                            Ainda nao existem faturas para apresentar.
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-surface-container-low transition-colors group" th:each="fatura : ${faturas}">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+                                    <span class="material-symbols-outlined" data-icon="dentistry">dentistry</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-on-surface" th:text="${fatura.tratamento()}">Consulta Geral</p>
+                                    <p class="text-xs text-on-surface-variant" th:text="${fatura.dentista()}">Clinica Dentaria</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-on-surface-variant text-sm" th:text="${fatura.dataEmissao()}">Sem data</td>
+                        <td class="px-8 py-6 font-semibold text-on-surface" th:text="${fatura.valor()}">R$ 0,00</td>
+                        <td class="px-8 py-6">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                                  th:classappend="${fatura.classeEstado()}">
+                                <span class="w-1.5 h-1.5 rounded-full" th:classappend="${fatura.pontoEstado()}"></span>
+                                <span th:text="${fatura.estado()}">PENDENTE</span>
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <button class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-primary hover:text-on-primary rounded-lg transition-all text-sm font-medium" type="button">
+                                <span class="material-symbols-outlined text-lg" data-icon="download">download</span>
+                                Recibo PDF
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 bg-zinc-900 rounded-3xl p-10 text-zinc-100 flex flex-col justify-between overflow-hidden relative group">
+            <div class="z-10">
+                <h3 class="text-3xl font-bold mb-4">Duvidas sobre cobranca?</h3>
+                <p class="text-zinc-400 mb-8 max-w-md">Nossa equipe financeira esta disponivel para esclarecer qualquer detalhe sobre seus tratamentos e parcelamentos.</p>
+                <button class="bg-primary hover:bg-primary-dim text-white px-8 py-4 rounded-xl font-bold transition-all inline-flex items-center gap-3" type="button">
+                    Falar com o Financeiro
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+            </div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary opacity-20 blur-[100px] -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-teal-300 opacity-10 blur-[60px] -ml-16 -mb-16"></div>
+        </div>
+        <div class="bg-white rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center text-center border border-zinc-100">
+            <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container mb-6">
+                <span class="material-symbols-outlined text-3xl" data-icon="shield_person">shield_person</span>
+            </div>
+            <h4 class="font-bold text-xl mb-3">Seguranca de Dados</h4>
+            <p class="text-sm text-zinc-500 mb-6">Seus dados financeiros sao protegidos por boas praticas de seguranca.</p>
+            <a class="text-primary font-bold text-sm underline" href="#">Politica de Privacidade</a>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
+        <div>
+            <p class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 brand-font">Clinica Dentaria</p>
+            <p class="text-zinc-500 dark:text-zinc-400 max-w-sm body-md">© 2026 Clinica Dentaria. The Clinical Sanctuary.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-2">
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Contacte-nos</a>
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Politica de Privacidade</a>
+            </div>
+            <div class="flex flex-col gap-2">
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Termos de Servico</a>
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Cuidados de Emergencia</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

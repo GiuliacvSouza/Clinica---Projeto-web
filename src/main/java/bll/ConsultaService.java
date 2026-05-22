@@ -256,7 +256,11 @@ public class ConsultaService {
                 getNomeDentista(consulta.getIdDentista()),
                 resolverProcedimento(consulta),
                 consulta.getDataHoraInicio(),
-                consulta.getStatus()
+                consulta.getStatus(),
+                consulta.getIdPaciente() != null && consulta.getIdPaciente().getUtilizador() != null
+                        ? consulta.getIdPaciente().getUtilizador().getNif()
+                        : null,
+                consulta.getIdPaciente() != null ? consulta.getIdPaciente().getId() : null
         );
     }
 

@@ -1,9 +1,7 @@
 plugins {
     id 'java'
-    id 'application'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group = 'com.clinica'
@@ -19,12 +17,13 @@ repositories {
     mavenCentral()
 }
 
-javafx {
-    version = '21'
-    modules = ['javafx.controls', 'javafx.fxml']
+springBoot {
+    mainClass = 'app.MainApplication'
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -34,19 +33,19 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-application {
-    mainClass = 'app.Launcher'
-}
-
 bootJar {
-    mainClass = 'app.Launcher'
-    manifest {
-        attributes 'Main-Class': 'app.Launcher'
-    }
+    mainClass = 'app.MainApplication'
 }
 
 tasks.named('bootRun') {
-    mainClass = 'app.Launcher'
+    mainClass = 'app.MainApplication'
+}
+
+tasks.register('bootRunTestWeb', org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = 'application'
+    description = 'Executa a aplicacao web de teste sem ligar a base de dados.'
+    mainClass = 'app.TestWebApplication'
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 tasks.named('test') {

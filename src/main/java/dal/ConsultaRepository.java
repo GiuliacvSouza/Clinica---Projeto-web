@@ -25,7 +25,8 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
            "c.tipo, " +
            "c.dataHoraInicio, " +
            "c.status, " +
-           "p.utilizador.nif) " +
+           "p.utilizador.nif, " +
+           "p.id) " +
            "FROM Consulta c " +
            "LEFT JOIN c.idPaciente p " +
            "LEFT JOIN c.idDentista d " +
@@ -39,7 +40,8 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
            "c.tipo, " +
            "c.dataHoraInicio, " +
            "c.status, " +
-           "p.utilizador.nif) " +
+           "p.utilizador.nif, " +
+           "p.id) " +
            "FROM Consulta c " +
            "LEFT JOIN c.idPaciente p " +
            "LEFT JOIN c.idDentista d " +

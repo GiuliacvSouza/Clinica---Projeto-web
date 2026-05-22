@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Criar Conta - Clinica Dentaria</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f7faf9;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+
+        .ambient-glow {
+            box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a5e0d7",
+                        "on-primary-fixed-variant": "#2a655e",
+                        "on-secondary-container": "#3d5653",
+                        "secondary-container": "#cce8e3",
+                        "on-error-container": "#6e0a12",
+                        "secondary-dim": "#3f5854",
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "error-dim": "#67040d",
+                        "primary-dim": "#205c55",
+                        "tertiary-dim": "#27596c",
+                        "error-container": "#fa746f",
+                        "primary-fixed": "#b3eee5",
+                        "primary": "#2e6861",
+                        "on-tertiary": "#f2faff",
+                        "on-secondary-fixed-variant": "#47605c",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-secondary-fixed": "#2b4440",
+                        "inverse-primary": "#bbf7ed",
+                        "on-tertiary-container": "#235669",
+                        "tertiary": "#346579",
+                        "surface-dim": "#d3dcdb",
+                        "on-background": "#2c3434",
+                        "surface-tint": "#2e6861",
+                        "outline": "#737c7c",
+                        "tertiary-fixed-dim": "#a8d9ef",
+                        "error": "#a83836",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#586160",
+                        "surface-container-highest": "#dbe4e3",
+                        "on-tertiary-fixed": "#084356",
+                        "on-tertiary-fixed-variant": "#2e6073",
+                        "surface-container-low": "#f0f5f4",
+                        "on-primary-container": "#1f5b54",
+                        "on-surface": "#2c3434",
+                        "secondary": "#4b6460",
+                        "secondary-fixed-dim": "#bedad5",
+                        "tertiary-container": "#b6e7fe",
+                        "inverse-on-surface": "#9a9e9d",
+                        "secondary-fixed": "#cce8e3",
+                        "background": "#f7faf9",
+                        "on-secondary": "#e2fff9",
+                        "on-primary-fixed": "#014842",
+                        "surface": "#f7faf9",
+                        "inverse-surface": "#0b0f0f",
+                        "tertiary-fixed": "#b6e7fe",
+                        "on-error": "#fff7f6",
+                        "surface-variant": "#dbe4e3",
+                        "surface-bright": "#f7faf9",
+                        "surface-container": "#e9efee"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "0.75rem",
+                        xl: "1rem",
+                        "2xl": "1.5rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"],
+                        body: ["Manrope"],
+                        label: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen items-center justify-center p-4 md:p-8">
+<main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden bg-surface-container-lowest rounded-2xl md:rounded-3xl ambient-glow">
+    <div class="hidden lg:flex lg:col-span-5 relative bg-primary-container/30 overflow-hidden flex-col justify-between p-12">
+        <div class="z-10">
+            <div class="flex items-center gap-2 mb-12">
+                <span class="material-symbols-outlined text-primary text-3xl" data-icon="dentistry">dentistry</span>
+                <span class="text-2xl font-bold tracking-tighter text-teal-800 brand-font">Clinica Dentaria</span>
+            </div>
+            <h1 class="text-display-lg text-primary leading-tight font-extrabold tracking-tighter mb-6">Seu sorriso,<br/>nosso santuario.</h1>
+            <p class="text-body-md text-on-surface-variant max-w-xs leading-relaxed">Experimente uma jornada odontologica focada no seu bem-estar e tranquilidade.</p>
+        </div>
+
+        <div class="relative mt-auto">
+            <div class="aspect-square w-full rounded-2xl overflow-hidden bg-surface-container-high relative z-0">
+                <img alt="Modern dental clinic interior" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700"
+                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7O65y0ihim6e4CwUZxLKuRpCetUCAXWiWDYxcnMqSQcLhzLS_ZenWfCExSuFXjoA-PoRDC1-lxgZzq6ZkP7KcUm1iOHBbY_kxowalvQY_xy1eoSRx3a-H9BkCJQikp7NmecwhaHMcu5WCRz3w0A9FALHj3zUQwMs1DyEuRfIQEwT870Ax9qcRyB0ymF3kENd_EMnPjFfSkkbgMLpcI1JQvdOuVT5joagLXGRjwoOJCOqsYo8fNKEz_30m73jYocBo5a5Oa-s3ev0"/>
+            </div>
+            <div class="absolute -bottom-6 -right-6 glass-panel p-6 rounded-xl ambient-glow z-10 border border-white/40">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary/10 p-2 rounded-lg">
+                        <span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+                    </div>
+                    <div>
+                        <p class="text-label-md font-bold text-on-surface">Cuidado Premium</p>
+                        <p class="text-[10px] text-on-surface-variant">Tecnologia de ponta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-16 lg:p-20 bg-surface-container-lowest">
+        <div class="max-w-md mx-auto w-full">
+            <div class="lg:hidden flex items-center gap-2 mb-10">
+                <span class="material-symbols-outlined text-primary text-2xl" data-icon="dentistry">dentistry</span>
+                <span class="text-xl font-bold tracking-tighter text-teal-800 brand-font">Clinica Dentaria</span>
+            </div>
+
+            <div class="mb-10">
+                <h2 class="text-headline-md font-extrabold text-on-surface tracking-tight mb-2">Criar Conta</h2>
+                <p class="text-body-md text-on-surface-variant">Comece sua jornada para um sorriso mais saudavel.</p>
+            </div>
+
+            <form class="space-y-6" method="post" th:action="@{/cadastro}">
+                <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+                <div class="rounded-xl bg-error-container/20 px-4 py-3 text-sm font-semibold text-on-error-container"
+                     th:if="${erroCadastro != null}"
+                     th:text="${erroCadastro}">
+                    Nao foi possivel criar a conta.
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="name">Nome Completo</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                        </div>
+                        <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                               id="name" name="nome" placeholder="Como devemos chamar voce?" required th:value="${nomeInformado}" type="text"/>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="email">Email</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+                        </div>
+                        <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                               id="email" name="email" placeholder="exemplo@email.com" required th:value="${emailInformado}" type="email"/>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="phone">Telefone</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="call">call</span>
+                            </div>
+                            <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                                   id="phone" name="telefone" placeholder="(00) 00000-0000" th:value="${telefoneInformado}" type="tel"/>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="password">Senha</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+                            </div>
+                            <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                                   id="password" name="password" placeholder="********" required type="password"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 px-1">
+                    <input class="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary-container"
+                           id="terms" name="terms" type="checkbox" value="accepted"/>
+                    <label class="text-label-md text-on-surface-variant leading-tight" for="terms">
+                        Eu concordo com os <a class="text-primary font-bold hover:underline" href="#">Termos de Servico</a> e a <a class="text-primary font-bold hover:underline" href="#">Politica de Privacidade</a>.
+                    </label>
+                </div>
+
+                <button class="w-full py-4 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2" type="submit">
+                    Cadastrar Agora
+                    <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+
+                <p class="text-center text-body-md text-on-surface-variant pt-4">
+                    Ja tem uma conta?
+                    <a class="text-primary font-bold hover:underline" th:href="@{/login}">Fazer Login</a>
+                </p>
+            </form>
+
+            <div class="mt-16 flex items-center justify-between text-label-md text-outline py-6 border-t border-surface-container-high">
+                <div class="flex items-center gap-4">
+                    <a class="hover:text-primary" href="#">Ajuda</a>
+                    <a class="hover:text-primary" href="#">Contatos</a>
+                </div>
+                <p>© 2026 Clinica Dentaria</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -mr-64 -mt-64"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-tertiary-container/10 rounded-full blur-[80px] -ml-48 -mb-48"></div>
+</body>
+</html>

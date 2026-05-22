@@ -171,6 +171,9 @@ public class MainApplication implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
+        if (System.getProperty("app.skipSeed") == null) {
+            System.setProperty("app.skipSeed", "true");
+        }
         SpringApplication.run(MainApplication.class, args);
     }
 

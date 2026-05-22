@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Marcar Consulta | Clinica Dentaria</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a5e0d7",
+                        "on-primary-fixed-variant": "#2a655e",
+                        "on-secondary-container": "#3d5653",
+                        "secondary-container": "#cce8e3",
+                        "on-error-container": "#6e0a12",
+                        "secondary-dim": "#3f5854",
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "error-dim": "#67040d",
+                        "primary-dim": "#205c55",
+                        "tertiary-dim": "#27596c",
+                        "error-container": "#fa746f",
+                        "primary-fixed": "#b3eee5",
+                        "primary": "#2e6861",
+                        "on-tertiary": "#f2faff",
+                        "on-secondary-fixed-variant": "#47605c",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-secondary-fixed": "#2b4440",
+                        "inverse-primary": "#bbf7ed",
+                        "on-tertiary-container": "#235669",
+                        "tertiary": "#346579",
+                        "surface-dim": "#d3dcdb",
+                        "on-background": "#2c3434",
+                        "surface-tint": "#2e6861",
+                        "outline": "#737c7c",
+                        "tertiary-fixed-dim": "#a8d9ef",
+                        "error": "#a83836",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#586160",
+                        "surface-container-highest": "#dbe4e3",
+                        "on-tertiary-fixed": "#084356",
+                        "on-tertiary-fixed-variant": "#2e6073",
+                        "surface-container-low": "#f0f5f4",
+                        "on-primary-container": "#1f5b54",
+                        "on-surface": "#2c3434",
+                        "secondary": "#4b6460",
+                        "secondary-fixed-dim": "#bedad5",
+                        "tertiary-container": "#b6e7fe",
+                        "inverse-on-surface": "#9a9e9d",
+                        "secondary-fixed": "#cce8e3",
+                        "background": "#f7faf9",
+                        "on-secondary": "#e2fff9",
+                        "on-primary-fixed": "#014842",
+                        "surface": "#f7faf9",
+                        "inverse-surface": "#0b0f0f",
+                        "tertiary-fixed": "#b6e7fe",
+                        "on-error": "#fff7f6",
+                        "surface-variant": "#dbe4e3",
+                        "surface-bright": "#f7faf9",
+                        "surface-container": "#e9efee"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"],
+                        body: ["Manrope"],
+                        label: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .signature-gradient {
+            background: linear-gradient(135deg, #2e6861 0%, #205c55 100%);
+        }
+
+        .ambient-glow {
+            box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<nav class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50 transition-all duration-200 ease-out">
+    <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
+            Clinica Dentaria
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/consultas}">Consultas</a>
+            <a class="text-teal-700 dark:text-teal-300 border-b-2 border-teal-600 pb-1 font-semibold" th:href="@{/marcar-consulta}">Marcar Consulta</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/faturas}">Faturas</a>
+        </div>
+        <a class="material-symbols-outlined text-teal-700 dark:text-teal-400 p-2 rounded-full hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-all scale-95 duration-200 ease-out"
+           data-icon="account_circle" th:href="@{/perfil}" title="Perfil">account_circle</a>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-8 py-12">
+    <header class="mb-12">
+        <h1 class="text-5xl font-extrabold tracking-tight text-on-surface mb-4">Marcar Consulta</h1>
+        <p class="text-on-surface-variant text-lg max-w-2xl">O seu caminho para um sorriso saudavel comeca aqui. Selecione o profissional e o melhor horario para o seu atendimento.</p>
+    </header>
+
+    <form class="grid grid-cols-1 lg:grid-cols-12 gap-12" method="post" th:action="@{/marcar-consulta}">
+        <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+        <div class="lg:col-span-8 space-y-12">
+            <div class="rounded-xl bg-error-container/20 px-4 py-3 text-sm font-semibold text-on-error-container"
+                 th:if="${erroMarcacao != null}"
+                 th:text="${erroMarcacao}">
+                Nao foi possivel marcar a consulta.
+            </div>
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">1</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Selecione o Especialista</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="group relative flex items-center p-4 rounded-xl bg-surface-container-low hover:bg-surface-container-lowest transition-all duration-300 cursor-pointer border border-transparent has-[:checked]:border-primary has-[:checked]:bg-surface-container-lowest"
+                           th:each="dentista, iter : ${dentistas}">
+                        <input class="sr-only" name="dentistaId" required th:checked="${dentista.id() == dentistaSelecionado}" th:value="${dentista.id()}" type="radio"/>
+                        <img alt="Dentista" class="w-16 h-16 rounded-full object-cover mr-4"
+                             th:src="${iter.index % 2 == 0}
+                                ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuAJkzvWYnCLDlZlMKMP_Gm3bh6ZaVjacQFsqG35imAgE69iuZucQIvKIphWCrJHFb0LkJGCkNKETskeYoqL0aR7DkMEk3gp3C32Ukau8qzToC3bLJaUNL6CidZ57r02HhD-Mq-IgFgSx_zPm_OFTQQU5eQ7w29DyNUf7Mrdno4F0FN1fx-jTXbyut4RMj3pdxvuYX4ppntrv31o_b3seSau3WMk6e_h0W_a_VSTptgtGHDCCJ7o0YOANlF4zxkS83vBx1u4x_cMYC4'
+                                : 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4qTmqrNuYJZ1OSZHzUwpVGquKkblY8ygxPY_n9qxOMWQKrt_8AY-A738LeIL3ZnAmHpN-I25Vcc_LwUAVt_TJWbbFXOZtGGYFEfiJbEwsrlfgre-FAJ7rnLZrt5oT7vWVwfPMgsZemgCN__dJtIgRB29MSUqHEeBXt1AcxIuAp7VMGtcGx-C9nWpgtdIieLte0CkMlzkwy1mtrKMVS2RkE5U2eS4POgpJYiGfY5Z7ZpwqE1VVpRO1zDPvp22_jTDrgOft45-ThmI'"/>
+                        <div>
+                            <h3 class="font-bold text-lg text-on-surface" th:text="${dentista.nome()}">Dra. Ana Silva</h3>
+                            <p class="text-sm text-on-surface-variant" th:text="${dentista.especialidade()}">Clinica Geral</p>
+                        </div>
+                        <div class="ml-auto opacity-0 group-has-[:checked]:opacity-100 transition-opacity">
+                            <span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">2</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Escolha a Data</h2>
+                </div>
+
+                <div class="bg-surface-container-low rounded-2xl p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xl font-bold">Proximas datas</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                        <label class="cursor-pointer" th:each="data : ${datas}">
+                            <input class="peer sr-only" name="data" required th:checked="${data.valor() == dataSelecionada}" th:value="${data.valor()}" type="radio"/>
+                            <span class="flex min-h-24 flex-col items-center justify-center rounded-xl bg-surface-container-lowest px-3 py-4 text-center transition-all hover:bg-primary-container peer-checked:bg-primary peer-checked:text-on-primary">
+                                <span class="text-xs font-bold uppercase tracking-widest" th:text="${data.diaSemana()}">Ter</span>
+                                <span class="text-2xl font-extrabold" th:text="${data.diaMes()}">5</span>
+                                <span class="text-xs font-semibold uppercase" th:text="${data.mes()}">Nov</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">3</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Horarios Disponiveis</h2>
+                </div>
+
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <label class="cursor-pointer" th:each="horario : ${horarios}">
+                        <input class="peer sr-only" name="hora" required th:checked="${horario == horaSelecionada}" th:value="${horario}" type="radio"/>
+                        <span class="block rounded-xl bg-surface-container-low px-4 py-3 text-center font-medium text-on-surface transition-all hover:bg-primary hover:text-on-primary peer-checked:bg-primary peer-checked:font-bold peer-checked:text-on-primary peer-checked:shadow-md"
+                              th:text="${horario}">10:30</span>
+                    </label>
+                </div>
+            </section>
+        </div>
+
+        <div class="lg:col-span-4">
+            <div class="sticky top-28 bg-surface-container-lowest rounded-3xl p-8 ambient-glow border border-primary/5">
+                <h3 class="text-xl font-bold mb-6">Resumo da Reserva</h3>
+
+                <div class="space-y-5 mb-8">
+                    <label class="block">
+                        <span class="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Tipo de consulta</span>
+                        <select class="w-full rounded-xl border-none bg-surface-container-low px-4 py-3 focus:ring-1 focus:ring-primary"
+                                name="tipo">
+                            <option th:selected="${tipoSelecionado == 'Consulta Geral'}" value="Consulta Geral">Consulta Geral</option>
+                            <option th:selected="${tipoSelecionado == 'Ortodontia'}" value="Ortodontia">Ortodontia</option>
+                            <option th:selected="${tipoSelecionado == 'Estetica'}" value="Estetica">Estetica</option>
+                            <option th:selected="${tipoSelecionado == 'Implantologia'}" value="Implantologia">Implantologia</option>
+                        </select>
+                    </label>
+
+                    <div class="flex items-start gap-4">
+                        <span class="material-symbols-outlined text-primary p-2 bg-primary-container/30 rounded-lg" data-icon="medical_services">medical_services</span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Especialista</p>
+                            <p class="text-on-surface font-semibold">Selecionado acima</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <span class="material-symbols-outlined text-primary p-2 bg-primary-container/30 rounded-lg" data-icon="calendar_today">calendar_today</span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Data selecionada</p>
+                            <p class="text-on-surface font-semibold">Escolha uma das datas</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <span class="material-symbols-outlined text-primary p-2 bg-primary-container/30 rounded-lg" data-icon="schedule">schedule</span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Horario</p>
+                            <p class="text-on-surface font-semibold">Duracao prevista: 45 min</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-surface-container-high mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-on-surface-variant">Consulta Inicial</span>
+                        <span class="text-on-surface font-bold">A confirmar</span>
+                    </div>
+                    <p class="text-xs text-on-surface-variant">O pagamento sera realizado no local apos o atendimento.</p>
+                </div>
+
+                <button class="w-full signature-gradient text-on-primary py-4 rounded-xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200" type="submit">
+                    Confirmar Marcacao
+                </button>
+                <p class="text-center mt-4 text-sm text-on-surface-variant">Ao confirmar, voce aceita nossos <a class="underline" href="#">Termos de Servico</a>.</p>
+            </div>
+        </div>
+    </form>
+</main>
+
+<footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800 transition-opacity duration-300">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
+        <div class="space-y-4">
+            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">Clinica Dentaria</div>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-sm">© 2026 Clinica Dentaria. The Clinical Sanctuary.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Contacte-nos</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Politica de Privacidade</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Termos de Servico</a>
+            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Cuidados de Emergencia</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
