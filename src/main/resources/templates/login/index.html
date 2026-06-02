@@ -85,83 +85,89 @@
             font-family: 'Manrope', sans-serif;
             background-color: #f7faf9;
         }
-
         h1, h2, h3 {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
         .gradient-btn {
             background: linear-gradient(135deg, #2e6861 0%, #205c55 100%);
         }
-
         .ambient-glow {
             box-shadow: 0 32px 48px rgba(44, 52, 52, 0.05);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 md:p-0 overflow-hidden">
-<main class="w-full max-w-6xl h-full md:h-[870px] bg-surface-container-lowest rounded-xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row ambient-glow">
-    <div class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-center relative bg-surface-container-lowest">
-        <div class="mb-12">
-            <span class="text-2xl font-bold tracking-tighter text-primary">Clínica Dentaria</span>
-            <p class="text-on-surface-variant font-label text-xs mt-1">Sorrisos saudáveis começam aqui</p>
+<!--
+  Layout: body ocupa min 100vh, centra o card com flex.
+  O card usa min-height adaptável e nunca altura fixa.
+  Em desktop a imagem lateral preenche a sua coluna via object-fit: cover.
+-->
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6">
+
+<main class="w-full max-w-5xl bg-surface-container-lowest rounded-2xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row ambient-glow"
+      style="min-height: min(680px, calc(100vh - 48px))">
+
+    <!-- Coluna do formulário -->
+    <div class="w-full md:w-5/12 p-8 md:p-12 flex flex-col justify-center relative bg-surface-container-lowest">
+
+        <div class="mb-8">
+            <span class="text-xl font-bold tracking-tighter text-primary">Clínica Dentaria</span>
+            <p class="text-on-surface-variant text-xs mt-0.5">Sorrisos saudáveis começam aqui</p>
         </div>
 
         <div class="max-w-sm w-full mx-auto">
-            <header class="mb-10">
-                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-3">Entrar no Portal</h1>
-                <p class="text-on-surface-variant text-body-md">Bem-vindo de volta. Acesse seus agendamentos e histórico clínico.</p>
+            <header class="mb-7">
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-on-surface mb-2">Entrar no Portal</h1>
+                <p class="text-on-surface-variant text-sm">Bem-vindo de volta. Acesse seus agendamentos e histórico clínico.</p>
             </header>
 
-            <form class="space-y-6" method="post" th:action="@{/login}">
+            <form class="space-y-4" method="post" th:action="@{/login}">
                 <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
-                <div class="rounded-xl bg-error-container/20 px-4 py-3 text-sm font-semibold text-on-error-container"
+                <div class="rounded-xl bg-error-container/20 px-4 py-2.5 text-sm font-semibold text-on-error-container"
                      th:if="${erroLogin != null}"
                      th:text="${erroLogin}">
                     E-mail ou palavra-passe inválidos.
                 </div>
 
-                <div class="rounded-xl bg-primary-container/50 px-4 py-3 text-sm font-semibold text-on-primary-container"
+                <div class="rounded-xl bg-primary-container/50 px-4 py-2.5 text-sm font-semibold text-on-primary-container"
                      th:if="${param.cadastro != null}">
                     Conta criada com sucesso. Já pode iniciar sessão!
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-1.5">
                     <label class="block text-sm font-semibold text-on-surface ml-1" for="email">E-mail *</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
-                            <span class="material-symbols-outlined text-[20px]">mail</span>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[18px]">mail</span>
                         </div>
-                        <input class="block w-full pl-11 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all duration-300 text-on-surface placeholder:text-outline-variant"
+                        <input class="block w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface text-sm placeholder:text-outline-variant"
                                id="email" name="email" placeholder="nome@exemplo.com" required th:value="${emailInformado}" type="email"/>
                     </div>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-1.5">
                     <div class="flex justify-between items-center px-1">
                         <label class="block text-sm font-semibold text-on-surface" for="password">Palavra-passe *</label>
-                        <a class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors" href="#">Recuperar Palavra-passe</a>
+                        <a class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors" href="#">Recuperar</a>
                     </div>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
-                            <span class="material-symbols-outlined text-[20px]">lock</span>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[18px]">lock</span>
                         </div>
-                        <input class="block w-full pl-11 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all duration-300 text-on-surface placeholder:text-outline-variant"
-                               id="password" name="password" placeholder="********" required type="password"/>
+                        <input class="block w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface text-sm placeholder:text-outline-variant"
+                               id="password" name="password" placeholder="••••••••" required type="password"/>
                     </div>
                 </div>
 
-                <button class="w-full gradient-btn text-on-primary font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-95 transition-all duration-200" type="submit">
+                <button class="w-full gradient-btn text-on-primary font-bold py-3.5 rounded-xl shadow hover:shadow-md hover:scale-[1.01] active:scale-95 transition-all duration-200 text-sm mt-2" type="submit">
                     Entrar
                 </button>
             </form>
 
-            <footer class="mt-12 text-center">
+            <footer class="mt-6 text-center">
                 <p class="text-sm text-on-surface-variant">
                     Ainda não tem uma conta?
                     <a class="text-primary font-bold hover:underline" th:href="@{/cadastro}">Criar Conta</a>
@@ -169,41 +175,44 @@
             </footer>
         </div>
 
-        <div class="absolute bottom-8 left-16 hidden md:block">
-            <div class="flex gap-4 items-center">
-                <div class="w-2 h-2 rounded-full bg-primary-container"></div>
-                <div class="w-2 h-2 rounded-full bg-primary"></div>
-                <div class="w-2 h-2 rounded-full bg-tertiary-container"></div>
-            </div>
+        <!-- Indicadores decorativos -->
+        <div class="absolute bottom-6 left-10 hidden md:flex gap-3 items-center">
+            <div class="w-1.5 h-1.5 rounded-full bg-primary-container"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></div>
         </div>
     </div>
 
-    <div class="hidden md:block w-7/12 relative overflow-hidden bg-surface-container-high">
-        <img alt="Profissional de saude bucal" class="absolute inset-0 w-full h-full object-cover grayscale-[20%] contrast-[105%]"
+    <!-- Coluna da imagem — adapta-se à altura do formulário, sem forçar crescimento -->
+    <div class="hidden md:block md:w-7/12 relative overflow-hidden bg-surface-container-high">
+        <img alt="Profissional de saude bucal"
+             class="absolute inset-0 w-full h-full object-cover grayscale-[20%] contrast-[105%]"
              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXfJ7NqCltcqh187trHCsxQp2D8lHE-MSxn7Kcn7FlHz1xnt-vzCasBu83opuIbfGWuMGDEJ7eA1VAzh-euHhWcVB_-7YcT866TRTUZU190s6vYCbjF8Wgg_-wwkJeICc4VtFLg4Lv7oY8qckpz0poxFoz19eqTovXBzp6AVL7LSKCeP_MUHysgcfgE2QlHC012LG5AOyQ7YSD5LWzeHsIYlEmYY9fDDCnkYVzw-p7QE2O5ZEbeifa7ey3qrZ_F6vQ_lWruSYXemY"/>
 
-        <div class="absolute bottom-12 left-12 right-12 p-8 rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/20">
-            <div class="flex items-start gap-4">
-                <div class="bg-primary-container p-3 rounded-xl text-on-primary-container">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+        <div class="absolute bottom-8 left-8 right-8 p-6 rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/20">
+            <div class="flex items-start gap-3">
+                <div class="bg-primary-container p-2.5 rounded-xl text-on-primary-container flex-shrink-0">
+                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">verified_user</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-on-surface mb-1">Cuidado Premium</h3>
-                    <p class="text-sm text-on-surface leading-relaxed">
+                    <h3 class="text-base font-bold text-on-surface mb-0.5">Cuidado Premium</h3>
+                    <p class="text-xs text-on-surface leading-relaxed">
                         "Nosso compromisso e transformar sua experiencia odontológica em um momento de bem-estar e confiança."
                     </p>
                 </div>
             </div>
         </div>
 
-        <div class="absolute top-12 right-12 w-24 h-24 rounded-full border-[0.5px] border-white/30"></div>
-        <div class="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-primary/5 blur-3xl"></div>
+        <div class="absolute top-10 right-10 w-20 h-20 rounded-full border border-white/20"></div>
+        <div class="absolute -top-10 -right-10 w-56 h-56 rounded-full bg-primary/5 blur-3xl"></div>
     </div>
 </main>
 
-<div class="fixed bottom-6 right-6 hidden lg:flex items-center gap-3 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/10 shadow-sm">
+<!-- Botão de ajuda fixo — posicionado para não sobrepor conteúdo -->
+<div class="fixed bottom-5 right-5 hidden lg:flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-full border border-outline-variant/20 shadow-sm z-10">
     <span class="material-symbols-outlined text-primary text-sm">support_agent</span>
     <span class="text-xs font-semibold text-on-surface-variant">Precisa de ajuda?</span>
 </div>
+
 </body>
 </html>

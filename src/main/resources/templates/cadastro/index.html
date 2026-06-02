@@ -11,22 +11,18 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
         body {
             font-family: 'Manrope', sans-serif;
             background-color: #f7faf9;
         }
-
         h1, h2, h3, .brand-font {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-
         .glass-panel {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
         }
-
         .ambient-glow {
             box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
         }
@@ -106,135 +102,177 @@
         }
     </script>
 </head>
-<body class="bg-surface text-on-surface flex min-h-screen items-center justify-center p-4 md:p-8">
-<main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden bg-surface-container-lowest rounded-2xl md:rounded-3xl ambient-glow">
-    <div class="hidden lg:flex lg:col-span-5 relative bg-primary-container/30 overflow-hidden flex-col justify-between p-12">
-        <div class="z-10">
-            <div class="flex items-center gap-2 mb-12">
-                <span class="material-symbols-outlined text-primary text-3xl" data-icon="dentistry">dentistry</span>
-                <span class="text-2xl font-bold tracking-tighter text-teal-800 brand-font">Clínica Dentaria</span>
+<!--
+  Layout: body centra o card com flex.
+  O card usa grid lg:12 cols — coluna lateral (5 cols) tem altura determinada
+  pelo conteúdo do formulário (7 cols), não por aspect-ratio fixo.
+  A imagem lateral preenche a coluna com object-fit: cover via absolute inset.
+-->
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-4 md:p-6">
+
+<!-- Blobs decorativos — ficam atrás do conteúdo, não interferem no layout -->
+<div class="fixed top-0 right-0 -z-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-80 h-80 bg-tertiary-container/10 rounded-full blur-[80px] -ml-40 -mb-40 pointer-events-none"></div>
+
+<main class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-surface-container-lowest rounded-2xl md:rounded-3xl ambient-glow">
+
+    <!-- Coluna lateral (imagem + marca) — visível só em lg+ -->
+    <!-- Usa self-stretch para ficar com a mesma altura que o formulário -->
+    <div class="hidden lg:flex lg:col-span-5 relative bg-primary-container/30 overflow-hidden flex-col justify-between p-10 self-stretch">
+
+        <!-- Conteúdo sobreposto à imagem de fundo -->
+        <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-8">
+                <span class="material-symbols-outlined text-primary text-2xl">dentistry</span>
+                <span class="text-xl font-bold tracking-tighter text-teal-800 brand-font">Clínica Dentaria</span>
             </div>
-            <h1 class="text-display-lg text-primary leading-tight font-extrabold tracking-tighter mb-6">Seu sorriso,<br/>nosso santuario.</h1>
-            <p class="text-body-md text-on-surface-variant max-w-xs leading-relaxed">Experimente uma jornada odontologica focada no seu bem-estar e tranquilidade.</p>
+            <h2 class="text-3xl font-extrabold text-primary leading-tight tracking-tighter mb-4">
+                Sorrisos saudáveis começam aqui.<br/>
+            </h2>
+            <p class="text-sm text-on-surface-variant max-w-xs leading-relaxed">
+                Experimente uma jornada odontologica focada no seu bem-estar e tranquilidade.
+            </p>
         </div>
 
-        <div class="relative mt-auto">
-            <div class="aspect-square w-full rounded-2xl overflow-hidden bg-surface-container-high relative z-0">
-                <img alt="Modern dental clinic interior" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7O65y0ihim6e4CwUZxLKuRpCetUCAXWiWDYxcnMqSQcLhzLS_ZenWfCExSuFXjoA-PoRDC1-lxgZzq6ZkP7KcUm1iOHBbY_kxowalvQY_xy1eoSRx3a-H9BkCJQikp7NmecwhaHMcu5WCRz3w0A9FALHj3zUQwMs1DyEuRfIQEwT870Ax9qcRyB0ymF3kENd_EMnPjFfSkkbgMLpcI1JQvdOuVT5joagLXGRjwoOJCOqsYo8fNKEz_30m73jYocBo5a5Oa-s3ev0"/>
-            </div>
-            <div class="absolute -bottom-6 -right-6 glass-panel p-6 rounded-xl ambient-glow z-10 border border-white/40">
-                <div class="flex items-center gap-3">
-                    <div class="bg-primary/10 p-2 rounded-lg">
-                        <span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
-                    </div>
-                    <div>
-                        <p class="text-label-md font-bold text-on-surface">Cuidado Premium</p>
-                        <p class="text-[10px] text-on-surface-variant">Tecnologia de ponta</p>
-                    </div>
+        <!--
+          Imagem: absolute inset para preencher toda a coluna.
+          A coluna cresce com o formulário — a imagem adapta-se via object-fit.
+        -->
+        <img alt="Modern dental clinic interior"
+             class="absolute inset-0 w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700 opacity-30"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7O65y0ihim6e4CwUZxLKuRpCetUCAXWiWDYxcnMqSQcLhzLS_ZenWfCExSuFXjoA-PoRDC1-lxgZzq6ZkP7KcUm1iOHBbY_kxowalvQY_xy1eoSRx3a-H9BkCJQikp7NmecwhaHMcu5WCRz3w0A9FALHj3zUQwMs1DyEuRfIQEwT870Ax9qcRyB0ymF3kENd_EMnPjFfSkkbgMLpcI1JQvdOuVT5joagLXGRjwoOJCOqsYo8fNKEz_30m73jYocBo5a5Oa-s3ev0"/>
+
+        <!-- Badge "Cuidado Premium" — relativo ao fundo da coluna -->
+        <div class="relative z-10 mt-auto">
+            <div class="glass-panel p-4 rounded-xl border border-white/40 ambient-glow inline-flex items-center gap-3">
+                <div class="bg-primary/10 p-2 rounded-lg flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-on-surface">Cuidado Premium</p>
+                    <p class="text-[11px] text-on-surface-variant">Tecnologia de ponta</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-16 lg:p-20 bg-surface-container-lowest">
+    <!-- Coluna do formulário -->
+    <div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-12 bg-surface-container-lowest">
         <div class="max-w-md mx-auto w-full">
-            <div class="lg:hidden flex items-center gap-2 mb-10">
-                <span class="material-symbols-outlined text-primary text-2xl" data-icon="dentistry">dentistry</span>
-                <span class="text-xl font-bold tracking-tighter text-teal-800 brand-font">Clínica Dentaria</span>
+
+            <!-- Logo para mobile (lg oculta a coluna lateral) -->
+            <div class="lg:hidden flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary text-xl">dentistry</span>
+                <span class="text-lg font-bold tracking-tighter text-teal-800 brand-font">Clínica Dentaria</span>
             </div>
 
-            <div class="mb-10">
-                <h2 class="text-headline-md font-extrabold text-on-surface tracking-tight mb-2">Criar Conta</h2>
-                <p class="text-body-md text-on-surface-variant">Comece sua jornada para um sorriso mais saudavel.</p>
+            <div class="mb-6">
+                <h1 class="text-2xl font-extrabold text-on-surface tracking-tight mb-1">Criar Conta</h1>
+                <p class="text-sm text-on-surface-variant">Comece sua jornada para um sorriso mais saudavel.</p>
             </div>
 
-            <form class="space-y-6" method="post" th:action="@{/cadastro}">
+            <form class="space-y-4" method="post" th:action="@{/cadastro}">
                 <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
-                <div class="rounded-xl bg-error-container/20 px-4 py-3 text-sm font-semibold text-on-error-container"
+                <div class="rounded-xl bg-error-container/20 px-4 py-2.5 text-sm font-semibold text-on-error-container"
                      th:if="${erroCadastro != null}"
                      th:text="${erroCadastro}">
                     Não foi possivel criar a conta.
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="name">Nome Completo</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
-                            <span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                <!-- Nome -->
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-on-surface-variant ml-1" for="name">Nome Completo</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[18px]">person</span>
                         </div>
-                        <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                        <input class="w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
                                id="name" name="nome" placeholder="Como devemos chamar voce?" required th:value="${nomeInformado}" type="text"/>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="email">Email</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
-                            <span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+                <!-- Email -->
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-on-surface-variant ml-1" for="email">Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-outline">
+                            <span class="material-symbols-outlined text-[18px]">mail</span>
                         </div>
-                        <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                        <input class="w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
                                id="email" name="email" placeholder="exemplo@email.com" required th:value="${emailInformado}" type="email"/>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="phone">Telefone</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
-                                <span class="material-symbols-outlined text-[20px]" data-icon="call">call</span>
+                <!-- Telefone + Palavra-passe em grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-semibold text-on-surface-variant ml-1" for="phone">Telefone</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-outline">
+                                <span class="material-symbols-outlined text-[18px]">call</span>
                             </div>
-                            <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                            <input class="w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
                                    id="phone" name="telefone" placeholder="(00) 00000-0000" th:value="${telefoneInformado}" type="tel"/>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-label-md font-semibold text-on-surface-variant ml-1" for="password">Palavra-passe</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
-                                <span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-semibold text-on-surface-variant ml-1" for="password">Palavra-passe *</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-outline">
+                                <span class="material-symbols-outlined text-[18px]">lock</span>
                             </div>
-                            <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl text-body-md focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
-                                   id="password" name="password" placeholder="********" required type="password"/>
+                            <input class="w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant"
+                                   id="password" name="password" placeholder="••••••••" required type="password"/>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-start gap-3 px-1">
-                    <input class="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary-container"
+                <!-- Termos -->
+                <div class="flex items-start gap-3 px-1 pt-1">
+                    <input class="mt-0.5 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary-container flex-shrink-0"
                            id="terms" name="terms" type="checkbox" value="accepted"/>
-                    <label class="text-label-md text-on-surface-variant leading-tight" for="terms">
-                        Eu concordo com os <a class="text-primary font-bold hover:underline" href="#">Termos de Serviço</a> e a <a class="text-primary font-bold hover:underline" href="#">Politica de Privacidade</a>.
+                    <label class="text-xs text-on-surface-variant leading-snug" for="terms">
+                        Eu concordo com os
+                        <a class="text-primary font-bold hover:underline" href="#">Termos de Serviço</a>
+                        e a
+                        <a class="text-primary font-bold hover:underline" href="#">Politica de Privacidade</a>.
                     </label>
                 </div>
 
-                <button class="w-full py-4 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2" type="submit">
+                <!-- Botão principal -->
+                <button class="w-full py-3.5 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 text-sm"
+                        type="submit">
                     Cadastrar Agora
-                    <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </button>
 
-                <p class="text-center text-body-md text-on-surface-variant pt-4">
-                    Ja tem uma conta?
+                <!-- Link para login -->
+                <p class="text-center text-sm text-on-surface-variant pt-1">
+                    Já tem uma conta?
                     <a class="text-primary font-bold hover:underline" th:href="@{/login}">Fazer Login</a>
                 </p>
             </form>
 
-            <div class="mt-16 flex items-center justify-between text-label-md text-outline py-6 border-t border-surface-container-high">
+            <!-- Rodapé discreto -->
+            <div class="mt-6 flex items-center justify-between text-xs text-outline pt-4 border-t border-surface-container-high">
                 <div class="flex items-center gap-4">
-                    <a class="hover:text-primary" href="#">Ajuda</a>
-                    <a class="hover:text-primary" href="#">Contatos</a>
+                    <a class="hover:text-primary transition-colors" href="#">Ajuda</a>
+                    <a class="hover:text-primary transition-colors" href="#">Contatos</a>
                 </div>
                 <p>© 2026 Clínica Dentaria</p>
             </div>
         </div>
     </div>
+
 </main>
 
-<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -mr-64 -mt-64"></div>
-<div class="fixed bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-tertiary-container/10 rounded-full blur-[80px] -ml-48 -mb-48"></div>
+<!-- Botão de ajuda fixo -->
+<div class="fixed bottom-5 right-5 hidden lg:flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-full border border-outline-variant/20 shadow-sm z-10">
+    <span class="material-symbols-outlined text-primary text-sm">support_agent</span>
+    <span class="text-xs font-semibold text-on-surface-variant">Precisa de ajuda?</span>
+</div>
+
 </body>
 </html>
