@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Faturas | Clinica Dentaria</title>
+    <title>Faturas | Clínica Dentaria</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -98,7 +98,7 @@
 <header class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
         <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
-            Clinica Dentaria
+            Clínica Dentaria
         </div>
         <nav class="hidden md:flex items-center gap-8">
             <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/consultas}">Consultas</a>
@@ -149,16 +149,16 @@
                     <thead>
                     <tr class="bg-surface-container-low text-on-surface-variant">
                         <th class="px-8 py-5 font-semibold text-sm">Tratamento</th>
-                        <th class="px-8 py-5 font-semibold text-sm">Data de Emissao</th>
+                        <th class="px-8 py-5 font-semibold text-sm">Data de Emissão</th>
                         <th class="px-8 py-5 font-semibold text-sm">Valor</th>
                         <th class="px-8 py-5 font-semibold text-sm">Status</th>
-                        <th class="px-8 py-5 font-semibold text-sm text-right">Acoes</th>
+                        <th class="px-8 py-5 font-semibold text-sm text-right">Ações</th>
                     </tr>
                     </thead>
                     <tbody class="divide-y divide-surface-container-low">
                     <tr th:if="${#lists.isEmpty(faturas)}">
                         <td class="px-8 py-12 text-center text-on-surface-variant" colspan="5">
-                            Ainda nao existem faturas para apresentar.
+                            Ainda não existem faturas para apresentar.
                         </td>
                     </tr>
 
@@ -170,12 +170,12 @@
                                 </div>
                                 <div>
                                     <p class="font-bold text-on-surface" th:text="${fatura.tratamento()}">Consulta Geral</p>
-                                    <p class="text-xs text-on-surface-variant" th:text="${fatura.dentista()}">Clinica Dentaria</p>
+                                    <p class="text-xs text-on-surface-variant" th:text="${fatura.dentista()}">Clínica Dentaria</p>
                                 </div>
                             </div>
                         </td>
                         <td class="px-8 py-6 text-on-surface-variant text-sm" th:text="${fatura.dataEmissao()}">Sem data</td>
-                        <td class="px-8 py-6 font-semibold text-on-surface" th:text="${fatura.valor()}">R$ 0,00</td>
+                        <td class="px-8 py-6 font-semibold text-on-surface" th:text="${fatura.valor()}">€ 0,00</td>
                         <td class="px-8 py-6">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
                                   th:classappend="${fatura.classeEstado()}">
@@ -199,8 +199,8 @@
     <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2 bg-zinc-900 rounded-3xl p-10 text-zinc-100 flex flex-col justify-between overflow-hidden relative group">
             <div class="z-10">
-                <h3 class="text-3xl font-bold mb-4">Duvidas sobre cobranca?</h3>
-                <p class="text-zinc-400 mb-8 max-w-md">Nossa equipe financeira esta disponivel para esclarecer qualquer detalhe sobre seus tratamentos e parcelamentos.</p>
+                <h3 class="text-3xl font-bold mb-4">Dúvidas sobre cobrança?</h3>
+                <p class="text-zinc-400 mb-8 max-w-md">Nossa equipe financeira esta disponivel para esclarecer qualquer pormenor sobre seus tratamentos.</p>
                 <button class="bg-primary hover:bg-primary-dim text-white px-8 py-4 rounded-xl font-bold transition-all inline-flex items-center gap-3" type="button">
                     Falar com o Financeiro
                     <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
@@ -213,9 +213,9 @@
             <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container mb-6">
                 <span class="material-symbols-outlined text-3xl" data-icon="shield_person">shield_person</span>
             </div>
-            <h4 class="font-bold text-xl mb-3">Seguranca de Dados</h4>
-            <p class="text-sm text-zinc-500 mb-6">Seus dados financeiros sao protegidos por boas praticas de seguranca.</p>
-            <a class="text-primary font-bold text-sm underline" href="#">Politica de Privacidade</a>
+            <h4 class="font-bold text-xl mb-3">Segurança de Dados</h4>
+            <p class="text-sm text-zinc-500 mb-6">Seus dados financeiros sao protegidos por boas práticas de segurança.</p>
+            <a class="text-primary font-bold text-sm underline" href="#">Política de Privacidade</a>
         </div>
     </div>
 </main>
@@ -223,17 +223,17 @@
 <footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
         <div>
-            <p class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 brand-font">Clinica Dentaria</p>
-            <p class="text-zinc-500 dark:text-zinc-400 max-w-sm body-md">© 2026 Clinica Dentaria. The Clinical Sanctuary.</p>
+            <p class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 brand-font">Clínica Dentaria</p>
+            <p class="text-zinc-500 dark:text-zinc-400 max-w-sm body-md">© 2026 Clínica Dentaria.</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-2">
                 <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Contacte-nos</a>
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Politica de Privacidade</a>
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Política de Privacidade</a>
             </div>
             <div class="flex flex-col gap-2">
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Termos de Servico</a>
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Cuidados de Emergencia</a>
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Termos de Serviço</a>
+                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Cuidados de Emergência</a>
             </div>
         </div>
     </div>

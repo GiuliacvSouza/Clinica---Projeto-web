@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Consultas - Clinica Dentaria</title>
+    <title>Consultas - Clínica Dentaria</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -102,7 +102,7 @@
 <header class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50 transition-all duration-200 ease-out">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
         <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
-            Clinica Dentaria
+            Clínica Dentaria
         </div>
         <nav class="hidden md:flex items-center gap-8">
             <a class="text-teal-700 dark:text-teal-300 border-b-2 border-teal-600 pb-1 font-semibold tracking-tight" th:href="@{/consultas}">Consultas</a>
@@ -120,7 +120,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
                 <h1 class="text-5xl font-extrabold tracking-tighter text-primary">
-                    Ola, <span th:text="${nomeUtilizador}">bem-vindo</span> ao seu <br/>Sanctuary Clinico.
+                    Olá, <span th:text="${nomeUtilizador}">bem-vindo</span>
                 </h1>
                 <p class="text-on-surface-variant text-lg max-w-md leading-relaxed">
                     Gerencie sua jornada de saude bucal com facilidade. Suas proximas consultas e historico clinico estao centralizados aqui.
@@ -192,7 +192,7 @@
                             </div>
                             <div>
                                 <h4 class="text-xl font-bold text-on-surface" th:text="${consulta.dentista()}">Dra. Ana Silva</h4>
-                                <p class="text-on-surface-variant font-medium" th:text="${consulta.procedimento()}">Clinica Geral</p>
+                                <p class="text-on-surface-variant font-medium" th:text="${consulta.procedimento()}">Clínica Geral</p>
                                 <div class="flex items-center gap-4 mt-2">
                                     <div class="flex items-center gap-1 text-sm text-primary font-semibold">
                                         <span class="material-symbols-outlined text-sm" data-icon="calendar_month">calendar_month</span>
@@ -238,8 +238,8 @@
 <footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800 transition-opacity duration-300 mt-20">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
         <div class="space-y-4">
-            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">Clinica Dentaria</div>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-xs">© 2026 Clinica Dentaria. The Clinical Sanctuary.</p>
+            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">Clínica Dentaria</div>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-xs">© 2026 Clínica Dentaria.</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
             <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 text-sm transition-all" href="#">Contacte-nos</a>
