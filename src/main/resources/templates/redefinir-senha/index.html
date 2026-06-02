@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Redefinir Palavra-passe | Clínica Dentária</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "primary-dim": "#205c55",
+                        "error-container": "#fa746f",
+                        "on-error-container": "#6e0a12",
+                        "primary": "#2e6861",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-primary-container": "#1f5b54",
+                        "surface-container-low": "#f0f5f4",
+                        "on-surface": "#2c3434",
+                        "on-surface-variant": "#586160",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7faf9",
+                        "surface": "#f7faf9",
+                        "error": "#a83836"
+                    },
+                    borderRadius: { DEFAULT: "0.5rem", xl: "1rem", "2xl": "1.5rem", full: "9999px" },
+                    fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Manrope"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; background-color: #f7faf9; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .gradient-btn { background: linear-gradient(135deg, #2e6861 0%, #205c55 100%); }
+        .ambient-glow { box-shadow: 0 32px 48px rgba(44, 52, 52, 0.05); }
+
+        .form-control {
+            display: block; width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            background: #f0f5f4; border: 1.5px solid transparent;
+            border-radius: 0.875rem; font-size: 0.875rem;
+            color: #2c3434; font-family: 'Manrope', sans-serif;
+            transition: border-color .18s, background .18s, box-shadow .18s;
+            outline: none;
+        }
+        .form-control:focus {
+            background: #fff; border-color: #2e6861;
+            box-shadow: 0 0 0 3px rgba(46,104,97,.12);
+        }
+        .form-control.has-error {
+            border-color: #a83836; background: #fff7f6;
+        }
+        .field-error {
+            font-size: 0.75rem; color: #a83836;
+            font-weight: 500; margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6">
+
+<main class="w-full max-w-md bg-surface-container-lowest rounded-2xl md:rounded-3xl p-8 md:p-12 ambient-glow">
+
+    <!-- Marca -->
+    <div class="mb-8 text-center">
+        <span class="text-xl font-bold tracking-tighter text-teal-800">Clínica Dentária</span>
+        <p class="text-xs text-on-surface-variant mt-0.5">Sorrisos saudáveis começam aqui</p>
+    </div>
+
+    <!-- Ícone decorativo -->
+    <div class="flex justify-center mb-6">
+        <div class="w-14 h-14 rounded-2xl bg-primary-container/60 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[28px]"
+                  style="font-variation-settings:'FILL' 1">lock</span>
+        </div>
+    </div>
+
+    <header class="text-center mb-8">
+        <h1 class="text-2xl font-extrabold tracking-tight text-on-surface mb-2">Nova Palavra-passe</h1>
+        <p class="text-sm text-on-surface-variant leading-relaxed">
+            Escolha uma palavra-passe segura para a sua conta.
+        </p>
+    </header>
+
+    <!-- ── Token inválido ou expirado ── -->
+    <div th:if="${erroToken != null}">
+        <div class="rounded-xl bg-error-container/20 px-4 py-4 text-sm font-semibold text-on-error-container
+                    flex items-start gap-3 mb-6">
+            <span class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5">error</span>
+            <div>
+                <p class="font-bold mb-1" th:text="${erroToken}">O link de recuperação é inválido ou expirou.</p>
+                <p class="font-normal text-xs opacity-80">
+                    Solicite um novo link em
+                    <a class="underline font-semibold" th:href="@{/recuperar-senha}">recuperar palavra-passe</a>.
+                </p>
+            </div>
+        </div>
+        <div class="text-center">
+            <a class="text-sm text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-1.5"
+               th:href="@{/login}">
+                <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                Voltar para o início de sessão
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Formulário de nova senha (só visível com token válido) ── -->
+    <div th:if="${redefinirSenhaForm != null}">
+        <form class="space-y-5" method="post" th:action="@{/redefinir-senha}"
+              th:object="${redefinirSenhaForm}">
+            <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+            <!-- Token hidden -->
+            <input th:field="*{token}" type="hidden"/>
+
+            <!-- Nova Palavra-passe -->
+            <div class="space-y-1">
+                <label class="block text-sm font-semibold text-on-surface ml-0.5"
+                       th:for="${#ids.next('novaSenha')}">
+                    Nova Palavra-passe *
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[18px]">lock</span>
+                    </div>
+                    <input autocomplete="new-password"
+                           class="form-control"
+                           placeholder="Mínimo 8 caracteres"
+                           th:classappend="${#fields.hasErrors('novaSenha')} ? 'has-error'"
+                           th:field="*{novaSenha}"
+                           type="password"/>
+                </div>
+                <p class="field-error"
+                   th:errors="*{novaSenha}"
+                   th:if="${#fields.hasErrors('novaSenha')}"></p>
+                <!-- Dica de requisitos (só informativo, não JS) -->
+                <p class="text-xs text-on-surface-variant mt-1 ml-0.5"
+                   th:unless="${#fields.hasErrors('novaSenha')}">
+                    Mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo.
+                </p>
+            </div>
+
+            <!-- Confirmar Palavra-passe -->
+            <div class="space-y-1">
+                <label class="block text-sm font-semibold text-on-surface ml-0.5"
+                       th:for="${#ids.next('confirmarSenha')}">
+                    Confirmar Palavra-passe *
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                    </div>
+                    <input autocomplete="new-password"
+                           class="form-control"
+                           placeholder="Repita a palavra-passe"
+                           th:classappend="${#fields.hasErrors('confirmarSenha')} ? 'has-error'"
+                           th:field="*{confirmarSenha}"
+                           type="password"/>
+                </div>
+                <p class="field-error"
+                   th:errors="*{confirmarSenha}"
+                   th:if="${#fields.hasErrors('confirmarSenha')}"></p>
+            </div>
+
+            <!-- Botão de submissão -->
+            <button class="w-full gradient-btn text-on-primary font-bold py-3.5 rounded-xl
+                           shadow hover:shadow-md hover:scale-[1.01] active:scale-95
+                           transition-all duration-200 text-sm flex items-center justify-center gap-2 mt-2"
+                    type="submit">
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                Guardar nova palavra-passe
+            </button>
+        </form>
+    </div>
+
+    <!-- Voltar para login -->
+    <div class="mt-6 text-center" th:if="${erroToken == null}">
+        <a class="text-sm text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-1.5"
+           th:href="@{/login}">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Voltar para o início de sessão
+        </a>
+    </div>
+
+</main>
+</body>
+</html>

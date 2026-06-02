@@ -2,20 +2,18 @@ package controller;
 
 import bll.UtilizadorService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import model.Utilizador;
+import model.dto.PerfilForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Controller
 public class PerfilController {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final UtilizadorService utilizadorService;
 
@@ -23,75 +21,116 @@ public class PerfilController {
         this.utilizadorService = utilizadorService;
     }
 
-    @GetMapping("/perfil")
-    public String perfil(HttpSession session, Model model) {
-        Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
-        if (utilizadorId == null) {
-            return "redirect:/login";
-        }
+    // ── GET /perfil ───────────────────────────────────────────────────────────
 
-        carregarModelo(model, utilizadorService.buscarPorId(utilizadorId));
+    @GetMapping("/perfil")
+    public String mostrarPerfil(HttpSession session, Model model) {
+        Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
+        if (utilizadorId == null) return "redirect:/login";
+
+        Utilizador u = utilizadorService.buscarPorId(utilizadorId);
+        model.addAttribute("perfilForm", toForm(u));
+        model.addAttribute("nomeCompleto", formatarNomeCompleto(u));
+        model.addAttribute("tipoUtilizador", formatarTipo(u.getTipoUtilizador()));
         return "perfil/index";
     }
 
+    // ── POST /perfil ──────────────────────────────────────────────────────────
+
     @PostMapping("/perfil")
     public String atualizarPerfil(
-            @RequestParam String email,
-            @RequestParam(required = false) String telemovel,
-            @RequestParam(required = false) String morada,
+            @Valid @ModelAttribute("perfilForm") PerfilForm form,
+            BindingResult result,
             HttpSession session,
             Model model
     ) {
         Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
-        if (utilizadorId == null) {
-            return "redirect:/login";
-        }
+        if (utilizadorId == null) return "redirect:/login";
 
-        Utilizador utilizador = utilizadorService.buscarPorId(utilizadorId);
-        utilizador.setEmail(email);
-        utilizador.setTelemovel(telemovel);
-        utilizador.setRua(morada);
+        // Se houver erros de validação, volta ao formulário com os erros visíveis
+        if (result.hasErrors()) {
+            Utilizador u = utilizadorService.buscarPorId(utilizadorId);
+            model.addAttribute("nomeCompleto",   formatarNomeCompleto(u));
+            model.addAttribute("tipoUtilizador", formatarTipo(u.getTipoUtilizador()));
+            return "perfil/index";
+        }
 
         try {
-            Utilizador atualizado = utilizadorService.salvar(utilizador);
-            session.setAttribute("utilizadorNome", formatarNome(atualizado));
-            session.setAttribute("utilizadorNif", atualizado.getNif());
-            carregarModelo(model, atualizado);
-            model.addAttribute("perfilAtualizado", true);
-            return "perfil/index";
+            Utilizador u = utilizadorService.buscarPorId(utilizadorId);
+            aplicarForm(u, form);
+            Utilizador atualizado = utilizadorService.salvar(u);
+
+            // Actualizar sessão com o novo nome
+            session.setAttribute("utilizadorNome", formatarNomeCompleto(atualizado));
+
+            return "redirect:/perfil?atualizado=true";
         } catch (RuntimeException ex) {
-            carregarModelo(model, utilizador);
-            model.addAttribute("erroPerfil", ex.getMessage());
+            result.reject("erroPerfil", ex.getMessage());
+            Utilizador u = utilizadorService.buscarPorId(utilizadorId);
+            model.addAttribute("nomeCompleto",   formatarNomeCompleto(u));
+            model.addAttribute("tipoUtilizador", formatarTipo(u.getTipoUtilizador()));
             return "perfil/index";
         }
     }
 
-    private void carregarModelo(Model model, Utilizador utilizador) {
-        model.addAttribute("nomeCompleto", formatarNome(utilizador));
-        model.addAttribute("dataNascimento", formatarData(utilizador.getDataNascimento()));
-        model.addAttribute("telemovel", valorOuVazio(utilizador.getTelemovel()));
-        model.addAttribute("email", valorOuVazio(utilizador.getEmail()));
-        model.addAttribute("morada", formatarMorada(utilizador));
+    // ── Mapeamento entidade ↔ DTO ─────────────────────────────────────────────
+
+    private PerfilForm toForm(Utilizador u) {
+        PerfilForm f = new PerfilForm();
+        f.setPrimeiroNome(u.getPrimeiroNome());
+        f.setUltimoNome(u.getUltimoNome());
+        f.setDataNascimento(u.getDataNascimento());
+        f.setNif(u.getNif());
+        f.setEmail(u.getEmail());
+        f.setTelemovel(u.getTelemovel());
+        f.setTelefone(u.getTelefone());
+        f.setRua(u.getRua());
+        f.setNumeroPorta(u.getNumeroPorta());
+        f.setCodigoPostal(
+            u.getCodigoPostal() != null ? u.getCodigoPostal().getCodigoPostal() : null
+        );
+        f.setLocalidade(
+            u.getCodigoPostal() != null ? u.getCodigoPostal().getLocalidade() : null
+        );
+        f.setTipoUtilizador(formatarTipo(u.getTipoUtilizador()));
+        return f;
     }
 
-    private String formatarNome(Utilizador utilizador) {
-        String primeiroNome = utilizador.getPrimeiroNome() != null ? utilizador.getPrimeiroNome().trim() : "";
-        String ultimoNome = utilizador.getUltimoNome() != null ? utilizador.getUltimoNome().trim() : "";
-        String nomeCompleto = (primeiroNome + " " + ultimoNome).trim();
-        return nomeCompleto.isBlank() ? utilizador.getEmail() : nomeCompleto;
+    private void aplicarForm(Utilizador u, PerfilForm f) {
+        u.setPrimeiroNome(f.getPrimeiroNome());
+        u.setUltimoNome(f.getUltimoNome());
+        u.setDataNascimento(f.getDataNascimento());
+        u.setNif(emptyToNull(f.getNif()));
+        u.setEmail(f.getEmail());
+        u.setTelemovel(emptyToNull(f.getTelemovel()));
+        u.setTelefone(emptyToNull(f.getTelefone()));
+        u.setRua(emptyToNull(f.getRua()));
+        u.setNumeroPorta(emptyToNull(f.getNumeroPorta()));
+        // CodigoPostal e Localidade requerem lógica de negócio própria — não alterados aqui
     }
 
-    private String formatarData(LocalDate data) {
-        return data == null ? "Nao informada" : DATE_FORMATTER.format(data);
+    // ── Utilitários ───────────────────────────────────────────────────────────
+
+    private String formatarNomeCompleto(Utilizador u) {
+        String p = u.getPrimeiroNome() != null ? u.getPrimeiroNome().trim() : "";
+        String l = u.getUltimoNome()   != null ? u.getUltimoNome().trim()   : "";
+        String nome = (p + " " + l).trim();
+        return nome.isBlank() ? (u.getEmail() != null ? u.getEmail() : "—") : nome;
     }
 
-    private String formatarMorada(Utilizador utilizador) {
-        String rua = valorOuVazio(utilizador.getRua());
-        String porta = valorOuVazio(utilizador.getNumeroPorta());
-        return (rua + (porta.isBlank() ? "" : ", " + porta)).trim();
+    private String formatarTipo(String tipo) {
+        if (tipo == null) return "Utilizador";
+        return switch (tipo.toUpperCase()) {
+            case "PACIENTE"      -> "Paciente";
+            case "DENTISTA"      -> "Dentista";
+            case "RECEPCIONISTA" -> "Recepcionista";
+            case "ASSISTENTE"    -> "Assistente";
+            case "ADMIN"         -> "Administrador";
+            default              -> tipo;
+        };
     }
 
-    private String valorOuVazio(String valor) {
-        return valor == null ? "" : valor;
+    private String emptyToNull(String v) {
+        return (v == null || v.isBlank()) ? null : v.trim();
     }
 }

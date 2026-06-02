@@ -21,7 +21,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/cadastro", "/dashboard",
                                 "/consultas", "/consultas/**",
                                 "/marcar-consulta", "/reagendar-consulta",
-                                "/faturas", "/perfil", "/css/**", "/images/**").permitAll()
+                                "/faturas", "/perfil", "/css/**", "/images/**",
+                                "/recuperar-senha", "/redefinir-senha").permitAll()
                         .anyRequest().permitAll()
                 )
                 .build();

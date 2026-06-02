@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Recuperar Palavra-passe | Clínica Dentária</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "primary-dim": "#205c55",
+                        "error-container": "#fa746f",
+                        "primary": "#2e6861",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "on-primary-container": "#1f5b54",
+                        "surface-container-low": "#f0f5f4",
+                        "on-surface": "#2c3434",
+                        "on-surface-variant": "#586160",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7faf9",
+                        "surface": "#f7faf9",
+                        "on-error-container": "#6e0a12"
+                    },
+                    borderRadius: { DEFAULT: "0.5rem", xl: "1rem", "2xl": "1.5rem", full: "9999px" },
+                    fontFamily: { headline: ["Plus Jakarta Sans"], body: ["Manrope"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; background-color: #f7faf9; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .gradient-btn { background: linear-gradient(135deg, #2e6861 0%, #205c55 100%); }
+        .ambient-glow { box-shadow: 0 32px 48px rgba(44, 52, 52, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6">
+
+<main class="w-full max-w-md bg-surface-container-lowest rounded-2xl md:rounded-3xl p-8 md:p-12 ambient-glow">
+
+    <!-- Marca -->
+    <div class="mb-8 text-center">
+        <span class="text-xl font-bold tracking-tighter text-teal-800">Clínica Dentária</span>
+        <p class="text-xs text-on-surface-variant mt-0.5">Sorrisos saudáveis começam aqui</p>
+    </div>
+
+    <!-- Ícone decorativo -->
+    <div class="flex justify-center mb-6">
+        <div class="w-14 h-14 rounded-2xl bg-primary-container/60 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[28px]"
+                  style="font-variation-settings:'FILL' 1">lock_reset</span>
+        </div>
+    </div>
+
+    <header class="text-center mb-8">
+        <h1 class="text-2xl font-extrabold tracking-tight text-on-surface mb-2">Recuperar Palavra-passe</h1>
+        <p class="text-sm text-on-surface-variant leading-relaxed">
+            Introduza o e-mail da sua conta e enviaremos um link para redefinir a palavra-passe.
+        </p>
+    </header>
+
+    <!-- Mensagem de sucesso (após envio) -->
+    <div class="mb-6 rounded-xl bg-primary-container/50 px-4 py-3.5 text-sm font-semibold text-on-primary-container flex items-start gap-2.5"
+         th:if="${mensagemEnviada != null}">
+        <span class="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0"
+              style="font-variation-settings:'FILL' 1">mark_email_read</span>
+        <span th:text="${mensagemEnviada}">
+            Se o e-mail estiver registado, receberá instruções para redefinir a palavra-passe.
+        </span>
+    </div>
+
+    <!-- Formulário (só visível se ainda não enviou) -->
+    <div th:if="${mensagemEnviada == null}">
+        <form class="space-y-5" method="post" th:action="@{/recuperar-senha}">
+            <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+            <div class="space-y-1.5">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="email">E-mail *</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[18px]">mail</span>
+                    </div>
+                    <input class="block w-full pl-10 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl
+                                  text-sm text-on-surface placeholder:text-on-surface-variant/50
+                                  focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest
+                                  transition-all"
+                           autocomplete="email"
+                           id="email"
+                           name="email"
+                           placeholder="nome@exemplo.com"
+                           required
+                           type="email"/>
+                </div>
+            </div>
+
+            <button class="w-full gradient-btn text-on-primary font-bold py-3.5 rounded-xl
+                           shadow hover:shadow-md hover:scale-[1.01] active:scale-95
+                           transition-all duration-200 text-sm flex items-center justify-center gap-2"
+                    type="submit">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+                Enviar link de recuperação
+            </button>
+        </form>
+    </div>
+
+    <!-- Voltar para login -->
+    <div class="mt-6 text-center">
+        <a class="text-sm text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-1.5"
+           th:href="@{/login}">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Voltar para o início de sessão
+        </a>
+    </div>
+
+</main>
+</body>
+</html>

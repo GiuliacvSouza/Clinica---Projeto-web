@@ -2,13 +2,16 @@ package controller;
 
 import bll.PacienteService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import model.Paciente;
 import model.Utilizador;
+import model.dto.CadastroForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
@@ -21,64 +24,62 @@ public class CadastroController {
         this.pacienteService = pacienteService;
     }
 
+    /** Redireciona utilizador já autenticado; caso contrário apresenta o formulário vazio. */
     @GetMapping("/cadastro")
-    public String cadastro(HttpSession session) {
+    public String mostrarFormulario(HttpSession session, Model model) {
         if (session.getAttribute("utilizadorId") != null) {
             return "redirect:/consultas";
         }
+        model.addAttribute("cadastroForm", new CadastroForm());
         return "cadastro/index";
     }
 
+    /**
+     * Processa o registo.
+     * Spring valida {@link CadastroForm} antes de entrar no método.
+     * Se houver erros, o formulário é reapresentado — o Thymeleaf mostra os erros.
+     */
     @PostMapping("/cadastro")
-    public String cadastrar(
-            @RequestParam String nome,
-            @RequestParam String email,
-            @RequestParam(required = false) String telefone,
-            @RequestParam String password,
-            @RequestParam(required = false) String terms,
+    public String processar(
+            @Valid @ModelAttribute("cadastroForm") CadastroForm form,
+            BindingResult result,
             Model model
     ) {
-        if (terms == null) {
-            return erroCadastro(model, nome, email, telefone, "Tem de aceitar os termos para criar a conta.");
+        if (result.hasErrors()) {
+            // Spring devolve o formulário com os erros já ligados ao model attribute
+            return "cadastro/index";
         }
 
         try {
             Paciente paciente = new Paciente();
-            paciente.setUtilizador(criarUtilizador(nome, email, telefone, password));
+            paciente.setUtilizador(criarUtilizador(form));
             paciente.setStatus("ATIVO");
             paciente.setDataRegisto(LocalDate.now());
 
             pacienteService.salvar(paciente);
             return "redirect:/login?cadastro=sucesso";
+
         } catch (RuntimeException ex) {
-            return erroCadastro(model, nome, email, telefone, ex.getMessage());
+            // Erro de negócio (ex: e-mail já registado) — apresentado como erro global
+            result.reject("erroCadastro", ex.getMessage());
+            return "cadastro/index";
         }
     }
 
-    private Utilizador criarUtilizador(String nome, String email, String telefone, String password) {
-        String nomeNormalizado = nome != null ? nome.trim() : "";
-        if (nomeNormalizado.isBlank()) {
-            throw new RuntimeException("Nome completo e obrigatorio.");
-        }
+    // ── Utilitário ────────────────────────────────────────────────────────────
 
-        String[] partesNome = nomeNormalizado.split("\\s+", 2);
+    private Utilizador criarUtilizador(CadastroForm form) {
+        String[] partes = form.getNome().split("[\\s\\-]+", 2);
 
-        Utilizador utilizador = new Utilizador();
-        utilizador.setPrimeiroNome(partesNome[0]);
-        utilizador.setUltimoNome(partesNome.length > 1 ? partesNome[1] : "");
-        utilizador.setEmail(email);
-        utilizador.setTelemovel(telefone);
-        utilizador.setTipoUtilizador("PACIENTE");
-        utilizador.setSenha(password);
-        utilizador.setStatus("ATIVO");
-        return utilizador;
-    }
-
-    private String erroCadastro(Model model, String nome, String email, String telefone, String mensagem) {
-        model.addAttribute("erroCadastro", mensagem);
-        model.addAttribute("nomeInformado", nome);
-        model.addAttribute("emailInformado", email);
-        model.addAttribute("telefoneInformado", telefone);
-        return "cadastro/index";
+        Utilizador u = new Utilizador();
+        u.setPrimeiroNome(partes[0]);
+        u.setUltimoNome(partes.length > 1 ? partes[1] : "");
+        u.setEmail(form.getEmail());
+        u.setTelemovel(form.getTelefone() == null || form.getTelefone().isBlank()
+                ? null : form.getTelefone());
+        u.setTipoUtilizador("PACIENTE");
+        u.setSenha(form.getPassword());  // hash é feito no UtilizadorService
+        u.setStatus("ATIVO");
+        return u;
     }
 }
