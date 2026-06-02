@@ -322,7 +322,9 @@ public class ConsultaService {
             case AGENDADA -> novoStatus == EstadoConsulta.AGENDADA
                     || novoStatus == EstadoConsulta.CONFIRMADA
                     || novoStatus == EstadoConsulta.CANCELADA;
-            case CONFIRMADA -> novoStatus == EstadoConsulta.EM_ESPERA;
+            case CONFIRMADA -> novoStatus == EstadoConsulta.AGENDADA
+                    || novoStatus == EstadoConsulta.EM_ESPERA
+                    || novoStatus == EstadoConsulta.CANCELADA;
             case EM_ESPERA -> novoStatus == EstadoConsulta.EM_CONSULTA;
             case EM_CONSULTA -> novoStatus == EstadoConsulta.CONCLUIDA;
             case CONCLUIDA -> novoStatus == EstadoConsulta.FATURADA;

@@ -3,12 +3,19 @@ package controller;
 import bll.ConsultaService;
 import jakarta.servlet.http.HttpSession;
 import model.dto.ConsultaAgendadaDTO;
+import model.enums.EstadoConsulta;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -48,6 +55,117 @@ public class ConsultasController {
         return "consultas/index";
     }
 
+    @PostMapping("/consultas/{id}/cancelar")
+    public String cancelarConsulta(
+            @PathVariable Integer id,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (session.getAttribute("utilizadorId") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            consultaService.cancelar(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Consulta cancelada com sucesso.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        }
+
+        return "redirect:/consultas";
+    }
+
+    @GetMapping("/consultas/{id}/reagendar")
+    public String mostrarReagendar(
+            @PathVariable Integer id,
+            HttpSession session,
+            Model model
+    ) {
+        if (session.getAttribute("utilizadorId") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            model.addAttribute("consulta", consultaService.buscarPorId(id));
+            model.addAttribute("datas", proximasDatas());
+            model.addAttribute("horarios", HORARIOS_DISPONIVEIS.stream()
+                    .map(h -> DateTimeFormatter.ofPattern("HH:mm").format(h))
+                    .toList());
+            return "reagendar-consulta/index";
+        } catch (RuntimeException ex) {
+            return "redirect:/consultas";
+        }
+    }
+
+    @PostMapping("/consultas/{id}/reagendar")
+    public String confirmarReagendamento(
+            @PathVariable Integer id,
+            @RequestParam String data,
+            @RequestParam String hora,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (session.getAttribute("utilizadorId") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            LocalDate dataConsulta = LocalDate.parse(data);
+            LocalTime horaConsulta = LocalTime.parse(hora);
+            Instant novaDataHora = dataConsulta.atTime(horaConsulta)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant();
+
+            consultaService.reagendar(id, novaDataHora);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Consulta reagendada com sucesso.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        }
+
+        return "redirect:/consultas";
+    }
+
+    private static final List<LocalTime> HORARIOS_DISPONIVEIS = List.of(
+            LocalTime.of(9, 0),
+            LocalTime.of(9, 30),
+            LocalTime.of(10, 0),
+            LocalTime.of(10, 30),
+            LocalTime.of(11, 0),
+            LocalTime.of(11, 30),
+            LocalTime.of(14, 0),
+            LocalTime.of(14, 30),
+            LocalTime.of(15, 0),
+            LocalTime.of(15, 30)
+    );
+
+    private List<DataOpcao> proximasDatas() {
+        return LocalDate.now().plusDays(1)
+                .datesUntil(LocalDate.now().plusDays(11))
+                .map(this::toDataOpcao)
+                .toList();
+    }
+
+    private DataOpcao toDataOpcao(LocalDate data) {
+        return new DataOpcao(
+                data.toString(),
+                nomeDia(data.getDayOfWeek()),
+                String.valueOf(data.getDayOfMonth()),
+                DateTimeFormatter.ofPattern("MMM").format(data)
+        );
+    }
+
+    private String nomeDia(java.time.DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case MONDAY -> "Seg";
+            case TUESDAY -> "Ter";
+            case WEDNESDAY -> "Qua";
+            case THURSDAY -> "Qui";
+            case FRIDAY -> "Sex";
+            case SATURDAY -> "Sab";
+            case SUNDAY -> "Dom";
+        };
+    }
+
     private List<ConsultaAgendadaDTO> carregarConsultas(Integer utilizadorId, String tipo) {
         List<ConsultaAgendadaDTO> consultas = consultaService.listarTodasAgendadas();
 
@@ -61,14 +179,19 @@ public class ConsultasController {
     }
 
     private ConsultaView toView(ConsultaAgendadaDTO consulta) {
+        String statusNome = consulta.getStatus() != null ? consulta.getStatus().name() : "PENDENTE";
+        boolean podeAlterar = consulta.getStatus() == EstadoConsulta.AGENDADA
+                || consulta.getStatus() == EstadoConsulta.CONFIRMADA;
         return new ConsultaView(
+                consulta.getIdConsulta(),
                 valorOuPadrao(consulta.getNomeDentista(), "Dentista por definir"),
                 valorOuPadrao(consulta.getProcedimento(), "Consulta"),
                 formatarData(consulta.getDataHoraInicio()),
                 formatarHora(consulta.getDataHoraInicio()),
-                consulta.getStatus() != null ? consulta.getStatus().name() : "PENDENTE",
-                resolverClasseBorda(consulta.getStatus() != null ? consulta.getStatus().name() : "PENDENTE"),
-                resolverClasseBadge(consulta.getStatus() != null ? consulta.getStatus().name() : "PENDENTE")
+                statusNome,
+                resolverClasseBorda(statusNome),
+                resolverClasseBadge(statusNome),
+                podeAlterar
         );
     }
 
@@ -144,13 +267,18 @@ public class ConsultasController {
     }
 
     public record ConsultaView(
+            Integer id,
             String dentista,
             String procedimento,
             String data,
             String hora,
             String status,
             String borderClass,
-            String badgeClass
+            String badgeClass,
+            boolean podeAlterar
     ) {
+    }
+
+    public record DataOpcao(String valor, String diaSemana, String diaMes, String mes) {
     }
 }

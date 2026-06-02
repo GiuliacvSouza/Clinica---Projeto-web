@@ -18,7 +18,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/cadastro", "/dashboard", "/consultas", "/marcar-consulta", "/faturas", "/perfil", "/css/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/cadastro", "/dashboard",
+                                "/consultas", "/consultas/**",
+                                "/marcar-consulta", "/reagendar-consulta",
+                                "/faturas", "/perfil", "/css/**", "/images/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .build();
