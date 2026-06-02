@@ -16,6 +16,7 @@ import model.enums.EstadoConsulta;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -48,6 +49,8 @@ public class ConsultaService {
         this.procedimentoRepository = procedimentoRepository;
         this.atendimentoProcedimentoRepository = atendimentoProcedimentoRepository;
     }
+
+    private static final int HORAS_MINIMAS_CANCELAMENTO = 24;
 
     @Transactional
     public Consulta agendarConsulta(Consulta consulta) {
@@ -146,12 +149,18 @@ public class ConsultaService {
     }
 
     @Transactional
-    public Consulta cancelar(Integer id) {
+    public Consulta cancelar(Integer id, String motivoCancelamento) {
+        if (motivoCancelamento == null || motivoCancelamento.isBlank()) {
+            throw new IllegalArgumentException("O motivo de cancelamento e obrigatorio.");
+        }
+
         Consulta consulta = buscarPorId(id);
         validarTransicao(consulta.getStatus(), EstadoConsulta.CANCELADA);
+        validarAntecedenciaCancelamento(consulta);
+
         consulta.setStatus(EstadoConsulta.CANCELADA);
         consulta.setDataCancelamento(LocalDate.now());
-        consulta.setMotivoCancelamento("Cancelada pela agenda.");
+        consulta.setMotivoCancelamento(motivoCancelamento.trim());
         return repository.save(consulta);
     }
 
@@ -333,6 +342,19 @@ public class ConsultaService {
 
         if (!transicaoValida) {
             throw new RuntimeException("Transicao de estado invalida: " + statusAtual + " -> " + novoStatus);
+        }
+    }
+
+    private void validarAntecedenciaCancelamento(Consulta consulta) {
+        if (consulta.getDataHoraInicio() == null) {
+            return; // sem data definida, permite cancelar
+        }
+        long horasAteConsulta = Duration.between(Instant.now(), consulta.getDataHoraInicio()).toHours();
+        if (horasAteConsulta < HORAS_MINIMAS_CANCELAMENTO) {
+            throw new IllegalStateException(
+                "Nao e possivel cancelar com menos de " + HORAS_MINIMAS_CANCELAMENTO +
+                " horas de antecedencia. Contacte a clinica diretamente."
+            );
         }
     }
 

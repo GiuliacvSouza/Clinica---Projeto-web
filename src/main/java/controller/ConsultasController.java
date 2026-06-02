@@ -2,6 +2,7 @@ package controller;
 
 import bll.ConsultaService;
 import jakarta.servlet.http.HttpSession;
+import model.Consulta;
 import model.dto.ConsultaAgendadaDTO;
 import model.enums.EstadoConsulta;
 import org.springframework.stereotype.Controller;
@@ -55,9 +56,28 @@ public class ConsultasController {
         return "consultas/index";
     }
 
-    @PostMapping("/consultas/{id}/cancelar")
-    public String cancelarConsulta(
+    @GetMapping("/consultas/{id}/cancelar")
+    public String mostrarCancelamento(
             @PathVariable Integer id,
+            HttpSession session,
+            Model model
+    ) {
+        if (session.getAttribute("utilizadorId") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            model.addAttribute("consulta", consultaService.buscarPorId(id));
+            return "cancelar-consulta/index";
+        } catch (RuntimeException ex) {
+            return "redirect:/consultas";
+        }
+    }
+
+    @PostMapping("/consultas/{id}/cancelar")
+    public String confirmarCancelamento(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "") String motivo,
             HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
@@ -65,11 +85,29 @@ public class ConsultasController {
             return "redirect:/login";
         }
 
+        // Autorização: paciente só pode cancelar as suas próprias consultas
+        Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
+        String utilizadorTipo = (String) session.getAttribute("utilizadorTipo");
+
         try {
-            consultaService.cancelar(id);
+            if ("PACIENTE".equalsIgnoreCase(utilizadorTipo)) {
+                Consulta consulta = consultaService.buscarPorId(id);
+                boolean ePaciente = consulta.getIdPaciente() != null
+                        && utilizadorId.equals(consulta.getIdPaciente().getId());
+                if (!ePaciente) {
+                    redirectAttributes.addFlashAttribute("mensagemErro",
+                            "Nao tem permissao para cancelar esta consulta.");
+                    return "redirect:/consultas";
+                }
+            }
+
+            consultaService.cancelar(id, motivo);
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Consulta cancelada com sucesso.");
-        } catch (RuntimeException ex) {
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro",
+                    "Nao foi possivel cancelar a consulta. " + ex.getMessage());
         }
 
         return "redirect:/consultas";

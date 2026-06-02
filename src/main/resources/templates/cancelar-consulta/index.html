@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Cancelar Consulta | Clínica Dentaria</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#a5e0d7",
+                        "on-primary-fixed-variant": "#2a655e",
+                        "on-secondary-container": "#3d5653",
+                        "secondary-container": "#cce8e3",
+                        "on-error-container": "#6e0a12",
+                        "secondary-dim": "#3f5854",
+                        "primary-container": "#b3eee5",
+                        "outline-variant": "#abb4b3",
+                        "error-dim": "#67040d",
+                        "primary-dim": "#205c55",
+                        "tertiary-dim": "#27596c",
+                        "error-container": "#fa746f",
+                        "primary-fixed": "#b3eee5",
+                        "primary": "#2e6861",
+                        "on-tertiary": "#f2faff",
+                        "surface-container-high": "#e2eae9",
+                        "on-primary": "#e2fff9",
+                        "inverse-primary": "#bbf7ed",
+                        "on-tertiary-container": "#235669",
+                        "tertiary": "#346579",
+                        "on-background": "#2c3434",
+                        "outline": "#737c7c",
+                        "error": "#a83836",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#586160",
+                        "surface-container-highest": "#dbe4e3",
+                        "on-tertiary-fixed-variant": "#2e6073",
+                        "surface-container-low": "#f0f5f4",
+                        "on-primary-container": "#1f5b54",
+                        "on-surface": "#2c3434",
+                        "secondary": "#4b6460",
+                        "tertiary-container": "#b6e7fe",
+                        "background": "#f7faf9",
+                        "on-secondary": "#e2fff9",
+                        "on-primary-fixed": "#014842",
+                        "surface": "#f7faf9",
+                        "surface-variant": "#dbe4e3",
+                        "surface-container": "#e9efee"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Plus Jakarta Sans"],
+                        body: ["Manrope"],
+                        label: ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ambient-glow {
+            box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
+        }
+        #char-count { transition: color 0.2s; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+
+<!-- Navbar -->
+<nav class="bg-surface backdrop-blur-xl top-0 sticky z-50 border-b border-surface-container-high">
+    <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter text-teal-800">Clínica Dentaria</div>
+        <div class="hidden md:flex items-center space-x-8">
+            <a class="text-teal-700 border-b-2 border-teal-600 pb-1 font-semibold" th:href="@{/consultas}">Consultas</a>
+            <a class="text-zinc-500 hover:text-teal-600 transition-colors" th:href="@{/marcar-consulta}">Marcar Consulta</a>
+            <a class="text-zinc-500 hover:text-teal-600 transition-colors" th:href="@{/faturas}">Faturas</a>
+        </div>
+        <a class="material-symbols-outlined text-teal-700 p-2 rounded-full hover:bg-teal-50/50 transition-all"
+           th:href="@{/perfil}" title="Perfil">account_circle</a>
+    </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-8 py-12">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
+        <a class="hover:text-primary transition-colors" th:href="@{/consultas}">Consultas</a>
+        <span class="material-symbols-outlined text-sm">chevron_right</span>
+        <span class="text-on-surface font-semibold">Cancelar Consulta</span>
+    </div>
+
+    <!-- Aviso destaque -->
+    <div class="flex items-start gap-4 bg-error-container/20 border border-error/20 rounded-2xl p-6 mb-8">
+        <span class="material-symbols-outlined text-error mt-0.5 text-2xl">warning</span>
+        <div>
+            <p class="font-bold text-on-error-container text-base">Esta acao nao pode ser desfeita.</p>
+            <p class="text-sm text-on-error-container/80 mt-1">
+                O cancelamento e definitivo. Caso pretenda apenas alterar a data, utilize a opcao
+                <a class="underline font-semibold hover:text-error transition-colors"
+                   th:href="@{/consultas/{id}/reagendar(id=${consulta.id})}">Reagendar</a>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Resumo da consulta -->
+    <div class="bg-surface-container-low rounded-2xl p-6 mb-8 border border-outline-variant/20 ambient-glow">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">Consulta a cancelar</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div class="flex items-center gap-3">
+                <span class="p-2 rounded-xl bg-primary-container/50 text-on-primary-container material-symbols-outlined">medical_services</span>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Tipo</p>
+                    <p class="font-bold text-on-surface"
+                       th:text="${consulta.tipo != null ? consulta.tipo : 'Consulta'}">Consulta Geral</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3"
+                 th:if="${consulta.idDentista != null and consulta.idDentista.utilizador != null}">
+                <span class="p-2 rounded-xl bg-primary-container/50 text-on-primary-container material-symbols-outlined">person</span>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Especialista</p>
+                    <p class="font-bold text-on-surface"
+                       th:text="'Dr(a). ' + ${consulta.idDentista.utilizador.primeiroNome} + ' ' + ${consulta.idDentista.utilizador.ultimoNome}">
+                        Dr(a). Nome
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="p-2 rounded-xl bg-primary-container/50 text-on-primary-container material-symbols-outlined">calendar_today</span>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Data</p>
+                    <p class="font-bold text-on-surface"
+                       th:text="${consulta.dataHoraInicio != null}
+                           ? ${#temporals.format(consulta.dataHoraInicio.atZone(T(java.time.ZoneId).systemDefault()), 'dd/MM/yyyy')}
+                           : 'Sem data'">
+                        --/--/----
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="p-2 rounded-xl bg-primary-container/50 text-on-primary-container material-symbols-outlined">schedule</span>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Horario</p>
+                    <p class="font-bold text-on-surface"
+                       th:text="${consulta.dataHoraInicio != null}
+                           ? ${#temporals.format(consulta.dataHoraInicio.atZone(T(java.time.ZoneId).systemDefault()), 'HH:mm')}
+                           : '--:--'">
+                        --:--
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Formulario de cancelamento -->
+    <div class="bg-surface-container-lowest rounded-3xl p-8 border border-outline-variant/20 ambient-glow">
+        <h2 class="text-xl font-bold mb-2">Motivo do cancelamento</h2>
+        <p class="text-sm text-on-surface-variant mb-6">
+            Indique o motivo para podermos melhorar o nosso servico. Este campo e obrigatorio.
+        </p>
+
+        <form th:action="@{/consultas/{id}/cancelar(id=${consulta.id})}" method="post" id="form-cancelar"
+              th:object="${consulta}">
+            <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+
+            <!-- Motivos predefinidos -->
+            <fieldset class="mb-6">
+                <legend class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-3">
+                    Selecione um motivo
+                </legend>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="group flex items-center gap-3 p-4 rounded-xl bg-surface-container-low
+                                  hover:bg-surface-container transition-all cursor-pointer
+                                  has-[:checked]:bg-error-container/20 has-[:checked]:border has-[:checked]:border-error/30">
+                        <input class="sr-only motivo-radio" name="_motivoPredef" type="radio"
+                               value="Indisponibilidade pessoal"/>
+                        <span class="w-4 h-4 rounded-full border-2 border-outline flex-shrink-0
+                                     group-has-[:checked]:border-error group-has-[:checked]:bg-error"></span>
+                        <span class="text-sm font-medium text-on-surface">Indisponibilidade pessoal</span>
+                    </label>
+                    <label class="group flex items-center gap-3 p-4 rounded-xl bg-surface-container-low
+                                  hover:bg-surface-container transition-all cursor-pointer
+                                  has-[:checked]:bg-error-container/20 has-[:checked]:border has-[:checked]:border-error/30">
+                        <input class="sr-only motivo-radio" name="_motivoPredef" type="radio"
+                               value="Conflito de agenda"/>
+                        <span class="w-4 h-4 rounded-full border-2 border-outline flex-shrink-0
+                                     group-has-[:checked]:border-error group-has-[:checked]:bg-error"></span>
+                        <span class="text-sm font-medium text-on-surface">Conflito de agenda</span>
+                    </label>
+                    <label class="group flex items-center gap-3 p-4 rounded-xl bg-surface-container-low
+                                  hover:bg-surface-container transition-all cursor-pointer
+                                  has-[:checked]:bg-error-container/20 has-[:checked]:border has-[:checked]:border-error/30">
+                        <input class="sr-only motivo-radio" name="_motivoPredef" type="radio"
+                               value="Motivo de saude"/>
+                        <span class="w-4 h-4 rounded-full border-2 border-outline flex-shrink-0
+                                     group-has-[:checked]:border-error group-has-[:checked]:bg-error"></span>
+                        <span class="text-sm font-medium text-on-surface">Motivo de saude</span>
+                    </label>
+                    <label class="group flex items-center gap-3 p-4 rounded-xl bg-surface-container-low
+                                  hover:bg-surface-container transition-all cursor-pointer
+                                  has-[:checked]:bg-error-container/20 has-[:checked]:border has-[:checked]:border-error/30">
+                        <input class="sr-only motivo-radio" name="_motivoPredef" type="radio"
+                               value="Outro motivo"/>
+                        <span class="w-4 h-4 rounded-full border-2 border-outline flex-shrink-0
+                                     group-has-[:checked]:border-error group-has-[:checked]:bg-error"></span>
+                        <span class="text-sm font-medium text-on-surface">Outro motivo</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Campo de texto livre -->
+            <div class="mb-8">
+                <label class="block text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2"
+                       for="motivo">
+                    Detalhe adicional <span class="text-on-surface-variant font-normal normal-case tracking-normal">(opcional se selecionou acima)</span>
+                </label>
+                <textarea id="motivo" name="motivo" rows="3" maxlength="500"
+                          placeholder="Descreva brevemente o motivo do cancelamento..."
+                          class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-3
+                                 text-on-surface placeholder-on-surface-variant/50
+                                 focus:outline-none focus:ring-2 focus:ring-error/50 focus:border-error/50
+                                 resize-none transition-all"></textarea>
+                <div class="flex justify-end mt-1">
+                    <span id="char-count" class="text-xs text-on-surface-variant">0 / 500</span>
+                </div>
+            </div>
+
+            <!-- Campo hidden que vai para o servidor -->
+            <input type="hidden" id="motivo-final" name="motivo" value=""/>
+
+            <!-- Botões -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-2 border-t border-surface-container-high">
+                <button type="submit" id="btn-confirmar"
+                        class="flex-1 flex items-center justify-center gap-2 bg-error text-on-error
+                               px-6 py-3.5 rounded-xl font-bold text-base
+                               hover:opacity-90 active:scale-[0.98] transition-all duration-200
+                               disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-base">cancel</span>
+                    Confirmar Cancelamento
+                </button>
+                <a th:href="@{/consultas}"
+                   class="flex-1 flex items-center justify-center gap-2 border border-outline-variant
+                          text-on-surface px-6 py-3.5 rounded-xl font-bold text-base
+                          hover:bg-surface-container transition-colors text-center">
+                    <span class="material-symbols-outlined text-base">arrow_back</span>
+                    Voltar sem cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="bg-zinc-50 border-t border-zinc-100 mt-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
+        <div>
+            <div class="text-lg font-semibold text-teal-900">Clínica Dentaria</div>
+            <p class="text-zinc-500 text-sm mt-2">© 2026 Clínica Dentaria.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Contacte-nos</a>
+            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Politica de Privacidade</a>
+            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Termos de Servico</a>
+            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Cuidados de Emergencia</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    (function () {
+        const textarea = document.getElementById('motivo');
+        const charCount = document.getElementById('char-count');
+        const motivoFinal = document.getElementById('motivo-final');
+        const btnConfirmar = document.getElementById('btn-confirmar');
+        const radioButtons = document.querySelectorAll('.motivo-radio');
+        const form = document.getElementById('form-cancelar');
+
+        // Remover o campo de texto "motivo" duplicado — apenas o hidden vai ao servidor
+        // (o textarea tem o mesmo name, vamos gerir via JS)
+        textarea.removeAttribute('name');
+
+        function atualizarMotivo() {
+            const radioSelecionado = document.querySelector('.motivo-radio:checked');
+            const textoLivre = textarea.value.trim();
+
+            let motivoComposto = '';
+            if (radioSelecionado) {
+                motivoComposto = radioSelecionado.value;
+                if (textoLivre) {
+                    motivoComposto += ': ' + textoLivre;
+                }
+            } else {
+                motivoComposto = textoLivre;
+            }
+
+            motivoFinal.value = motivoComposto;
+            btnConfirmar.disabled = motivoComposto.length === 0;
+        }
+
+        textarea.addEventListener('input', function () {
+            const len = this.value.length;
+            charCount.textContent = len + ' / 500';
+            charCount.style.color = len > 450 ? '#a83836' : '';
+            atualizarMotivo();
+        });
+
+        radioButtons.forEach(function (radio) {
+            radio.addEventListener('change', atualizarMotivo);
+        });
+
+        // Estado inicial — botão desactivado até escolher motivo
+        atualizarMotivo();
+
+        // Validação final antes de submeter
+        form.addEventListener('submit', function (e) {
+            if (!motivoFinal.value.trim()) {
+                e.preventDefault();
+                textarea.focus();
+                textarea.classList.add('ring-2', 'ring-error/50', 'border-error/50');
+            }
+        });
+    })();
+</script>
+</body>
+</html>

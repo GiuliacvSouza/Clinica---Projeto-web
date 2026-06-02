@@ -225,15 +225,11 @@
                                     <span class="material-symbols-outlined text-sm" data-icon="edit_calendar">edit_calendar</span>
                                     Reagendar
                                 </a>
-                                <form th:action="@{/consultas/{id}/cancelar(id=${consulta.id()})}" method="post"
-                                      onsubmit="return confirm('Tem a certeza que pretende cancelar esta consulta?')">
-                                    <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-                                    <button type="submit"
-                                            class="flex-1 md:flex-none px-6 py-2.5 bg-on-error-container/10 text-error-dim rounded-lg font-bold text-sm hover:bg-error-container/20 transition-colors flex items-center justify-center gap-2">
-                                        <span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
-                                        Cancelar
-                                    </button>
-                                </form>
+                                <a th:href="@{/consultas/{id}/cancelar(id=${consulta.id()})}"
+                                   class="flex-1 md:flex-none px-6 py-2.5 bg-on-error-container/10 text-error-dim rounded-lg font-bold text-sm hover:bg-error-container/20 transition-colors flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
+                                    Cancelar
+                                </a>
                             </div>
                         </div>
                     </div>
