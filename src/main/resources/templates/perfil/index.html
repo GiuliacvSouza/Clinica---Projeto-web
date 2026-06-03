@@ -212,7 +212,9 @@
             text-decoration: none;
         }
         .btn-secondary:hover { background: #e2eae9; border-color: #586160; }
+
     </style>
+    <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
 
@@ -239,7 +241,7 @@
 
     <!-- Cabeçalho -->
     <div class="mb-8">
-        <h1 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">O Meu Perfil</h1>
+        <h1 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">Meu Perfil</h1>
         <p class="text-sm text-on-surface-variant max-w-lg leading-relaxed">
             Aqui pode consultar e atualizar os seus dados pessoais,
             mantendo o seu perfil sempre atualizado.
@@ -537,14 +539,17 @@
             <p class="text-sm font-bold text-teal-900 mb-1">Clínica Dentária</p>
             <p class="text-xs text-zinc-400">© 2026 Clínica Dentária. Todos os direitos reservados.</p>
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs text-zinc-400">
-            <a class="hover:text-teal-700 transition-colors" href="#">Contacte-nos</a>
-            <a class="hover:text-teal-700 transition-colors" href="#">Política de Privacidade</a>
-            <a class="hover:text-teal-700 transition-colors" href="#">Termos de Serviço</a>
-            <a class="hover:text-teal-700 transition-colors" href="#">Cuidados de Emergência</a>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-8 text-xs text-zinc-400">
+            <button type="button" onclick="abrirModalLegal('modalContactos')"
+                    class="hover:text-teal-700 transition-colors text-left cursor-pointer bg-transparent border-none p-0">Contacte-nos</button>
+            <button type="button" onclick="abrirModalLegal('modalTermos')"
+                    class="hover:text-teal-700 transition-colors text-left cursor-pointer bg-transparent border-none p-0">Termos de Serviço</button>
+            <button type="button" onclick="abrirModalLegal('modalPrivacidade')"
+                    class="hover:text-teal-700 transition-colors text-left cursor-pointer bg-transparent border-none p-0">Política de Privacidade</button>
         </div>
     </div>
 </footer>
-
+<th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
+<th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
 </body>
 </html>

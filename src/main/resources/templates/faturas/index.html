@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Faturas | Clínica Dentaria</title>
+    <title>Faturas | Clínica Dentária</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -92,13 +92,15 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
     </style>
+    <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen flex flex-col">
 <header class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
         <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
-            Clínica Dentaria
+            Clínica Dentária
         </div>
         <nav class="hidden md:flex items-center gap-8">
             <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/consultas}">Consultas</a>
@@ -170,7 +172,7 @@
                                 </div>
                                 <div>
                                     <p class="font-bold text-on-surface" th:text="${fatura.tratamento()}">Consulta Geral</p>
-                                    <p class="text-xs text-on-surface-variant" th:text="${fatura.dentista()}">Clínica Dentaria</p>
+                                    <p class="text-xs text-on-surface-variant" th:text="${fatura.dentista()}">Clínica Dentária</p>
                                 </div>
                             </div>
                         </td>
@@ -223,7 +225,8 @@
             </div>
             <h4 class="font-bold text-xl mb-3">Segurança de Dados</h4>
             <p class="text-sm text-zinc-500 mb-6">Seus dados financeiros sao protegidos por boas práticas de segurança.</p>
-            <a class="text-primary font-bold text-sm underline" href="#">Política de Privacidade</a>
+            <button type="button" class="text-primary font-bold text-sm underline cursor-pointer bg-transparent border-none p-0"
+               onclick="abrirModalLegal('modalPrivacidade')">Política de Privacidade</button>
         </div>
     </div>
 </main>
@@ -231,20 +234,20 @@
 <footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
         <div>
-            <p class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 brand-font">Clínica Dentaria</p>
-            <p class="text-zinc-500 dark:text-zinc-400 max-w-sm body-md">© 2026 Clínica Dentaria.</p>
+            <p class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 brand-font">Clínica Dentária</p>
+            <p class="text-zinc-500 dark:text-zinc-400 max-w-sm">© 2026 Clínica Dentária.</p>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="flex flex-col gap-2">
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Contacte-nos</a>
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Política de Privacidade</a>
-            </div>
-            <div class="flex flex-col gap-2">
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Termos de Serviço</a>
-                <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300 transition-opacity duration-300" href="#">Cuidados de Emergência</a>
-            </div>
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start">
+            <button type="button" onclick="abrirModalLegal('modalContactos')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Contacte-nos</button>
+            <button type="button" onclick="abrirModalLegal('modalTermos')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Termos de Serviço</button>
+            <button type="button" onclick="abrirModalLegal('modalPrivacidade')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Política de Privacidade</button>
         </div>
     </div>
 </footer>
+<th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
+<th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
 </body>
 </html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  Fragmento reutilizável: modais legais (Termos, Privacidade, Contactos).
+  Incluir com: th:replace="~{fragments/modais-legais :: modais}"
+  CSS e JS são incluídos pelo fragmento "estilos" e "scripts" respectivamente.
+-->
+<head>
+<th:block th:fragment="estilos">
+<style>
+    /* ── Modais legais ───────────────────────────────────────────── */
+    .legal-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.55);
+    }
+    .legal-modal.aberto { display: flex; }
+
+    @keyframes modalEntrada {
+        from { opacity: 0; transform: translateY(12px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+
+    .legal-modal-card {
+        width: 100%;
+        max-width: 760px;
+        max-height: 85vh;
+        background: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: modalEntrada .18s ease-out;
+    }
+
+    .legal-modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2eae9;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .legal-modal-body {
+        padding: 1.5rem;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.875rem;
+        line-height: 1.7;
+        color: #3a4040;
+    }
+
+    .legal-modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2eae9;
+        display: flex;
+        justify-content: flex-end;
+        background: #ffffff;
+        flex-shrink: 0;
+    }
+
+    .legal-close-btn {
+        background: linear-gradient(135deg, #2e6861, #205c55);
+        color: #e2fff9;
+        font-weight: 700;
+        font-size: 0.875rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.875rem;
+        border: none;
+        cursor: pointer;
+        min-width: 110px;
+    }
+
+    .legal-icon-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+        color: #586160;
+        padding: 0.125rem 0.25rem;
+        flex-shrink: 0;
+    }
+    .legal-icon-btn:hover { color: #2e6861; }
+
+    .legal-content h3 {
+        color: #2e6861;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .legal-content ul {
+        list-style: disc;
+        padding-left: 1.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .legal-content li { margin-bottom: 0.25rem; }
+
+    .legal-note {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        color: #78350f;
+        border-radius: 0.875rem;
+        padding: 1rem;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .legal-academic-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #b3eee5;
+        color: #1f5b54;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        margin-bottom: 0.45rem;
+    }
+</style>
+</th:block>
+</head>
+<body>
+
+<!-- ══ BLOCO DE MODAIS ════════════════════════════════════════════════════ -->
+<th:block th:fragment="modais">
+
+<!-- Modal Termos de Serviço -->
+<div id="modalTermos" class="legal-modal" onclick="fecharAoClicarFora(event,'modalTermos')">
+    <div class="legal-modal-card">
+        <div class="legal-modal-header">
+            <div>
+                <span class="legal-academic-badge">Documento académico sem valor jurídico definitivo</span>
+                <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:#2c3434;margin-top:0.25rem">
+                    Termos de Serviço
+                </h2>
+                <p style="font-size:0.75rem;color:#586160;margin-top:0.25rem">
+                    Última atualização: Junho de 2026 · Clínica Dentária
+                </p>
+            </div>
+            <button type="button" class="legal-icon-btn" onclick="fecharModalLegal('modalTermos')" aria-label="Fechar">×</button>
+        </div>
+        <div class="legal-modal-body legal-content">
+            <div class="legal-note">
+                <strong>Nota:</strong> Este documento foi elaborado exclusivamente para fins académicos no âmbito de um projeto universitário. O seu conteúdo é simulado e não constitui um instrumento jurídico vinculativo.
+            </div>
+            <p>Estes Termos de Serviço regulam a utilização da plataforma digital da Clínica Dentária. Ao criar uma conta ou utilizar a plataforma, o utilizador declara que leu, compreendeu e aceita estes termos.</p>
+            <h3>1. Objetivo da plataforma</h3>
+            <p>A plataforma digital da Clínica Dentária tem como objetivo facilitar o acesso dos pacientes a serviços de saúde oral, permitindo o agendamento de consultas, a gestão de dados pessoais e a comunicação com a clínica.</p>
+            <h3>2. Conta de utilizador</h3>
+            <p>Para utilizar os serviços da plataforma, o utilizador deve:</p>
+            <ul>
+                <li>Fornecer informações verdadeiras, completas e atualizadas no momento do registo.</li>
+                <li>Manter a confidencialidade das suas credenciais de acesso.</li>
+                <li>Não partilhar a sua conta com terceiros.</li>
+                <li>Informar a clínica caso suspeite de acesso indevido à sua conta.</li>
+            </ul>
+            <h3>3. Utilização adequada</h3>
+            <p>O utilizador compromete-se a utilizar a plataforma de forma responsável, sendo proibido:</p>
+            <ul>
+                <li>Introduzir dados falsos ou enganosos.</li>
+                <li>Tentar aceder a informações de outros utilizadores sem autorização.</li>
+                <li>Utilizar a plataforma para fins comerciais não autorizados.</li>
+                <li>Realizar ações que possam comprometer a segurança ou estabilidade do sistema.</li>
+            </ul>
+            <h3>4. Comunicações</h3>
+            <p>Ao criar uma conta, o utilizador aceita receber comunicações relacionadas com a sua conta, incluindo confirmações, mensagens administrativas e recuperação de palavra-passe.</p>
+            <h3>5. Limitação de responsabilidade</h3>
+            <p>A Clínica Dentária não se responsabiliza por danos resultantes de interrupções temporárias do serviço ou falhas técnicas alheias ao seu controlo.</p>
+            <h3>6. Alterações aos termos</h3>
+            <p>A Clínica Dentária pode atualizar estes Termos sempre que necessário. A versão mais recente estará disponível para consulta na plataforma.</p>
+            <h3>7. Nota académica</h3>
+            <p>Este documento foi criado no contexto de um projeto académico. O seu conteúdo é meramente ilustrativo e não tem validade jurídica.</p>
+        </div>
+        <div class="legal-modal-footer">
+            <button type="button" class="legal-close-btn" onclick="fecharModalLegal('modalTermos')">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Política de Privacidade -->
+<div id="modalPrivacidade" class="legal-modal" onclick="fecharAoClicarFora(event,'modalPrivacidade')">
+    <div class="legal-modal-card">
+        <div class="legal-modal-header">
+            <div>
+                <span class="legal-academic-badge">Documento académico sem valor jurídico definitivo</span>
+                <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:#2c3434;margin-top:0.25rem">
+                    Política de Privacidade
+                </h2>
+                <p style="font-size:0.75rem;color:#586160;margin-top:0.25rem">
+                    Última atualização: Junho de 2026 · Clínica Dentária
+                </p>
+            </div>
+            <button type="button" class="legal-icon-btn" onclick="fecharModalLegal('modalPrivacidade')" aria-label="Fechar">×</button>
+        </div>
+        <div class="legal-modal-body legal-content">
+            <div class="legal-note">
+                <strong>Nota:</strong> Este documento foi elaborado exclusivamente para fins académicos. O seu conteúdo é simulado e não constitui um instrumento jurídico vinculativo. O tratamento de dados descrito segue princípios gerais do RGPD a título ilustrativo.
+            </div>
+            <p>Esta Política de Privacidade explica, de forma simples, como a Clínica Dentária trata os dados pessoais fornecidos pelos utilizadores através da sua plataforma digital.</p>
+            <h3>1. Responsável pelo tratamento de dados</h3>
+            <p>O responsável pelo tratamento dos dados pessoais recolhidos através desta plataforma é a Clínica Dentária, no âmbito deste projeto académico simulado.</p>
+            <h3>2. Dados pessoais recolhidos</h3>
+            <p>No momento do registo, poderão ser recolhidos os seguintes dados:</p>
+            <ul>
+                <li>Nome completo.</li>
+                <li>Endereço de e-mail.</li>
+                <li>Número de telemóvel, quando fornecido.</li>
+                <li>Palavra-passe (armazenada de forma encriptada).</li>
+            </ul>
+            <h3>3. Finalidade do tratamento</h3>
+            <p>Os dados pessoais recolhidos são utilizados para:</p>
+            <ul>
+                <li>Criar e gerir a conta do utilizador.</li>
+                <li>Permitir a autenticação na plataforma.</li>
+                <li>Enviar comunicações relacionadas com a conta.</li>
+                <li>Permitir a recuperação de palavra-passe.</li>
+            </ul>
+            <h3>4. Segurança dos dados</h3>
+            <p>A Clínica Dentária adota medidas técnicas para proteger os dados pessoais contra acesso não autorizado, incluindo encriptação de palavras-passe e tokens de recuperação com validade limitada.</p>
+            <h3>5. Partilha de dados com terceiros</h3>
+            <p>Os dados pessoais dos utilizadores não são vendidos, alugados ou cedidos a terceiros para fins comerciais.</p>
+            <h3>6. Direitos do utilizador</h3>
+            <p>O utilizador pode solicitar o acesso, correção ou eliminação dos seus dados pessoais, de acordo com a legislação aplicável (RGPD).</p>
+            <h3>7. Conservação dos dados</h3>
+            <p>Os dados serão conservados apenas pelo período necessário para cumprir as finalidades para as quais foram recolhidos.</p>
+            <h3>8. Nota académica</h3>
+            <p>Este documento foi criado no contexto de um projeto académico e não tem validade jurídica.</p>
+        </div>
+        <div class="legal-modal-footer">
+            <button type="button" class="legal-close-btn" onclick="fecharModalLegal('modalPrivacidade')">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contactos -->
+<div id="modalContactos" class="legal-modal" onclick="fecharAoClicarFora(event,'modalContactos')">
+    <div class="legal-modal-card" style="max-width:480px">
+        <div class="legal-modal-header">
+            <div>
+                <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:#2c3434">
+                    Contacte-nos
+                </h2>
+                <p style="font-size:0.75rem;color:#586160;margin-top:0.25rem">Clínica Dentária · Contactos simulados</p>
+            </div>
+            <button type="button" class="legal-icon-btn" onclick="fecharModalLegal('modalContactos')" aria-label="Fechar">×</button>
+        </div>
+        <div class="legal-modal-body">
+            <div style="display:flex;flex-direction:column;gap:1.25rem;padding:0.5rem 0">
+
+                <div style="display:flex;align-items:center;gap:0.875rem">
+                    <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:#b3eee5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <span style="font-family:'Material Symbols Outlined';font-size:1.1rem;color:#1f5b54;font-variation-settings:'FILL' 1">mail</span>
+                    </div>
+                    <div>
+                        <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#586160;margin-bottom:0.2rem">E-mail</p>
+                        <p style="font-size:0.875rem;font-weight:600;color:#2c3434">contacto@clinicadentaria.pt</p>
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:0.875rem">
+                    <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:#b3eee5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <span style="font-family:'Material Symbols Outlined';font-size:1.1rem;color:#1f5b54;font-variation-settings:'FILL' 1">call</span>
+                    </div>
+                    <div>
+                        <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#586160;margin-bottom:0.2rem">Telefone</p>
+                        <p style="font-size:0.875rem;font-weight:600;color:#2c3434">+351 210 000 000</p>
+                    </div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:0.875rem">
+                    <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:#b3eee5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <span style="font-family:'Material Symbols Outlined';font-size:1.1rem;color:#1f5b54;font-variation-settings:'FILL' 1">schedule</span>
+                    </div>
+                    <div>
+                        <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#586160;margin-bottom:0.2rem">Horário</p>
+                        <p style="font-size:0.875rem;font-weight:600;color:#2c3434">Segunda a sexta, das 09h00 às 18h00</p>
+                    </div>
+                </div>
+
+                <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.78rem;color:#78350f;line-height:1.55;margin-top:0.5rem">
+                    Contactos simulados para contexto académico.
+                </div>
+            </div>
+        </div>
+        <div class="legal-modal-footer">
+            <button type="button" class="legal-close-btn" onclick="fecharModalLegal('modalContactos')">Fechar</button>
+        </div>
+    </div>
+</div>
+
+</th:block>
+
+<!-- ══ SCRIPT ════════════════════════════════════════════════════════════ -->
+<th:block th:fragment="scripts">
+<script>
+function abrirModalLegal(id) {
+    var m = document.getElementById(id);
+    if (m) { m.classList.add('aberto'); document.body.style.overflow = 'hidden'; }
+}
+function fecharModalLegal(id) {
+    var m = document.getElementById(id);
+    if (m) { m.classList.remove('aberto'); document.body.style.overflow = ''; }
+}
+function fecharAoClicarFora(event, id) {
+    if (event.target.id === id) fecharModalLegal(id);
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        ['modalTermos','modalPrivacidade','modalContactos'].forEach(fecharModalLegal);
+    }
+});
+</script>
+</th:block>
+
+</body>
+</html>

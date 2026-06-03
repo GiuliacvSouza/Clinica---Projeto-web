@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Marcar Consulta | Clínica Dentaria</title>
+    <title>Marcar Consulta | Clínica Dentária</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -100,13 +100,15 @@
         .ambient-glow {
             box-shadow: 0 32px 48px -12px rgba(44, 52, 52, 0.06);
         }
+
     </style>
+    <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
 <nav class="bg-surface dark:bg-zinc-950/50 backdrop-blur-xl full-width top-0 sticky z-50 transition-all duration-200 ease-out">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
         <div class="text-2xl font-bold tracking-tighter text-teal-800 dark:text-teal-300">
-            Clínica Dentaria
+            Clínica Dentária
         </div>
         <div class="hidden md:flex items-center space-x-8">
             <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 transition-colors" th:href="@{/consultas}">Consultas</a>
@@ -243,13 +245,15 @@
                         <span class="text-on-surface-variant">Consulta Inicial</span>
                         <span class="text-on-surface font-bold">A confirmar</span>
                     </div>
-                    <p class="text-xs text-on-surface-variant">O pagamento sera realizado no local apos o atendimento.</p>
+                    <p class="text-xs text-on-surface-variant">O pagamento será realizado no local após o atendimento.</p>
                 </div>
 
                 <button class="w-full signature-gradient text-on-primary py-4 rounded-xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200" type="submit">
-                    Confirmar Marcacao
+                    Confirmar Marcação
                 </button>
-                <p class="text-center mt-4 text-sm text-on-surface-variant">Ao confirmar, voce aceita nossos <a class="underline" href="#">Termos de Servico</a>.</p>
+                <p class="text-center mt-4 text-sm text-on-surface-variant">Ao confirmar, aceita os nossos
+                    <button type="button" class="underline font-semibold text-primary hover:opacity-80"
+                            onclick="abrirModalLegal('modalTermos')">Termos de Serviço</button>.</p>
             </div>
         </div>
     </form>
@@ -258,16 +262,20 @@
 <footer class="bg-zinc-50 dark:bg-zinc-900 full-width border-t border-zinc-100 dark:border-zinc-800 transition-opacity duration-300">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
         <div class="space-y-4">
-            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">Clínica Dentaria</div>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-sm">© 2026 Clínica Dentaria.</p>
+            <div class="text-lg font-semibold text-teal-900 dark:text-teal-100">Clínica Dentária</div>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm max-w-sm">© 2026 Clínica Dentária.</p>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Contacte-nos</a>
-            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Politica de Privacidade</a>
-            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Termos de Servico</a>
-            <a class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-300" href="#">Cuidados de Emergencia</a>
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start">
+            <button type="button" onclick="abrirModalLegal('modalContactos')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Contacte-nos</button>
+            <button type="button" onclick="abrirModalLegal('modalTermos')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Termos de Serviço</button>
+            <button type="button" onclick="abrirModalLegal('modalPrivacidade')"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Política de Privacidade</button>
         </div>
     </div>
 </footer>
+<th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
+<th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Cancelar Consulta | Clínica Dentaria</title>
+    <title>Cancelar Consulta | Clínica Dentária</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -78,13 +78,14 @@
         }
         #char-count { transition: color 0.2s; }
     </style>
+    <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
 
 <!-- Navbar -->
 <nav class="bg-surface backdrop-blur-xl top-0 sticky z-50 border-b border-surface-container-high">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
-        <div class="text-2xl font-bold tracking-tighter text-teal-800">Clínica Dentaria</div>
+        <div class="text-2xl font-bold tracking-tighter text-teal-800">Clínica Dentária</div>
         <div class="hidden md:flex items-center space-x-8">
             <a class="text-teal-700 border-b-2 border-teal-600 pb-1 font-semibold" th:href="@{/consultas}">Consultas</a>
             <a class="text-zinc-500 hover:text-teal-600 transition-colors" th:href="@{/marcar-consulta}">Marcar Consulta</a>
@@ -273,14 +274,16 @@
 <footer class="bg-zinc-50 border-t border-zinc-100 mt-20">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full px-8 py-12 max-w-7xl mx-auto">
         <div>
-            <div class="text-lg font-semibold text-teal-900">Clínica Dentaria</div>
-            <p class="text-zinc-500 text-sm mt-2">© 2026 Clínica Dentaria.</p>
+            <div class="text-lg font-semibold text-teal-900">Clínica Dentária</div>
+            <p class="text-zinc-500 text-sm mt-2">© 2026 Clínica Dentária.</p>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Contacte-nos</a>
-            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Politica de Privacidade</a>
-            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Termos de Servico</a>
-            <a class="text-zinc-500 hover:text-teal-600 text-sm" href="#">Cuidados de Emergencia</a>
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start">
+            <button type="button" onclick="abrirModalLegal('modalContactos')"
+                    class="text-zinc-500 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Contacte-nos</button>
+            <button type="button" onclick="abrirModalLegal('modalTermos')"
+                    class="text-zinc-500 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Termos de Serviço</button>
+            <button type="button" onclick="abrirModalLegal('modalPrivacidade')"
+                    class="text-zinc-500 hover:text-teal-600 text-sm cursor-pointer bg-transparent border-none p-0">Política de Privacidade</button>
         </div>
     </div>
 </footer>
@@ -340,5 +343,7 @@
         });
     })();
 </script>
+<th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
+<th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
 </body>
 </html>
