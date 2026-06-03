@@ -24,10 +24,6 @@ public class RecuperacaoSenhaController {
         this.recuperacaoSenhaService = recuperacaoSenhaService;
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PASSO 1 — Pedir recuperação (introduzir e-mail)
-    // ══════════════════════════════════════════════════════════════════════════
-
     @GetMapping("/recuperar-senha")
     public String mostrarFormularioRecuperacao() {
         return "recuperar-senha/index";
@@ -41,20 +37,13 @@ public class RecuperacaoSenhaController {
         try {
             recuperacaoSenhaService.iniciarRecuperacao(email);
         } catch (RuntimeException ex) {
-            // Erro de infra (ex: SMTP indisponível) — mostrar mensagem genérica
-            // sem revelar a causa real
             System.err.println("[RecuperacaoSenhaController] " + ex.getMessage());
         }
 
-        // Mensagem sempre genérica — nunca revelar se o e-mail existe
         redirectAttributes.addFlashAttribute("mensagemEnviada",
                 "Se o e-mail estiver registado, receberá instruções para redefinir a palavra-passe.");
         return "redirect:/recuperar-senha?enviado=true";
     }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // PASSO 2 — Redefinir a senha com o token recebido por e-mail
-    // ══════════════════════════════════════════════════════════════════════════
 
     @GetMapping("/redefinir-senha")
     public String mostrarFormularioRedefinicao(
@@ -72,7 +61,6 @@ public class RecuperacaoSenhaController {
             return "redefinir-senha/index";
         }
 
-        // Token válido — mostrar formulário de nova senha
         RedefinirSenhaForm form = new RedefinirSenhaForm();
         form.setToken(token);
         model.addAttribute("redefinirSenhaForm", form);
@@ -86,7 +74,6 @@ public class RecuperacaoSenhaController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        // Validar confirmação de senha (cross-field — não coberto por @Valid sozinho)
         if (!result.hasFieldErrors("novaSenha")
                 && form.getNovaSenha() != null
                 && !form.getNovaSenha().equals(form.getConfirmarSenha())) {
@@ -95,7 +82,6 @@ public class RecuperacaoSenhaController {
         }
 
         if (result.hasErrors()) {
-            // Revalidar token antes de reapresentar formulário
             if (form.getToken() != null && recuperacaoSenhaService.validarToken(form.getToken()).isEmpty()) {
                 model.addAttribute("erroToken", "O link de recuperação é inválido ou expirou.");
                 return "redefinir-senha/index";
@@ -110,11 +96,9 @@ public class RecuperacaoSenhaController {
                     form.getConfirmarSenha()
             );
         } catch (IllegalStateException ex) {
-            // Token inválido ou expirado
             model.addAttribute("erroToken", ex.getMessage());
             return "redefinir-senha/index";
         } catch (IllegalArgumentException ex) {
-            // Senhas não coincidem (segunda linha de defesa)
             result.rejectValue("confirmarSenha", "senhas.nao.coincidem", ex.getMessage());
             return "redefinir-senha/index";
         }

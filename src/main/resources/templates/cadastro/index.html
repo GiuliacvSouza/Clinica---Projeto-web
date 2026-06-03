@@ -259,15 +259,11 @@
 </head>
 
 <body class="bg-surface text-on-surface min-h-screen flex items-center justify-center p-4 md:p-6">
-
-<!-- Blobs decorativos -->
 <div class="fixed top-0 right-0 -z-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48 pointer-events-none"></div>
 <div class="fixed bottom-0 left-0 -z-10 w-80 h-80 bg-tertiary-container/10 rounded-full blur-[80px] -ml-40 -mb-40 pointer-events-none"></div>
 
 <main class="w-full max-w-5xl min-h-[720px] grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-surface-container-lowest rounded-2xl md:rounded-3xl ambient-glow">
-
-    <!-- Coluna lateral -->
-    <div class="hidden lg:flex lg:col-span-5 bg-primary-container/25 overflow-hidden flex-col p-10 self-stretch">
+<div class="hidden lg:flex lg:col-span-5 bg-primary-container/25 overflow-hidden flex-col p-10 self-stretch">
 
         <div class="relative z-10">
             <div class="flex items-center gap-2 mb-10">
@@ -306,13 +302,9 @@
             </div>
         </div>
     </div>
-
-    <!-- Coluna do formulário -->
-    <div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-12 bg-surface-container-lowest">
+<div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-12 bg-surface-container-lowest">
         <div class="max-w-md mx-auto w-full">
-
-            <!-- Logo mobile -->
-            <div class="lg:hidden flex items-center gap-2 mb-6">
+<div class="lg:hidden flex items-center gap-2 mb-6">
                 <span class="material-symbols-outlined text-primary text-xl">dentistry</span>
                 <span class="text-lg font-bold tracking-tighter text-teal-800 brand-font">
                     Clínica Dentária
@@ -334,15 +326,11 @@
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}"
                        type="hidden"/>
-
-                <!-- Erros globais -->
-                <div class="rounded-xl bg-error-container/20 px-4 py-2.5 text-sm font-semibold text-on-error-container"
+<div class="rounded-xl bg-error-container/20 px-4 py-2.5 text-sm font-semibold text-on-error-container"
                      th:if="${#fields.hasGlobalErrors()}">
                     <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
                 </div>
-
-                <!-- Nome Completo -->
-                <div class="space-y-1">
+<div class="space-y-1">
                     <label class="text-sm font-semibold text-on-surface-variant ml-1" for="nome">
                         Nome Completo *
                     </label>
@@ -365,9 +353,7 @@
                        th:errors="*{nome}"
                        th:if="${#fields.hasErrors('nome')}"></p>
                 </div>
-
-                <!-- E-mail -->
-                <div class="space-y-1">
+<div class="space-y-1">
                     <label class="text-sm font-semibold text-on-surface-variant ml-1" for="email">
                         E-mail *
                     </label>
@@ -390,12 +376,8 @@
                        th:errors="*{email}"
                        th:if="${#fields.hasErrors('email')}"></p>
                 </div>
-
-                <!-- Telemóvel + Palavra-passe -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-                    <!-- Telemóvel -->
-                    <div class="space-y-1">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="space-y-1">
                         <label class="text-sm font-semibold text-on-surface-variant ml-1" for="telefone">
                             Telemóvel
                         </label>
@@ -418,9 +400,7 @@
                            th:errors="*{telefone}"
                            th:if="${#fields.hasErrors('telefone')}"></p>
                     </div>
-
-                    <!-- Palavra-passe -->
-                    <div class="space-y-1">
+<div class="space-y-1">
                         <label class="text-sm font-semibold text-on-surface-variant ml-1" for="password">
                             Palavra-passe *
                         </label>
@@ -444,9 +424,7 @@
                            th:if="${#fields.hasErrors('password')}"></p>
                     </div>
                 </div>
-
-                <!-- Confirmar Palavra-passe -->
-                <div class="space-y-1">
+<div class="space-y-1">
                     <label class="text-sm font-semibold text-on-surface-variant ml-1" for="confirmPassword">
                         Confirmar Palavra-passe *
                     </label>
@@ -469,9 +447,7 @@
                        th:errors="*{confirmPassword}"
                        th:if="${#fields.hasErrors('confirmPassword')}"></p>
                 </div>
-
-                <!-- Termos e condições -->
-                <div class="space-y-1 px-1 pt-1">
+<div class="space-y-1 px-1 pt-1">
                     <div class="flex items-start gap-3">
                         <input id="termos"
                                class="mt-0.5 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary-container flex-shrink-0"
@@ -502,9 +478,7 @@
                        th:errors="*{termos}"
                        th:if="${#fields.hasErrors('termos')}"></p>
                 </div>
-
-                <!-- Botão -->
-                <button class="w-full py-3.5 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 text-sm"
+<button class="w-full py-3.5 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 text-sm"
                         type="submit">
                     Criar Conta
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -537,8 +511,6 @@
     </div>
 
 </main>
-
-<!-- Modal Termos de Serviço -->
 <div id="modalTermos" class="legal-modal" onclick="fecharAoClicarFora(event, 'modalTermos')">
     <div class="legal-modal-card">
 
@@ -644,8 +616,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Política de Privacidade -->
 <div id="modalPrivacidade" class="legal-modal" onclick="fecharAoClicarFora(event, 'modalPrivacidade')">
     <div class="legal-modal-card">
 

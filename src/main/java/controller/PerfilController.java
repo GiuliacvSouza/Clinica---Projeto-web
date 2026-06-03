@@ -21,8 +21,6 @@ public class PerfilController {
         this.utilizadorService = utilizadorService;
     }
 
-    // ── GET /perfil ───────────────────────────────────────────────────────────
-
     @GetMapping("/perfil")
     public String mostrarPerfil(HttpSession session, Model model) {
         Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
@@ -35,8 +33,6 @@ public class PerfilController {
         return "perfil/index";
     }
 
-    // ── POST /perfil ──────────────────────────────────────────────────────────
-
     @PostMapping("/perfil")
     public String atualizarPerfil(
             @Valid @ModelAttribute("perfilForm") PerfilForm form,
@@ -47,7 +43,6 @@ public class PerfilController {
         Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
         if (utilizadorId == null) return "redirect:/login";
 
-        // Se houver erros de validação, volta ao formulário com os erros visíveis
         if (result.hasErrors()) {
             Utilizador u = utilizadorService.buscarPorId(utilizadorId);
             model.addAttribute("nomeCompleto",   formatarNomeCompleto(u));
@@ -60,7 +55,6 @@ public class PerfilController {
             aplicarForm(u, form);
             Utilizador atualizado = utilizadorService.salvar(u);
 
-            // Actualizar sessão com o novo nome
             session.setAttribute("utilizadorNome", formatarNomeCompleto(atualizado));
 
             return "redirect:/perfil?atualizado=true";
@@ -72,8 +66,6 @@ public class PerfilController {
             return "perfil/index";
         }
     }
-
-    // ── Mapeamento entidade ↔ DTO ─────────────────────────────────────────────
 
     private PerfilForm toForm(Utilizador u) {
         PerfilForm f = new PerfilForm();
@@ -106,10 +98,7 @@ public class PerfilController {
         u.setTelefone(emptyToNull(f.getTelefone()));
         u.setRua(emptyToNull(f.getRua()));
         u.setNumeroPorta(emptyToNull(f.getNumeroPorta()));
-        // CodigoPostal e Localidade requerem lógica de negócio própria — não alterados aqui
     }
-
-    // ── Utilitários ───────────────────────────────────────────────────────────
 
     private String formatarNomeCompleto(Utilizador u) {
         String p = u.getPrimeiroNome() != null ? u.getPrimeiroNome().trim() : "";

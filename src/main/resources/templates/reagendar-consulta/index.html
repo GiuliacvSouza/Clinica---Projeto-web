@@ -102,9 +102,7 @@
 </nav>
 
 <main class="max-w-7xl mx-auto px-8 py-12">
-
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
+<div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
         <a class="hover:text-primary transition-colors" th:href="@{/consultas}">Consultas</a>
         <span class="material-symbols-outlined text-sm">chevron_right</span>
         <span class="text-on-surface font-semibold">Reagendar Consulta</span>
@@ -114,9 +112,7 @@
         <h1 class="text-5xl font-extrabold tracking-tight text-on-surface mb-4">Reagendar Consulta</h1>
         <p class="text-on-surface-variant text-lg max-w-2xl">Escolha uma nova data e horario para a sua consulta.</p>
     </header>
-
-    <!-- Resumo da consulta atual -->
-    <div class="bg-surface-container-low rounded-2xl p-6 mb-10 flex flex-col md:flex-row gap-6 items-start md:items-center border border-outline-variant/20">
+<div class="bg-surface-container-low rounded-2xl p-6 mb-10 flex flex-col md:flex-row gap-6 items-start md:items-center border border-outline-variant/20">
         <div class="flex items-center gap-4 flex-1">
             <div class="p-3 rounded-xl bg-primary-container/50 text-on-primary-container">
                 <span class="material-symbols-outlined">event</span>
@@ -133,7 +129,8 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2 text-primary font-semibold">
                 <span class="material-symbols-outlined text-sm">calendar_today</span>
-                <span th:text="${#temporals.format(consulta.dataHoraInicio != null ? consulta.dataHoraInicio.atZone(T(java.time.ZoneId).systemDefault()) : null, 'dd/MM/yyyy HH:mm')}">--/--/---- --:--</span>
+                <span th:text="${consulta.dataHoraInicio != null ? #temporals.format(consulta.dataHoraInicio, 'dd/MM/yyyy HH:mm') : '--/--/---- --:--'}">
+    --/--/---- --:--</span>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-container text-on-primary-container"
                   th:text="${consulta.status != null ? consulta.status.descricao : 'Agendada'}">Agendada</span>
@@ -145,9 +142,7 @@
         <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
         <div class="lg:col-span-8 space-y-12">
-
-            <!-- Passo 1: Data -->
-            <section>
+<section>
                 <div class="flex items-center gap-3 mb-6">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">1</span>
                     <h2 class="text-2xl font-bold tracking-tight">Nova Data</h2>
@@ -167,9 +162,7 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Passo 2: Horário -->
-            <section>
+<section>
                 <div class="flex items-center gap-3 mb-6">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">2</span>
                     <h2 class="text-2xl font-bold tracking-tight">Novo Horario</h2>
@@ -184,9 +177,7 @@
                 </div>
             </section>
         </div>
-
-        <!-- Sidebar -->
-        <div class="lg:col-span-4">
+<div class="lg:col-span-4">
             <div class="sticky top-28 bg-surface-container-lowest rounded-3xl p-8 ambient-glow border border-primary/5">
                 <h3 class="text-xl font-bold mb-6">Confirmar Reagendamento</h3>
 

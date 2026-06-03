@@ -81,8 +81,6 @@
     <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
-
-<!-- Navbar -->
 <nav class="bg-surface backdrop-blur-xl top-0 sticky z-50 border-b border-surface-container-high">
     <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
         <div class="text-2xl font-bold tracking-tighter text-teal-800">Clínica Dentária</div>
@@ -97,16 +95,12 @@
 </nav>
 
 <main class="max-w-3xl mx-auto px-8 py-12">
-
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
+<div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
         <a class="hover:text-primary transition-colors" th:href="@{/consultas}">Consultas</a>
         <span class="material-symbols-outlined text-sm">chevron_right</span>
         <span class="text-on-surface font-semibold">Cancelar Consulta</span>
     </div>
-
-    <!-- Aviso destaque -->
-    <div class="flex items-start gap-4 bg-error-container/20 border border-error/20 rounded-2xl p-6 mb-8">
+<div class="flex items-start gap-4 bg-error-container/20 border border-error/20 rounded-2xl p-6 mb-8">
         <span class="material-symbols-outlined text-error mt-0.5 text-2xl">warning</span>
         <div>
             <p class="font-bold text-on-error-container text-base">Esta acao nao pode ser desfeita.</p>
@@ -117,9 +111,7 @@
             </p>
         </div>
     </div>
-
-    <!-- Resumo da consulta -->
-    <div class="bg-surface-container-low rounded-2xl p-6 mb-8 border border-outline-variant/20 ambient-glow">
+<div class="bg-surface-container-low rounded-2xl p-6 mb-8 border border-outline-variant/20 ambient-glow">
         <h2 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">Consulta a cancelar</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
@@ -172,9 +164,7 @@
 
         </div>
     </div>
-
-    <!-- Formulario de cancelamento -->
-    <div class="bg-surface-container-lowest rounded-3xl p-8 border border-outline-variant/20 ambient-glow">
+<div class="bg-surface-container-lowest rounded-3xl p-8 border border-outline-variant/20 ambient-glow">
         <h2 class="text-xl font-bold mb-2">Motivo do cancelamento</h2>
         <p class="text-sm text-on-surface-variant mb-6">
             Indique o motivo para podermos melhorar o nosso servico. Este campo e obrigatorio.
@@ -183,9 +173,7 @@
         <form th:action="@{/consultas/{id}/cancelar(id=${consulta.id})}" method="post" id="form-cancelar"
               th:object="${consulta}">
             <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-
-            <!-- Motivos predefinidos -->
-            <fieldset class="mb-6">
+<fieldset class="mb-6">
                 <legend class="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-3">
                     Selecione um motivo
                 </legend>
@@ -228,9 +216,7 @@
                     </label>
                 </div>
             </fieldset>
-
-            <!-- Campo de texto livre -->
-            <div class="mb-8">
+<div class="mb-8">
                 <label class="block text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2"
                        for="motivo">
                     Detalhe adicional <span class="text-on-surface-variant font-normal normal-case tracking-normal">(opcional se selecionou acima)</span>
@@ -245,12 +231,8 @@
                     <span id="char-count" class="text-xs text-on-surface-variant">0 / 500</span>
                 </div>
             </div>
-
-            <!-- Campo hidden que vai para o servidor -->
-            <input type="hidden" id="motivo-final" name="motivo" value=""/>
-
-            <!-- Botões -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-2 border-t border-surface-container-high">
+<input type="hidden" id="motivo-final" name="motivo" value=""/>
+<div class="flex flex-col sm:flex-row gap-3 pt-2 border-t border-surface-container-high">
                 <button type="submit" id="btn-confirmar"
                         class="flex-1 flex items-center justify-center gap-2 bg-error text-on-error
                                px-6 py-3.5 rounded-xl font-bold text-base

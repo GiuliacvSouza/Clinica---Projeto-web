@@ -191,12 +191,16 @@
                     <h2 class="text-2xl font-bold tracking-tight">Horarios Disponiveis</h2>
                 </div>
 
-                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <div id="horarios-lista" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     <label class="cursor-pointer" th:each="horario : ${horarios}">
                         <input class="peer sr-only" name="hora" required th:checked="${horario == horaSelecionada}" th:value="${horario}" type="radio"/>
                         <span class="block rounded-xl bg-surface-container-low px-4 py-3 text-center font-medium text-on-surface transition-all hover:bg-primary hover:text-on-primary peer-checked:bg-primary peer-checked:font-bold peer-checked:text-on-primary peer-checked:shadow-md"
                               th:text="${horario}">10:30</span>
                     </label>
+                    <p class="col-span-full rounded-xl bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface-variant"
+                       th:if="${#lists.isEmpty(horarios)}">
+                        Sem horários disponíveis para o dentista e a data selecionados.
+                    </p>
                 </div>
             </section>
         </div>
@@ -277,5 +281,61 @@
 </footer>
 <th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
 <th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
+<script>
+    const horariosLista = document.getElementById('horarios-lista');
+
+    function horarioOption(hora) {
+        const label = document.createElement('label');
+        label.className = 'cursor-pointer';
+        label.innerHTML = `
+            <input class="peer sr-only" name="hora" required value="${hora}" type="radio"/>
+            <span class="block rounded-xl bg-surface-container-low px-4 py-3 text-center font-medium text-on-surface transition-all hover:bg-primary hover:text-on-primary peer-checked:bg-primary peer-checked:font-bold peer-checked:text-on-primary peer-checked:shadow-md">${hora}</span>
+        `;
+        return label;
+    }
+
+    function mensagemHorarios(texto) {
+        const mensagem = document.createElement('p');
+        mensagem.className = 'col-span-full rounded-xl bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface-variant';
+        mensagem.textContent = texto;
+        return mensagem;
+    }
+
+    async function carregarHorariosDisponiveis() {
+        const dentista = document.querySelector('input[name="dentistaId"]:checked');
+        const data = document.querySelector('input[name="data"]:checked');
+        horariosLista.innerHTML = '';
+
+        if (!dentista || !data) {
+            horariosLista.appendChild(mensagemHorarios('Selecione primeiro o dentista e a data.'));
+            return;
+        }
+
+        try {
+            const response = await fetch(`/consultas/horarios-disponiveis?dentistaId=${encodeURIComponent(dentista.value)}&data=${encodeURIComponent(data.value)}`);
+            if (!response.ok) {
+                throw new Error('Falha ao carregar horários.');
+            }
+
+            const horarios = await response.json();
+            if (!horarios.length) {
+                horariosLista.appendChild(mensagemHorarios('Sem horários disponíveis para o dentista e a data selecionados.'));
+                return;
+            }
+
+            horarios.forEach((hora, index) => {
+                const option = horarioOption(hora);
+                option.querySelector('input').checked = index === 0;
+                horariosLista.appendChild(option);
+            });
+        } catch (error) {
+            horariosLista.appendChild(mensagemHorarios('Não foi possível carregar os horários disponíveis. Tente novamente.'));
+        }
+    }
+
+    document.querySelectorAll('input[name="dentistaId"], input[name="data"]').forEach((input) => {
+        input.addEventListener('change', carregarHorariosDisponiveis);
+    });
+</script>
 </body>
 </html>

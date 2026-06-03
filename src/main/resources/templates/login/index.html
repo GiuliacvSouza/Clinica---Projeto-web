@@ -99,18 +99,11 @@
         }
     </style>
 </head>
-<!--
-  Layout: body ocupa min 100vh, centra o card com flex.
-  O card usa min-height adaptável e nunca altura fixa.
-  Em desktop a imagem lateral preenche a sua coluna via object-fit: cover.
--->
 <body class="min-h-screen flex items-center justify-center p-4 md:p-6">
 
 <main class="w-full max-w-5xl bg-surface-container-lowest rounded-2xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row ambient-glow"
       style="min-height: min(680px, calc(100vh - 48px))">
-
-    <!-- Coluna do formulário -->
-    <div class="w-full md:w-5/12 p-8 md:p-12 flex flex-col justify-center relative bg-surface-container-lowest">
+<div class="w-full md:w-5/12 p-8 md:p-12 flex flex-col justify-center relative bg-surface-container-lowest">
 
         <div class="mb-8">
             <span class="text-xl font-bold tracking-tighter text-primary">Clínica Dentaria</span>
@@ -183,17 +176,13 @@
                 </p>
             </footer>
         </div>
-
-        <!-- Indicadores decorativos -->
-        <div class="absolute bottom-6 left-10 hidden md:flex gap-3 items-center">
+<div class="absolute bottom-6 left-10 hidden md:flex gap-3 items-center">
             <div class="w-1.5 h-1.5 rounded-full bg-primary-container"></div>
             <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
             <div class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></div>
         </div>
     </div>
-
-    <!-- Coluna da imagem — adapta-se à altura do formulário, sem forçar crescimento -->
-    <div class="hidden md:block md:w-7/12 relative overflow-hidden bg-surface-container-high">
+<div class="hidden md:block md:w-7/12 relative overflow-hidden bg-surface-container-high">
         <img alt="Profissional de saude bucal"
              class="absolute inset-0 w-full h-full object-cover grayscale-[20%] contrast-[105%]"
              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXfJ7NqCltcqh187trHCsxQp2D8lHE-MSxn7Kcn7FlHz1xnt-vzCasBu83opuIbfGWuMGDEJ7eA1VAzh-euHhWcVB_-7YcT866TRTUZU190s6vYCbjF8Wgg_-wwkJeICc4VtFLg4Lv7oY8qckpz0poxFoz19eqTovXBzp6AVL7LSKCeP_MUHysgcfgE2QlHC012LG5AOyQ7YSD5LWzeHsIYlEmYY9fDDCnkYVzw-p7QE2O5ZEbeifa7ey3qrZ_F6vQ_lWruSYXemY"/>

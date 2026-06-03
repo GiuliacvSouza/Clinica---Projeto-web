@@ -26,7 +26,6 @@ public class RecepcionistaService {
 
     @Transactional
     public Recepcionista salvar(Recepcionista recepcionista) {
-        // Validações
         if (recepcionista.getUtilizador() == null) {
             throw new RuntimeException("Recepcionista deve estar associado a um utilizador.");
         }
@@ -36,23 +35,18 @@ public class RecepcionistaService {
             throw new RuntimeException("Data de admissão não pode ser futura.");
         }
 
-        // Verifica se o utilizador existe
         Utilizador utilizador = utilizadorRepository.findById(recepcionista.getUtilizador().getId())
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado."));
 
-        // Atualiza o tipo do utilizador para RECEPCIONISTA
         utilizador.setTipoUtilizador("RECEPCIONISTA");
         utilizadorRepository.save(utilizador);
 
-        // Associa o utilizador ao recepcionista
         recepcionista.setUtilizador(utilizador);
 
-        // Se dataAdmissao for null, usa a data atual
         if (recepcionista.getDataAdmissao() == null) {
             recepcionista.setDataAdmissao(LocalDate.now());
         }
 
-        // Se turno for null, define um padrão
         if (recepcionista.getTurno() == null) {
             recepcionista.setTurno(Turno.MANHA);
         }
@@ -82,7 +76,6 @@ public class RecepcionistaService {
     public void excluir(Integer id) {
         Recepcionista recepcionista = buscarPorId(id);
 
-        // Remove o tipo RECEPCIONISTA do utilizador
         Utilizador utilizador = recepcionista.getUtilizador();
         utilizador.setTipoUtilizador(null);
         utilizadorRepository.save(utilizador);

@@ -46,15 +46,11 @@
 <body class="min-h-screen flex items-center justify-center p-4 md:p-6">
 
 <main class="w-full max-w-md bg-surface-container-lowest rounded-2xl md:rounded-3xl p-8 md:p-12 ambient-glow">
-
-    <!-- Marca -->
-    <div class="mb-8 text-center">
+<div class="mb-8 text-center">
         <span class="text-xl font-bold tracking-tighter text-teal-800">Clínica Dentária</span>
         <p class="text-xs text-on-surface-variant mt-0.5">Sorrisos saudáveis começam aqui</p>
     </div>
-
-    <!-- Ícone decorativo -->
-    <div class="flex justify-center mb-6">
+<div class="flex justify-center mb-6">
         <div class="w-14 h-14 rounded-2xl bg-primary-container/60 flex items-center justify-center">
             <span class="material-symbols-outlined text-primary text-[28px]"
                   style="font-variation-settings:'FILL' 1">lock_reset</span>
@@ -67,9 +63,7 @@
             Introduza o e-mail da sua conta e enviaremos um link para redefinir a palavra-passe.
         </p>
     </header>
-
-    <!-- Mensagem de sucesso (após envio) -->
-    <div class="mb-6 rounded-xl bg-primary-container/50 px-4 py-3.5 text-sm font-semibold text-on-primary-container flex items-start gap-2.5"
+<div class="mb-6 rounded-xl bg-primary-container/50 px-4 py-3.5 text-sm font-semibold text-on-primary-container flex items-start gap-2.5"
          th:if="${mensagemEnviada != null}">
         <span class="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0"
               style="font-variation-settings:'FILL' 1">mark_email_read</span>
@@ -77,9 +71,7 @@
             Se o e-mail estiver registado, receberá instruções para redefinir a palavra-passe.
         </span>
     </div>
-
-    <!-- Formulário (só visível se ainda não enviou) -->
-    <div th:if="${mensagemEnviada == null}">
+<div th:if="${mensagemEnviada == null}">
         <form class="space-y-5" method="post" th:action="@{/recuperar-senha}">
             <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
 
@@ -111,9 +103,7 @@
             </button>
         </form>
     </div>
-
-    <!-- Voltar para login -->
-    <div class="mt-6 text-center">
+<div class="mt-6 text-center">
         <a class="text-sm text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-1.5"
            th:href="@{/login}">
             <span class="material-symbols-outlined text-[16px]">arrow_back</span>

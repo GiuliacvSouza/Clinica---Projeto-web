@@ -8,10 +8,12 @@ import model.Dentista;
 import model.Paciente;
 import model.enums.EstadoConsulta;
 import org.springframework.stereotype.Controller;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -34,7 +36,9 @@ public class MarcarConsultaController {
             LocalTime.of(14, 0),
             LocalTime.of(14, 30),
             LocalTime.of(15, 0),
-            LocalTime.of(15, 30)
+            LocalTime.of(15, 30),
+            LocalTime.of(16, 0),
+            LocalTime.of(16, 30)
     );
 
     private final DentistaService dentistaService;
@@ -112,6 +116,17 @@ public class MarcarConsultaController {
         }
     }
 
+    @GetMapping("/consultas/horarios-disponiveis")
+    @ResponseBody
+    public List<String> horariosDisponiveis(
+            @RequestParam Integer dentistaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        return consultaService.listarHorariosDisponiveis(dentistaId, data).stream()
+                .map(this::formatarHora)
+                .toList();
+    }
+
     private void carregarModelo(Model model, Integer dentistaSelecionado, String dataSelecionada,
                                 String horaSelecionada, String tipoSelecionado) {
         List<DentistaOpcao> dentistas = dentistaService.listarAtivosOuCriarPadrao().stream()
@@ -120,13 +135,33 @@ public class MarcarConsultaController {
 
         model.addAttribute("dentistas", dentistas);
         model.addAttribute("datas", proximasDatas());
-        model.addAttribute("horarios", HORARIOS.stream().map(this::formatarHora).toList());
-        model.addAttribute("dentistaSelecionado", dentistaSelecionado != null
+        Integer dentistaId = dentistaSelecionado != null
                 ? dentistaSelecionado
-                : dentistas.stream().findFirst().map(DentistaOpcao::id).orElse(null));
-        model.addAttribute("dataSelecionada", dataSelecionada != null ? dataSelecionada : LocalDate.now().plusDays(1).toString());
-        model.addAttribute("horaSelecionada", horaSelecionada != null ? horaSelecionada : "10:30");
+                : dentistas.stream().findFirst().map(DentistaOpcao::id).orElse(null);
+        String dataEscolhida = dataSelecionada != null ? dataSelecionada : LocalDate.now().plusDays(1).toString();
+        List<String> horariosDisponiveis = listarHorariosDaData(dentistaId, dataEscolhida);
+
+        model.addAttribute("horarios", horariosDisponiveis);
+        model.addAttribute("dentistaSelecionado", dentistaId);
+        model.addAttribute("dataSelecionada", dataEscolhida);
+        model.addAttribute("horaSelecionada", horaSelecionada != null && horariosDisponiveis.contains(horaSelecionada)
+                ? horaSelecionada
+                : horariosDisponiveis.stream().findFirst().orElse(null));
         model.addAttribute("tipoSelecionado", tipoSelecionado != null ? tipoSelecionado : "Consulta Geral");
+    }
+
+    private List<String> listarHorariosDaData(Integer dentistaId, String dataSelecionada) {
+        if (dentistaId == null || dataSelecionada == null || dataSelecionada.isBlank()) {
+            return HORARIOS.stream().map(this::formatarHora).toList();
+        }
+
+        try {
+            return consultaService.listarHorariosDisponiveis(dentistaId, LocalDate.parse(dataSelecionada)).stream()
+                    .map(this::formatarHora)
+                    .toList();
+        } catch (RuntimeException ex) {
+            return HORARIOS.stream().map(this::formatarHora).toList();
+        }
     }
 
     private DentistaOpcao toOpcao(Dentista dentista) {

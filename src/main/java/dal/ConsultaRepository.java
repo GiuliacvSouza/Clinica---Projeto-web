@@ -88,6 +88,17 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
             @Param("fim") Instant fim
     );
 
+    @Query("SELECT c FROM Consulta c " +
+           "WHERE c.idDentista.id = :idDentista " +
+           "AND c.dataHoraInicio BETWEEN :inicio AND :fim " +
+           "AND c.status <> :statusCancelada")
+    List<Consulta> findOcupadasPorDentistaEntre(
+            @Param("idDentista") Integer idDentista,
+            @Param("inicio") Instant inicio,
+            @Param("fim") Instant fim,
+            @Param("statusCancelada") EstadoConsulta statusCancelada
+    );
+
     @Query("SELECT c FROM Consulta c WHERE c.idDentista.id = :idDentista AND c.dataHoraInicio = :dataHora AND c.status != 'CANCELADA'")
     List<Consulta> findConflitoHorario(
             @Param("idDentista") Integer idDentista,

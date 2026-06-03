@@ -35,7 +35,7 @@ import java.util.Locale;
  *   - Todas as rotas verificam a sessão antes de agir.
  *   - O download verifica que a fatura pertence ao paciente logado,
  *     navegando a cadeia Fatura → Atendimento → Consulta → Paciente.
- *   - O caminho físico do PDF nunca é exposto no HTML — a URL usa apenas o id.
+ *   - O caminho físico do PDF nunca é exposto no HTML a URL usa apenas o id.
  */
 @Controller
 @RequestMapping("/paciente/faturas")
@@ -48,7 +48,7 @@ public class FaturaDownloadController {
 
     private final FaturaService faturaService;
 
-    /** Pasta base dos PDFs — configurada em application.properties (app.faturas-dir). */
+    /** Pasta base dos PDFs: configurada em application.properties (app.faturas-dir). */
     @Value("${app.faturas-dir:C:/Users/jenni/intelijProjetos/clinica/uploads/faturas}")
     private String faturasDir;
 

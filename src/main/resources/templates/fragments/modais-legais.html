@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!--
-  Fragmento reutilizável: modais legais (Termos, Privacidade, Contactos).
-  Incluir com: th:replace="~{fragments/modais-legais :: modais}"
-  CSS e JS são incluídos pelo fragmento "estilos" e "scripts" respectivamente.
--->
 <head>
 <th:block th:fragment="estilos">
 <style>
@@ -136,11 +131,7 @@
 </th:block>
 </head>
 <body>
-
-<!-- ══ BLOCO DE MODAIS ════════════════════════════════════════════════════ -->
 <th:block th:fragment="modais">
-
-<!-- Modal Termos de Serviço -->
 <div id="modalTermos" class="legal-modal" onclick="fecharAoClicarFora(event,'modalTermos')">
     <div class="legal-modal-card">
         <div class="legal-modal-header">
@@ -192,8 +183,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Política de Privacidade -->
 <div id="modalPrivacidade" class="legal-modal" onclick="fecharAoClicarFora(event,'modalPrivacidade')">
     <div class="legal-modal-card">
         <div class="legal-modal-header">
@@ -247,8 +236,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Contactos -->
 <div id="modalContactos" class="legal-modal" onclick="fecharAoClicarFora(event,'modalContactos')">
     <div class="legal-modal-card" style="max-width:480px">
         <div class="legal-modal-header">
@@ -305,8 +292,6 @@
 </div>
 
 </th:block>
-
-<!-- ══ SCRIPT ════════════════════════════════════════════════════════════ -->
 <th:block th:fragment="scripts">
 <script>
 function abrirModalLegal(id) {

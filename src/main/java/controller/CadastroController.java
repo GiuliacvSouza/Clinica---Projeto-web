@@ -23,9 +23,7 @@ public class CadastroController {
     public CadastroController(PacienteService pacienteService) {
         this.pacienteService = pacienteService;
     }
-
-    /** Redireciona utilizador já autenticado; caso contrário apresenta o formulário vazio. */
-    @GetMapping("/cadastro")
+@GetMapping("/cadastro")
     public String mostrarFormulario(HttpSession session, Model model) {
         if (session.getAttribute("utilizadorId") != null) {
             return "redirect:/consultas";
@@ -33,20 +31,13 @@ public class CadastroController {
         model.addAttribute("cadastroForm", new CadastroForm());
         return "cadastro/index";
     }
-
-    /**
-     * Processa o registo.
-     * Spring valida {@link CadastroForm} antes de entrar no método.
-     * Se houver erros, o formulário é reapresentado — o Thymeleaf mostra os erros.
-     */
-    @PostMapping("/cadastro")
+@PostMapping("/cadastro")
     public String processar(
             @Valid @ModelAttribute("cadastroForm") CadastroForm form,
             BindingResult result,
             Model model
     ) {
         if (result.hasErrors()) {
-            // Spring devolve o formulário com os erros já ligados ao model attribute
             return "cadastro/index";
         }
 
@@ -60,13 +51,10 @@ public class CadastroController {
             return "redirect:/login?cadastro=sucesso";
 
         } catch (RuntimeException ex) {
-            // Erro de negócio (ex: e-mail já registado) — apresentado como erro global
             result.reject("erroCadastro", ex.getMessage());
             return "cadastro/index";
         }
     }
-
-    // ── Utilitário ────────────────────────────────────────────────────────────
 
     private Utilizador criarUtilizador(CadastroForm form) {
         String[] partes = form.getNome().split("[\\s\\-]+", 2);
@@ -78,7 +66,7 @@ public class CadastroController {
         u.setTelemovel(form.getTelefone() == null || form.getTelefone().isBlank()
                 ? null : form.getTelefone());
         u.setTipoUtilizador("PACIENTE");
-        u.setSenha(form.getPassword());  // hash é feito no UtilizadorService
+        u.setSenha(form.getPassword());
         u.setStatus("ATIVO");
         return u;
     }

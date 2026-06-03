@@ -217,8 +217,6 @@
     <th:block th:replace="~{fragments/modais-legais :: estilos}"></th:block>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
-
-<!-- ── Navbar ── -->
 <header class="bg-white top-0 sticky z-50 border-b border-surface-container-high"
         style="box-shadow: 0 1px 8px rgba(44,52,52,0.06)">
     <div class="flex justify-between items-center w-full px-6 md:px-10 py-4 max-w-7xl mx-auto">
@@ -235,36 +233,24 @@
         </a>
     </div>
 </header>
-
-<!-- ── Conteúdo principal ── -->
 <main class="max-w-7xl mx-auto px-4 sm:px-8 py-10 lg:py-14">
-
-    <!-- Cabeçalho -->
-    <div class="mb-8">
+<div class="mb-8">
         <h1 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">Meu Perfil</h1>
         <p class="text-sm text-on-surface-variant max-w-lg leading-relaxed">
             Aqui pode consultar e atualizar os seus dados pessoais,
             mantendo o seu perfil sempre atualizado.
         </p>
     </div>
-
-    <!-- Mensagem de sucesso (via redirect param) -->
-    <div class="mb-6 flex items-center gap-3 bg-primary-container/50 rounded-xl px-5 py-3.5
+<div class="mb-6 flex items-center gap-3 bg-primary-container/50 rounded-xl px-5 py-3.5
                 text-sm font-semibold text-on-primary-container"
          th:if="${param.atualizado != null}">
         <span class="material-symbols-outlined text-[18px]"
               style="font-variation-settings:'FILL' 1">check_circle</span>
         Perfil atualizado com sucesso.
     </div>
-
-    <!-- Layout: coluna esquerda (avatar) + coluna direita (formulário) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-        <!-- ── Coluna esquerda ── -->
-        <aside class="lg:col-span-3 space-y-5">
-
-            <!-- Card do utilizador -->
-            <div class="bg-white rounded-2xl p-6 text-center border border-surface-container-high"
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<aside class="lg:col-span-3 space-y-5">
+<div class="bg-white rounded-2xl p-6 text-center border border-surface-container-high"
                  style="box-shadow: 0 2px 16px -4px rgba(44,52,52,0.07)">
                 <div class="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4
                             ring-4 ring-primary-container bg-primary-container/30">
@@ -274,9 +260,7 @@
                 <p class="font-bold text-base text-on-surface" th:text="${nomeCompleto}">—</p>
                 <p class="text-sm text-on-surface-variant mt-0.5" th:text="${tipoUtilizador}">Paciente</p>
             </div>
-
-            <!-- Sair da conta -->
-            <form method="post" th:action="@{/logout}">
+<form method="post" th:action="@{/logout}">
                 <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
                 <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
                                border border-error/30 bg-transparent text-error text-sm font-semibold
@@ -287,28 +271,16 @@
                 </button>
             </form>
         </aside>
-
-        <!-- ── Coluna direita: formulário ── -->
-        <div class="lg:col-span-9">
-
-            <!--
-                th:object liga todas as secções ao PerfilForm.
-                th:field gera id, name e value automaticamente.
-                th:errors mostra as mensagens Bean Validation por campo.
-            -->
-            <form method="post" th:action="@{/perfil}" th:object="${perfilForm}">
+<div class="lg:col-span-9">
+<form method="post" th:action="@{/perfil}" th:object="${perfilForm}">
                 <input th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
-
-                <!-- Erros globais (ex: excepção ao guardar) -->
-                <div class="form-section" th:if="${#fields.hasGlobalErrors()}">
+<div class="form-section" th:if="${#fields.hasGlobalErrors()}">
                     <div class="flex items-center gap-3 text-sm font-semibold text-on-error-container">
                         <span class="material-symbols-outlined text-[18px]">error</span>
                         <span th:each="e : ${#fields.globalErrors()}" th:text="${e}"></span>
                     </div>
                 </div>
-
-                <!-- ══ CARD 1: Informações Pessoais ══════════════════════════ -->
-                <div class="form-section">
+<div class="form-section">
                     <div class="section-header">
                         <div class="section-icon-wrap">
                             <span class="material-symbols-outlined text-[18px]"
@@ -325,8 +297,7 @@
                     </div>
 
                     <div class="form-grid">
-                        <!-- Primeiro Nome -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('primeiroNome')}">Primeiro Nome *</label>
                             <input class="form-control"
                                    placeholder="Ex: Ana"
@@ -337,9 +308,7 @@
                                   th:errors="*{primeiroNome}"
                                   th:if="${#fields.hasErrors('primeiroNome')}"></span>
                         </div>
-
-                        <!-- Último Nome -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('ultimoNome')}">Último Nome *</label>
                             <input class="form-control"
                                    placeholder="Ex: Silva"
@@ -350,9 +319,7 @@
                                   th:errors="*{ultimoNome}"
                                   th:if="${#fields.hasErrors('ultimoNome')}"></span>
                         </div>
-
-                        <!-- Data de Nascimento — type="date" abre picker nativo -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('dataNascimento')}">Data de Nascimento</label>
                             <input class="form-control"
                                    th:classappend="${#fields.hasErrors('dataNascimento')} ? 'has-error'"
@@ -362,9 +329,7 @@
                                   th:errors="*{dataNascimento}"
                                   th:if="${#fields.hasErrors('dataNascimento')}"></span>
                         </div>
-
-                        <!-- NIF -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('nif')}">NIF</label>
                             <input class="form-control"
                                    maxlength="9"
@@ -378,9 +343,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ══ CARD 2: Contacto ═══════════════════════════════════════ -->
-                <div class="form-section">
+<div class="form-section">
                     <div class="section-header">
                         <div class="section-icon-wrap">
                             <span class="material-symbols-outlined text-[18px]">contact_page</span>
@@ -396,8 +359,7 @@
                     </div>
 
                     <div class="form-grid">
-                        <!-- E-mail (largura total) -->
-                        <div class="form-group full">
+<div class="form-group full">
                             <label class="form-label" th:for="${#ids.next('email')}">E-mail *</label>
                             <input autocomplete="email"
                                    class="form-control"
@@ -409,9 +371,7 @@
                                   th:errors="*{email}"
                                   th:if="${#fields.hasErrors('email')}"></span>
                         </div>
-
-                        <!-- Telemóvel -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('telemovel')}">Telemóvel *</label>
                             <input autocomplete="tel"
                                    class="form-control"
@@ -423,9 +383,7 @@
                                   th:errors="*{telemovel}"
                                   th:if="${#fields.hasErrors('telemovel')}"></span>
                         </div>
-
-                        <!-- Telefone Fixo -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('telefone')}">Telefone Fixo</label>
                             <input autocomplete="tel"
                                    class="form-control"
@@ -439,9 +397,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ══ CARD 3: Morada ════════════════════════════════════════ -->
-                <div class="form-section">
+<div class="form-section">
                     <div class="section-header">
                         <div class="section-icon-wrap">
                             <span class="material-symbols-outlined text-[18px]">location_on</span>
@@ -457,8 +413,7 @@
                     </div>
 
                     <div class="form-grid">
-                        <!-- Rua (largura total) -->
-                        <div class="form-group full">
+<div class="form-group full">
                             <label class="form-label" th:for="${#ids.next('rua')}">Rua / Avenida</label>
                             <input class="form-control"
                                    placeholder="Ex: Rua das Flores"
@@ -469,9 +424,7 @@
                                   th:errors="*{rua}"
                                   th:if="${#fields.hasErrors('rua')}"></span>
                         </div>
-
-                        <!-- Número da Porta -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('numeroPorta')}">Número</label>
                             <input class="form-control"
                                    placeholder="Ex: 12, 2.º Esq."
@@ -482,9 +435,7 @@
                                   th:errors="*{numeroPorta}"
                                   th:if="${#fields.hasErrors('numeroPorta')}"></span>
                         </div>
-
-                        <!-- Código Postal -->
-                        <div class="form-group">
+<div class="form-group">
                             <label class="form-label" th:for="${#ids.next('codigoPostal')}">Código Postal</label>
                             <input class="form-control"
                                    placeholder="1234-567"
@@ -495,9 +446,7 @@
                                   th:errors="*{codigoPostal}"
                                   th:if="${#fields.hasErrors('codigoPostal')}"></span>
                         </div>
-
-                        <!-- Localidade -->
-                        <div class="form-group full">
+<div class="form-group full">
                             <label class="form-label" th:for="${#ids.next('localidade')}">Localidade</label>
                             <input class="form-control"
                                    placeholder="Ex: Viana do Castelo"
@@ -510,9 +459,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ══ Botões ══════════════════════════════════════════════════ -->
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 pb-6">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 pb-6">
                     <p class="text-xs text-on-surface-variant italic order-last sm:order-first">
                         Mantenha os seus dados atualizados para facilitar o contacto com a clínica.
                     </p>
@@ -531,8 +478,6 @@
         </div>
     </div>
 </main>
-
-<!-- ── Footer ── -->
 <footer class="border-t border-surface-container-high mt-12" style="background:#f7faf9">
     <div class="max-w-7xl mx-auto px-6 md:px-10 py-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>

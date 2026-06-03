@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +53,22 @@ public class ConsultaService {
     }
 
     private static final int HORAS_MINIMAS_CANCELAMENTO = 24;
+    private static final int DURACAO_PADRAO_MINUTOS = 45;
+    private static final ZoneId ZONA_HORARIA = ZoneId.systemDefault();
+    private static final List<LocalTime> HORARIOS_BASE = List.of(
+            LocalTime.of(9, 0),
+            LocalTime.of(9, 30),
+            LocalTime.of(10, 0),
+            LocalTime.of(10, 30),
+            LocalTime.of(11, 0),
+            LocalTime.of(11, 30),
+            LocalTime.of(14, 0),
+            LocalTime.of(14, 30),
+            LocalTime.of(15, 0),
+            LocalTime.of(15, 30),
+            LocalTime.of(16, 0),
+            LocalTime.of(16, 30)
+    );
 
     @Transactional
     public Consulta agendarConsulta(Consulta consulta) {
@@ -92,7 +110,7 @@ public class ConsultaService {
                 return consultas;
             }
         } catch (Exception ignored) {
-            // Fallback para proteger a agenda quando a query DTO falha silenciosamente.
+            // Mantem a agenda visivel se a projecao DTO falhar.
         }
 
         return repository.findAllEager().stream()
@@ -119,7 +137,7 @@ public class ConsultaService {
                 return consultas;
             }
         } catch (Exception ignored) {
-            // Fallback para manter a agenda funcional mesmo com problema na query DTO.
+            // Mantem a agenda visivel se a projecao DTO falhar.
         }
 
         return repository.findByStatus(status).stream()
@@ -133,9 +151,49 @@ public class ConsultaService {
             return List.of();
         }
 
-        Instant inicio = data.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Instant fim = data.plusDays(1).atStartOfDay(ZoneId.systemDefault()).minusNanos(1).toInstant();
+        Instant inicio = data.atStartOfDay(ZONA_HORARIA).toInstant();
+        Instant fim = data.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant();
         return repository.findByDentistaEDia(dentistaId, inicio, fim);
+    }
+
+    public List<LocalTime> listarHorariosDisponiveis(Integer dentistaId, LocalDate data) {
+        if (dentistaId == null || data == null || data.isBefore(LocalDate.now())) {
+            return List.of();
+        }
+
+        Instant inicioDia = data.atStartOfDay(ZONA_HORARIA).toInstant();
+        Instant fimDia = data.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant();
+        List<Consulta> consultasOcupadas = repository.findOcupadasPorDentistaEntre(
+                dentistaId,
+                inicioDia,
+                fimDia,
+                EstadoConsulta.CANCELADA
+        );
+
+        return HORARIOS_BASE.stream()
+                .filter(hora -> data.isAfter(LocalDate.now()) || hora.isAfter(LocalTime.now()))
+                .filter(hora -> {
+                    Instant inicio = data.atTime(hora).atZone(ZONA_HORARIA).toInstant();
+                    Instant fim = inicio.plus(Duration.ofMinutes(DURACAO_PADRAO_MINUTOS));
+                    return consultasOcupadas.stream().noneMatch(existente -> existeConflito(inicio, fim, existente));
+                })
+                .toList();
+    }
+
+    public boolean horarioDisponivel(Integer dentistaId, Instant inicio, Integer duracaoMinutos, Integer consultaIgnoradaId) {
+        if (dentistaId == null || inicio == null || inicio.isBefore(Instant.now())) {
+            return false;
+        }
+
+        int duracao = duracaoMinutos != null && duracaoMinutos > 0 ? duracaoMinutos : DURACAO_PADRAO_MINUTOS;
+        LocalDate data = LocalDateTime.ofInstant(inicio, ZONA_HORARIA).toLocalDate();
+        Instant inicioDia = data.atStartOfDay(ZONA_HORARIA).toInstant();
+        Instant fimDia = data.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant();
+        Instant fim = inicio.plus(Duration.ofMinutes(duracao));
+
+        return repository.findOcupadasPorDentistaEntre(dentistaId, inicioDia, fimDia, EstadoConsulta.CANCELADA).stream()
+                .filter(existente -> consultaIgnoradaId == null || !consultaIgnoradaId.equals(existente.getId()))
+                .noneMatch(existente -> existeConflito(inicio, fim, existente));
     }
 
     public Consulta buscarPorId(Integer id) {
@@ -202,19 +260,13 @@ public class ConsultaService {
 
     @Transactional
     public Consulta finalizarConsulta(Integer id) {
-        Consulta consulta = atualizarStatus(id, EstadoConsulta.CONCLUIDA);
-
-        // Se ainda não existir atendimento associado, criar um atendimento básico
-        try {
+        Consulta consulta = atualizarStatus(id, EstadoConsulta.CONCLUIDA);        try {
             if (atendimentoService.buscarPorConsulta(consulta) == null) {
                 model.Atendimento at = new model.Atendimento();
                 at.setIdConsulta(consulta);
                 at.setRetorno(false);
                 at.setDiagnostico("Atendimento criado automaticamente ao concluir a consulta.");
-                model.Atendimento salvo = atendimentoService.salvar(at);
-
-                // Tentar associar um procedimento automaticamente baseado no tipo/observacoes da consulta
-                try {
+                model.Atendimento salvo = atendimentoService.salvar(at);                try {
                     String nomeProc = resolverProcedimento(consulta);
                     if (nomeProc != null && !nomeProc.isBlank()) {
                         var procs = procedimentoRepository.findByNomeContainingIgnoreCase(nomeProc);
@@ -228,13 +280,9 @@ public class ConsultaService {
                             atendimentoProcedimentoRepository.save(ap);
                         }
                     }
-                } catch (RuntimeException ignoredInner) {
-                    // Não bloquear fluxo principal se não for possível mapear procedimento
-                }
+                } catch (RuntimeException ignoredInner) {                }
             }
-        } catch (RuntimeException ignored) {
-            // Não impedir a finalização da consulta se a criação do atendimento falhar
-        }
+        } catch (RuntimeException ignored) {        }
 
         return consulta;
     }
@@ -347,7 +395,7 @@ public class ConsultaService {
 
     private void validarAntecedenciaCancelamento(Consulta consulta) {
         if (consulta.getDataHoraInicio() == null) {
-            return; // sem data definida, permite cancelar
+            return;
         }
         long horasAteConsulta = Duration.between(Instant.now(), consulta.getDataHoraInicio()).toHours();
         if (horasAteConsulta < HORAS_MINIMAS_CANCELAMENTO) {
@@ -364,14 +412,31 @@ public class ConsultaService {
         }
 
         try {
-            boolean horarioOcupado = repository.findConflitoHorario(consulta.getIdDentista().getId(), novaDataHoraInicio).stream()
-                    .anyMatch(conflito -> !conflito.getId().equals(consulta.getId()));
+            boolean disponivel = horarioDisponivel(
+                    consulta.getIdDentista().getId(),
+                    novaDataHoraInicio,
+                    consulta.getDuracao(),
+                    consulta.getId()
+            );
 
-            if (horarioOcupado) {
-                throw new RuntimeException("O dentista ja possui consulta marcada para esse horario.");
+            if (!disponivel) {
+                throw new RuntimeException("Este horario ja nao esta disponivel para o dentista selecionado.");
             }
         } catch (DataIntegrityViolationException ex) {
             throw new RuntimeException("Nao foi possivel validar o novo horario da consulta.", ex);
         }
+    }
+
+    private boolean existeConflito(Instant novoInicio, Instant novoFim, Consulta existente) {
+        if (existente.getDataHoraInicio() == null) {
+            return false;
+        }
+
+        int duracaoExistente = existente.getDuracao() != null && existente.getDuracao() > 0
+                ? existente.getDuracao()
+                : DURACAO_PADRAO_MINUTOS;
+        Instant existenteInicio = existente.getDataHoraInicio();
+        Instant existenteFim = existenteInicio.plus(Duration.ofMinutes(duracaoExistente));
+        return novoInicio.isBefore(existenteFim) && novoFim.isAfter(existenteInicio);
     }
 }
