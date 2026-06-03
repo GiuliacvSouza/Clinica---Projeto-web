@@ -146,6 +146,45 @@ public class ConsultaService {
                 .collect(Collectors.toList());
     }
 
+    public List<ConsultaAgendadaDTO> filtrarConsultasAgendadas(
+            EstadoConsulta status,
+            Integer dentistaId,
+            Integer pacienteId,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            String periodo,
+            String pesquisa,
+            String tipo
+    ) {
+        PeriodoInstants periodoInstants = resolverPeriodo(periodo);
+        Instant inicio = dataInicio != null
+                ? dataInicio.atStartOfDay(ZONA_HORARIA).toInstant()
+                : periodoInstants.inicio();
+        Instant fim = dataFim != null
+                ? dataFim.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant()
+                : periodoInstants.fim();
+        String tipoNormalizado = normalizarTexto(tipo);
+        String pesquisaNormalizada = normalizarPesquisa(pesquisa);
+
+        return repository.filtrarConsultasAgendadas(
+                status,
+                dentistaId,
+                pacienteId,
+                inicio != null,
+                inicio,
+                fim != null,
+                fim,
+                tipoNormalizado != null,
+                tipoNormalizado,
+                pesquisaNormalizada != null,
+                pesquisaNormalizada
+        );
+    }
+
+    public List<String> listarTiposConsulta() {
+        return repository.findTiposConsulta();
+    }
+
     public List<Consulta> listarPorDentistaEDia(Integer dentistaId, LocalDate data) {
         if (dentistaId == null || data == null) {
             return List.of();
@@ -364,6 +403,41 @@ public class ConsultaService {
             }
         }
         return null;
+    }
+
+    private String normalizarTexto(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        return valor.trim().toLowerCase();
+    }
+
+    private String normalizarPesquisa(String valor) {
+        String texto = normalizarTexto(valor);
+        if (texto == null) {
+            return null;
+        }
+        return "%" + texto + "%";
+    }
+
+    private PeriodoInstants resolverPeriodo(String periodo) {
+        if (periodo == null || periodo.isBlank()) {
+            return new PeriodoInstants(null, null);
+        }
+
+        LocalDate hoje = LocalDate.now(ZONA_HORARIA);
+        return switch (periodo.trim().toUpperCase()) {
+            case "HOJE" -> new PeriodoInstants(
+                    hoje.atStartOfDay(ZONA_HORARIA).toInstant(),
+                    hoje.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant()
+            );
+            case "FUTURAS" -> new PeriodoInstants(Instant.now(), null);
+            case "PASSADAS" -> new PeriodoInstants(null, Instant.now());
+            default -> new PeriodoInstants(null, null);
+        };
+    }
+
+    private record PeriodoInstants(Instant inicio, Instant fim) {
     }
 
     private void validarTransicao(EstadoConsulta statusAtual, EstadoConsulta novoStatus) {

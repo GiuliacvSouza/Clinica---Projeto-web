@@ -1,10 +1,13 @@
 package controller;
 
 import bll.ConsultaService;
+import bll.DentistaService;
 import jakarta.servlet.http.HttpSession;
 import model.Consulta;
+import model.Dentista;
 import model.dto.ConsultaAgendadaDTO;
 import model.enums.EstadoConsulta;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,20 +32,45 @@ public class ConsultasController {
     private static final DateTimeFormatter HORA_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final ConsultaService consultaService;
+    private final DentistaService dentistaService;
 
-    public ConsultasController(ConsultaService consultaService) {
+    public ConsultasController(ConsultaService consultaService, DentistaService dentistaService) {
         this.consultaService = consultaService;
+        this.dentistaService = dentistaService;
     }
 
     @GetMapping("/consultas")
-    public String consultas(HttpSession session, Model model) {
+    public String consultas(
+            HttpSession session,
+            Model model,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @RequestParam(required = false) Integer dentistaId,
+            @RequestParam(required = false) String pesquisa,
+            @RequestParam(required = false) String tipoConsulta
+    ) {
         if (session.getAttribute("utilizadorId") == null) {
             return "redirect:/login";
         }
 
         Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
-        String tipo = (String) session.getAttribute("utilizadorTipo");
-        List<ConsultaAgendadaDTO> consultas = carregarConsultas(utilizadorId, tipo);
+        String tipoUtilizador = (String) session.getAttribute("utilizadorTipo");
+        boolean utilizadorPaciente = "PACIENTE".equalsIgnoreCase(tipoUtilizador);
+        Integer pacienteId = utilizadorPaciente ? utilizadorId : null;
+        String pesquisaPaciente = utilizadorPaciente ? null : pesquisa;
+        EstadoConsulta statusSelecionado = parseEstado(estado);
+        List<ConsultaAgendadaDTO> consultas = consultaService.filtrarConsultasAgendadas(
+                statusSelecionado,
+                dentistaId,
+                pacienteId,
+                dataInicio,
+                dataFim,
+                periodo,
+                pesquisaPaciente,
+                tipoConsulta
+        );
         List<ConsultaView> consultasView = consultas.stream()
                 .map(this::toView)
                 .toList();
@@ -52,6 +80,18 @@ public class ConsultasController {
         model.addAttribute("proximaVisita", calcularProximaVisita(consultas));
         model.addAttribute("periodoConsultas", calcularPeriodo(consultas));
         model.addAttribute("consultas", consultasView);
+        model.addAttribute("estadosConsulta", estadosConsultaFiltro());
+        model.addAttribute("dentistas", dentistaService.listarTodos().stream().map(this::toDentistaOpcao).toList());
+        model.addAttribute("tiposConsulta", consultaService.listarTiposConsulta());
+        model.addAttribute("estadoSelecionado", statusSelecionado);
+        model.addAttribute("periodoSelecionado", normalizarParametro(periodo));
+        model.addAttribute("dataInicio", dataInicio);
+        model.addAttribute("dataFim", dataFim);
+        model.addAttribute("dentistaSelecionadoId", dentistaId);
+        model.addAttribute("mostrarFiltroPaciente", !utilizadorPaciente);
+        model.addAttribute("pesquisa", normalizarParametro(pesquisaPaciente));
+        model.addAttribute("tipoConsultaSelecionado", normalizarParametro(tipoConsulta));
+        model.addAttribute("filtrosAplicados", filtrosAplicados(statusSelecionado, periodo, dataInicio, dataFim, dentistaId, pesquisaPaciente, tipoConsulta));
 
         return "consultas/index";
     }
@@ -204,29 +244,18 @@ public class ConsultasController {
         };
     }
 
-    private List<ConsultaAgendadaDTO> carregarConsultas(Integer utilizadorId, String tipo) {
-        List<ConsultaAgendadaDTO> consultas = consultaService.listarTodasAgendadas();
-
-        if ("PACIENTE".equalsIgnoreCase(tipo) && utilizadorId != null) {
-            return consultas.stream()
-                    .filter(consulta -> utilizadorId.equals(consulta.getIdPaciente()))
-                    .toList();
-        }
-
-        return consultas;
-    }
-
     private ConsultaView toView(ConsultaAgendadaDTO consulta) {
         String statusNome = consulta.getStatus() != null ? consulta.getStatus().name() : "PENDENTE";
         boolean podeAlterar = consulta.getStatus() == EstadoConsulta.AGENDADA
                 || consulta.getStatus() == EstadoConsulta.CONFIRMADA;
         return new ConsultaView(
                 consulta.getIdConsulta(),
+                valorOuPadrao(consulta.getNomePaciente(), "Paciente por definir"),
                 valorOuPadrao(consulta.getNomeDentista(), "Dentista por definir"),
                 valorOuPadrao(consulta.getProcedimento(), "Consulta"),
                 formatarData(consulta.getDataHoraInicio()),
                 formatarHora(consulta.getDataHoraInicio()),
-                statusNome,
+                labelStatus(consulta.getStatus()),
                 resolverClasseBorda(statusNome),
                 resolverClasseBadge(statusNome),
                 podeAlterar
@@ -286,6 +315,69 @@ public class ConsultasController {
         return valor == null || valor.isBlank() ? padrao : valor;
     }
 
+    private EstadoConsulta parseEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            return null;
+        }
+
+        try {
+            return EstadoConsulta.valueOf(estado.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    private String normalizarParametro(String valor) {
+        return valor == null ? null : valor.trim();
+    }
+
+    private boolean filtrosAplicados(
+            EstadoConsulta status,
+            String periodo,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            Integer dentistaId,
+            String pesquisa,
+            String tipoConsulta
+    ) {
+        return status != null
+                || (periodo != null && !periodo.isBlank())
+                || dataInicio != null
+                || dataFim != null
+                || dentistaId != null
+                || (pesquisa != null && !pesquisa.isBlank())
+                || (tipoConsulta != null && !tipoConsulta.isBlank());
+    }
+
+    private List<EstadoOpcao> estadosConsultaFiltro() {
+        return List.of(
+                new EstadoOpcao(EstadoConsulta.AGENDADA, "Agendada"),
+                new EstadoOpcao(EstadoConsulta.CONFIRMADA, "Confirmada"),
+                new EstadoOpcao(EstadoConsulta.CONCLUIDA, "Realizada"),
+                new EstadoOpcao(EstadoConsulta.CANCELADA, "Cancelada"),
+                new EstadoOpcao(EstadoConsulta.FATURADA, "Faturada")
+        );
+    }
+
+    private DentistaOpcao toDentistaOpcao(Dentista dentista) {
+        String nome = "Dentista por definir";
+        if (dentista != null && dentista.getUtilizador() != null) {
+            nome = valorOuPadrao(
+                    (valorOuPadrao(dentista.getUtilizador().getPrimeiroNome(), "") + " "
+                            + valorOuPadrao(dentista.getUtilizador().getUltimoNome(), "")).trim(),
+                    nome
+            );
+        }
+        return new DentistaOpcao(dentista != null ? dentista.getId() : null, nome);
+    }
+
+    private String labelStatus(EstadoConsulta status) {
+        if (status == EstadoConsulta.CONCLUIDA) {
+            return "REALIZADA";
+        }
+        return status != null ? status.name() : "PENDENTE";
+    }
+
     private String resolverClasseBorda(String status) {
         return switch (status) {
             case "CONFIRMADA", "AGENDADA" -> "border-primary";
@@ -306,6 +398,7 @@ public class ConsultasController {
 
     public record ConsultaView(
             Integer id,
+            String paciente,
             String dentista,
             String procedimento,
             String data,
@@ -318,5 +411,11 @@ public class ConsultasController {
     }
 
     public record DataOpcao(String valor, String diaSemana, String diaMes, String mes) {
+    }
+
+    public record EstadoOpcao(EstadoConsulta valor, String label) {
+    }
+
+    public record DentistaOpcao(Integer id, String nome) {
     }
 }

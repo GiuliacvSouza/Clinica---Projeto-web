@@ -49,6 +49,50 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
            "ORDER BY c.dataHoraInicio DESC")
     List<ConsultaAgendadaDTO> findByStatusAgendadas(@Param("status") EstadoConsulta status);
 
+    @Query("SELECT new model.dto.ConsultaAgendadaDTO(" +
+           "c.id, " +
+           "CONCAT(p.utilizador.primeiroNome, ' ', p.utilizador.ultimoNome), " +
+           "CONCAT(d.utilizador.primeiroNome, ' ', d.utilizador.ultimoNome), " +
+           "c.tipo, " +
+           "c.dataHoraInicio, " +
+           "c.status, " +
+           "p.utilizador.nif, " +
+           "p.id) " +
+           "FROM Consulta c " +
+           "LEFT JOIN c.idPaciente p " +
+           "LEFT JOIN p.utilizador u " +
+           "LEFT JOIN c.idDentista d " +
+           "WHERE (:status IS NULL OR c.status = :status) " +
+           "AND (:dentistaId IS NULL OR d.id = :dentistaId) " +
+           "AND (:pacienteId IS NULL OR p.id = :pacienteId) " +
+           "AND (:filtrarDataInicio = false OR c.dataHoraInicio >= :dataInicio) " +
+           "AND (:filtrarDataFim = false OR c.dataHoraInicio <= :dataFim) " +
+           "AND (:filtrarTipo = false OR LOWER(c.tipo) = :tipo) " +
+           "AND (:filtrarPesquisa = false OR " +
+           "LOWER(u.primeiroNome) LIKE :pesquisa OR " +
+           "LOWER(u.ultimoNome) LIKE :pesquisa OR " +
+           "LOWER(CONCAT(u.primeiroNome, ' ', u.ultimoNome)) LIKE :pesquisa OR " +
+           "LOWER(u.email) LIKE :pesquisa OR " +
+           "u.telemovel LIKE :pesquisa OR " +
+           "u.telefone LIKE :pesquisa) " +
+           "ORDER BY c.dataHoraInicio DESC")
+    List<ConsultaAgendadaDTO> filtrarConsultasAgendadas(
+            @Param("status") EstadoConsulta status,
+            @Param("dentistaId") Integer dentistaId,
+            @Param("pacienteId") Integer pacienteId,
+            @Param("filtrarDataInicio") boolean filtrarDataInicio,
+            @Param("dataInicio") Instant dataInicio,
+            @Param("filtrarDataFim") boolean filtrarDataFim,
+            @Param("dataFim") Instant dataFim,
+            @Param("filtrarTipo") boolean filtrarTipo,
+            @Param("tipo") String tipo,
+            @Param("filtrarPesquisa") boolean filtrarPesquisa,
+            @Param("pesquisa") String pesquisa
+    );
+
+    @Query("SELECT DISTINCT c.tipo FROM Consulta c WHERE c.tipo IS NOT NULL AND TRIM(c.tipo) <> '' ORDER BY c.tipo")
+    List<String> findTiposConsulta();
+
     @Query("SELECT DISTINCT c FROM Consulta c " +
            "LEFT JOIN FETCH c.idPaciente p " +
            "LEFT JOIN FETCH p.utilizador " +
