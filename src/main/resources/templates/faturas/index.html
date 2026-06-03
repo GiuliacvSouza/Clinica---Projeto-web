@@ -184,10 +184,18 @@
                             </span>
                         </td>
                         <td class="px-8 py-6 text-right">
-                            <button class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-primary hover:text-on-primary rounded-lg transition-all text-sm font-medium" type="button">
+                            <a th:if="${fatura.pdfDisponivel()}"
+                               th:href="@{|/faturas/${fatura.id()}/download|}"
+                               class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-primary hover:text-on-primary rounded-lg transition-all text-sm font-medium"
+                               target="_blank">
                                 <span class="material-symbols-outlined text-lg" data-icon="download">download</span>
                                 Recibo PDF
-                            </button>
+                            </a>
+                            <span th:unless="${fatura.pdfDisponivel()}"
+                                  class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-lg text-sm font-medium text-on-surface-variant">
+                                <span class="material-symbols-outlined text-lg" data-icon="hourglass_empty">hourglass_empty</span>
+                                PDF indisponível
+                            </span>
                         </td>
                     </tr>
                     </tbody>

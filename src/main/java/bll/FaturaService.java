@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -151,6 +154,94 @@ public class FaturaService {
 
     public void excluir(Integer id) {
         repository.deleteById(id);
+    }
+
+    /**
+     * Lista todas as faturas do paciente com o id indicado.
+     * Navega Fatura → Atendimento → Consulta → Paciente.
+     */
+    public List<Fatura> listarPorPaciente(Integer pacienteId) {
+        if (pacienteId == null) return List.of();
+        return repository.findByPacienteId(pacienteId);
+    }
+
+    /**
+     * Devolve a fatura pelo id, garantindo que pertence ao paciente indicado.
+     * Lança exceção com status adequado se não existir ou não pertencer ao paciente.
+     */
+    public Fatura buscarPorIdEPaciente(Integer faturaId, Integer pacienteId) {
+        return repository.findByIdAndPacienteId(faturaId, pacienteId)
+                .orElseThrow(() -> new FaturaAcessoNegadoException(
+                        "Fatura não encontrada ou sem permissão de acesso."));
+    }
+
+    /**
+     * Resolve o caminho do PDF da fatura para um Path absoluto e normalizado.
+     * Tenta primeiro o caminho da BD; se não existir, tenta o fallback com faturasDir.
+     *
+     * @param fatura     Entidade fatura com caminhoPdf.
+     * @param faturasDir Pasta base configurada em app.faturas-dir (pode ser null).
+     * @return Path resolvido, ou null se caminhoPdf estiver vazio.
+     */
+    public Path resolverCaminhoPdf(Fatura fatura, String faturasDir) {
+        if (fatura.getCaminhoPdf() == null || fatura.getCaminhoPdf().isBlank()) return null;
+
+        // Normalizar barras mistas (Windows: "uploads/faturas\fatura_7.pdf")
+        String caminhoNormalizado = fatura.getCaminhoPdf().replace('\\', '/');
+        Path caminho = Paths.get(caminhoNormalizado).normalize();
+        String nomeFicheiro = caminho.getFileName().toString();
+
+        // Se o caminho directo não existir, tentar fallback: faturasDir + nome do ficheiro
+        if (!caminho.isAbsolute() && faturasDir != null && !faturasDir.isBlank()) {
+            caminho = Paths.get(faturasDir)
+                    .resolve(nomeFicheiro)
+                    .normalize()
+                    .toAbsolutePath();
+        } else {
+            caminho = caminho.toAbsolutePath();
+        }
+        System.out.println("[PDF] faturaId=" + fatura.getId());
+        System.out.println("[PDF] app.faturas-dir=" + faturasDir);
+        System.out.println("[PDF] caminhoPdf BD=" + fatura.getCaminhoPdf());
+        System.out.println("[PDF] nome ficheiro=" + nomeFicheiro);
+        System.out.println("[PDF] caminho resolvido=" + caminho);
+        System.out.println("[PDF] existe? " + Files.exists(caminho));
+        System.out.println("[PDF] legível? " + Files.isReadable(caminho));
+
+        return caminho;
+    }
+
+    /**
+     * Sobrecarga sem faturasDir — usa apenas o caminho da BD (sem fallback).
+     * Mantida por compatibilidade com chamadas existentes.
+     */
+    public Path resolverCaminhoPdf(Fatura fatura) {
+        return resolverCaminhoPdf(fatura, null);
+    }
+
+    /**
+     * Verifica se a fatura tem PDF disponível, tentando o caminho da BD
+     * e o fallback configurado.
+     *
+     * @param fatura     Entidade fatura.
+     * @param faturasDir Pasta base (app.faturas-dir). Pode ser null.
+     */
+    public boolean temPdfDisponivel(Fatura fatura, String faturasDir) {
+        Path caminho = resolverCaminhoPdf(fatura, faturasDir);
+        if (caminho == null) return false;
+        return Files.exists(caminho) && Files.isRegularFile(caminho) && Files.isReadable(caminho);
+    }
+
+    /**
+     * Sobrecarga sem faturasDir — sem fallback de directório.
+     */
+    public boolean temPdfDisponivel(Fatura fatura) {
+        return temPdfDisponivel(fatura, null);
+    }
+
+    /** Excepção de negócio para acesso não autorizado a uma fatura. */
+    public static class FaturaAcessoNegadoException extends RuntimeException {
+        public FaturaAcessoNegadoException(String mensagem) { super(mensagem); }
     }
 
     public Fatura salvar(Fatura fatura) {

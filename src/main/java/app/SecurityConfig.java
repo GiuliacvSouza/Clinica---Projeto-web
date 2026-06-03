@@ -23,7 +23,8 @@ public class SecurityConfig {
                                 "/marcar-consulta", "/reagendar-consulta",
                                 "/faturas", "/perfil", "/css/**", "/images/**",
                                 "/recuperar-senha", "/redefinir-senha",
-                                "/termos", "/privacidade").permitAll()
+                                "/termos", "/privacidade",
+                                "/paciente/faturas", "/paciente/faturas/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .build();

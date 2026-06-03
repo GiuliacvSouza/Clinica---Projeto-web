@@ -9,11 +9,22 @@ import model.Fatura;
 import model.Procedimento;
 import model.Utilizador;
 import model.enums.EstadoFatura;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +38,9 @@ public class FaturasController {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd MMM, yyyy");
 
     private final FaturaService faturaService;
+
+    @Value("${app.faturas-dir:C:/Users/jenni/intelijProjetos/clinica/uploads/faturas}")
+    private String faturasDir;
 
     public FaturasController(FaturaService faturaService) {
         this.faturaService = faturaService;
@@ -57,6 +71,43 @@ public class FaturasController {
         return "faturas/index";
     }
 
+    @GetMapping("/faturas/{id}/download")
+    public ResponseEntity<Resource> descarregarFatura(@PathVariable Integer id, HttpSession session) {
+        Integer utilizadorId = (Integer) session.getAttribute("utilizadorId");
+        if (utilizadorId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Fatura fatura;
+        try {
+            fatura = faturaService.buscarPorId(id);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fatura nao encontrada.");
+        }
+
+        String tipoUtilizador = (String) session.getAttribute("utilizadorTipo");
+        if (!deveMostrarFatura(fatura, tipoUtilizador, utilizadorId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (fatura.getEstado() != EstadoFatura.PAGA) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O documento ainda nao esta disponivel.");
+        }
+
+        Path caminho = faturaService.resolverCaminhoPdf(fatura, faturasDir);
+        if (caminho == null || !Files.isRegularFile(caminho) || !Files.isReadable(caminho)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O documento ainda nao esta disponivel.");
+        }
+
+        Resource recurso = new FileSystemResource(caminho);
+        String nomeFicheiro = caminho.getFileName().toString();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomeFicheiro + "\"")
+                .body(recurso);
+    }
+
     private boolean deveMostrarFatura(Fatura fatura, String tipoUtilizador, Integer utilizadorId) {
         if (!"PACIENTE".equalsIgnoreCase(tipoUtilizador)) {
             return true;
@@ -74,14 +125,17 @@ public class FaturasController {
 
     private FaturaView toView(Fatura fatura) {
         EstadoFatura estado = fatura.getEstado() != null ? fatura.getEstado() : EstadoFatura.PENDENTE;
+        boolean pdfDisponivel = estado == EstadoFatura.PAGA && faturaService.temPdfDisponivel(fatura, faturasDir);
         return new FaturaView(
+                fatura.getId(),
                 tituloTratamento(fatura),
                 nomeDentista(fatura),
                 formatarData(fatura.getDataEmissao()),
                 CURRENCY_FORMAT.format(valorFinalSeguro(fatura)),
                 estado.name(),
                 classeEstado(estado),
-                pontoEstado(estado)
+                pontoEstado(estado),
+                pdfDisponivel
         );
     }
 
@@ -153,13 +207,15 @@ public class FaturasController {
     }
 
     public record FaturaView(
+            Integer id,
             String tratamento,
             String dentista,
             String dataEmissao,
             String valor,
             String estado,
             String classeEstado,
-            String pontoEstado
+            String pontoEstado,
+            boolean pdfDisponivel
     ) {
     }
 }

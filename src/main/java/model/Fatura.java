@@ -50,6 +50,16 @@ public class Fatura {
     @Enumerated(EnumType.STRING)
     private EstadoFatura estado;
 
+    /**
+     * Caminho absoluto no servidor onde o PDF gerado está guardado.
+     * Nulo enquanto o PDF ainda não tiver sido gerado pela rececionista.
+     */
+    @Column(name = "caminho_pdf", length = 500)
+    private String caminhoPdf;
+
+    public String getCaminhoPdf() { return caminhoPdf; }
+    public void setCaminhoPdf(String caminhoPdf) { this.caminhoPdf = caminhoPdf; }
+
     public Integer getId() {
         return id;
     }
