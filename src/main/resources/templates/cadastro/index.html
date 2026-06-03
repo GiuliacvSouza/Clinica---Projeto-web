@@ -42,6 +42,144 @@
             background-color: #fff7f6 !important;
             box-shadow: 0 0 0 3px rgba(168, 56, 54, 0.12) !important;
         }
+
+        /* Modal Termos / Privacidade */
+        .legal-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.55);
+        }
+
+        .legal-modal.aberto {
+            display: flex;
+        }
+
+
+        @keyframes modalEntrada {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .legal-modal-card {
+            width: 100%;
+            max-width: 760px;
+            height: auto;
+            max-height: 85vh;
+            background: #ffffff;
+            border-radius: 1.25rem;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalEntrada .18s ease-out;
+        }
+
+        .legal-modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2eae9;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .legal-modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .legal-modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e2eae9;
+            display: flex;
+            justify-content: flex-end;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .legal-close-btn {
+            background: linear-gradient(135deg, #2e6861, #205c55);
+            color: #e2fff9;
+            font-weight: 700;
+            font-size: 0.875rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.875rem;
+            border: none;
+            cursor: pointer;
+            min-width: 110px;
+        }
+
+        .legal-icon-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.75rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #586160;
+            padding: 0.125rem 0.25rem;
+        }
+
+        .legal-icon-btn:hover {
+            color: #2e6861;
+        }
+
+        .legal-content h3 {
+            color: #2e6861;
+            font-weight: 800;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .legal-content p,
+        .legal-content li {
+            font-size: 0.875rem;
+            line-height: 1.7;
+            color: #3a4040;
+        }
+
+        .legal-content ul {
+            list-style: disc;
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .legal-note {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #78350f;
+            border-radius: 0.875rem;
+            padding: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .legal-academic-badge {
+            display: inline-flex;
+            align-items: center;
+            background: #b3eee5;
+            color: #1f5b54;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            margin-bottom: 0.45rem;
+        }
     </style>
 
     <script id="tailwind-config">
@@ -145,7 +283,7 @@
             </h2>
 
             <p class="text-sm text-on-surface-variant max-w-xs leading-relaxed">
-                Experimente uma jornada odontológica focada no seu bem-estar e tranquilidade.
+                Experimente uma jornada de cuidados dentários focada no seu bem-estar e tranquilidade.
             </p>
         </div>
 
@@ -343,9 +481,20 @@
 
                         <label class="text-xs text-on-surface-variant leading-snug" for="termos">
                             Eu concordo com os
-                            <a class="text-primary font-bold hover:underline" href="#">Termos de Serviço</a>
+
+                            <button type="button"
+                                    class="text-primary font-bold hover:underline"
+                                    onclick="abrirModalLegal('modalTermos')">
+                                Termos de Serviço
+                            </button>
+
                             e a
-                            <a class="text-primary font-bold hover:underline" href="#">Política de Privacidade</a>.
+
+                            <button type="button"
+                                    class="text-primary font-bold hover:underline"
+                                    onclick="abrirModalLegal('modalPrivacidade')">
+                                Política de Privacidade
+                            </button>.
                         </label>
                     </div>
 
@@ -370,9 +519,16 @@
             </form>
 
             <div class="mt-6 flex items-center justify-between text-xs text-outline pt-4 border-t border-surface-container-high">
-                <div class="flex items-center gap-4">
-                    <a class="hover:text-primary transition-colors" href="#">Ajuda</a>
-                    <a class="hover:text-primary transition-colors" href="#">Contactos</a>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <a class="hover:text-primary transition-colors"
+                       href="mailto:clinicadentaria.ipvc@gmail.com">
+                        clinicadentaria.ipvc@gmail.com
+                    </a>
+
+                    <a class="hover:text-primary transition-colors"
+                       href="tel:+351210000000">
+                        +351 210 000 000
+                    </a>
                 </div>
 
                 <p>© 2026 Clínica Dentária</p>
@@ -382,10 +538,278 @@
 
 </main>
 
-<div class="fixed bottom-5 right-5 hidden lg:flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-full border border-outline-variant/20 shadow-sm z-10">
-    <span class="material-symbols-outlined text-primary text-sm">support_agent</span>
-    <span class="text-xs font-semibold text-on-surface-variant">Precisa de ajuda?</span>
+<!-- Modal Termos de Serviço -->
+<div id="modalTermos" class="legal-modal" onclick="fecharAoClicarFora(event, 'modalTermos')">
+    <div class="legal-modal-card">
+
+        <div class="legal-modal-header">
+            <div>
+                <span class="legal-academic-badge">
+                    Documento académico sem valor jurídico definitivo
+                </span>
+
+                <h2 class="text-xl font-extrabold text-on-surface">
+                    Termos de Serviço
+                </h2>
+
+                <p class="text-xs text-on-surface-variant mt-1">
+                    Última atualização: Junho de 2026 · Clínica Dentária
+                </p>
+            </div>
+
+            <button type="button"
+                    class="legal-icon-btn"
+                    onclick="fecharModalLegal('modalTermos')"
+                    aria-label="Fechar">
+                ×
+            </button>
+        </div>
+
+        <div class="legal-modal-body legal-content">
+
+            <div class="legal-note">
+                <strong>Nota:</strong> Este documento foi elaborado exclusivamente para fins académicos
+                no âmbito de um projeto universitário. O seu conteúdo é simulado e não constitui um
+                instrumento jurídico vinculativo.
+            </div>
+
+            <p>
+                Estes Termos de Serviço regulam a utilização da plataforma digital da Clínica Dentária.
+                Ao criar uma conta ou utilizar a plataforma, o utilizador declara que leu, compreendeu
+                e aceita estes termos.
+            </p>
+
+            <h3>1. Objetivo da plataforma</h3>
+            <p>
+                A plataforma digital da Clínica Dentária tem como objetivo facilitar o acesso dos pacientes
+                a serviços de saúde oral, permitindo a criação de conta, autenticação, gestão de dados
+                pessoais e comunicação com a clínica.
+            </p>
+
+            <h3>2. Conta de utilizador</h3>
+            <p>Para utilizar os serviços da plataforma, o utilizador deve:</p>
+            <ul>
+                <li>Fornecer informações verdadeiras, completas e atualizadas no momento do registo.</li>
+                <li>Manter a confidencialidade das suas credenciais de acesso.</li>
+                <li>Não partilhar a sua conta com terceiros.</li>
+                <li>Informar a clínica caso suspeite de acesso indevido à sua conta.</li>
+            </ul>
+
+            <h3>3. Utilização adequada</h3>
+            <p>O utilizador compromete-se a utilizar a plataforma de forma responsável, sendo proibido:</p>
+            <ul>
+                <li>Introduzir dados falsos ou enganosos.</li>
+                <li>Tentar aceder a informações de outros utilizadores sem autorização.</li>
+                <li>Utilizar a plataforma para fins comerciais não autorizados.</li>
+                <li>Realizar ações que possam comprometer a segurança ou estabilidade do sistema.</li>
+            </ul>
+
+            <h3>4. Comunicações</h3>
+            <p>
+                Ao criar uma conta, o utilizador aceita receber comunicações relacionadas com a sua conta,
+                incluindo confirmações, mensagens de recuperação de palavra-passe, avisos administrativos
+                e informações relevantes sobre o funcionamento da plataforma.
+            </p>
+
+            <h3>5. Limitação de responsabilidade</h3>
+            <p>
+                A Clínica Dentária não se responsabiliza por danos resultantes de interrupções temporárias
+                do serviço, falhas técnicas alheias ao seu controlo ou utilização indevida da plataforma
+                por parte do utilizador.
+            </p>
+            <p>
+                A informação disponível na plataforma tem caráter informativo e não substitui o
+                aconselhamento presencial prestado por profissionais de saúde oral.
+            </p>
+
+            <h3>6. Alterações aos termos</h3>
+            <p>
+                A Clínica Dentária pode atualizar estes Termos de Serviço sempre que necessário.
+                A versão mais recente estará disponível para consulta na plataforma.
+            </p>
+
+            <h3>7. Nota académica</h3>
+            <p>
+                Este documento foi criado no contexto de um projeto académico. O seu conteúdo é meramente
+                ilustrativo e não tem validade jurídica.
+            </p>
+        </div>
+
+        <div class="legal-modal-footer">
+            <button type="button"
+                    class="legal-close-btn"
+                    onclick="fecharModalLegal('modalTermos')">
+                Fechar
+            </button>
+        </div>
+    </div>
 </div>
+
+<!-- Modal Política de Privacidade -->
+<div id="modalPrivacidade" class="legal-modal" onclick="fecharAoClicarFora(event, 'modalPrivacidade')">
+    <div class="legal-modal-card">
+
+        <div class="legal-modal-header">
+            <div>
+                <span class="legal-academic-badge">
+                    Documento académico sem valor jurídico definitivo
+                </span>
+
+                <h2 class="text-xl font-extrabold text-on-surface">
+                    Política de Privacidade
+                </h2>
+
+                <p class="text-xs text-on-surface-variant mt-1">
+                    Última atualização: Junho de 2026 · Clínica Dentária
+                </p>
+            </div>
+
+            <button type="button"
+                    class="legal-icon-btn"
+                    onclick="fecharModalLegal('modalPrivacidade')"
+                    aria-label="Fechar">
+                ×
+            </button>
+        </div>
+
+        <div class="legal-modal-body legal-content">
+
+            <div class="legal-note">
+                <strong>Nota:</strong> Este documento foi elaborado exclusivamente para fins académicos
+                no âmbito de um projeto universitário. O seu conteúdo é simulado e não constitui um
+                instrumento jurídico vinculativo. O tratamento de dados descrito segue princípios gerais
+                do RGPD a título ilustrativo.
+            </div>
+
+            <p>
+                Esta Política de Privacidade explica, de forma simples, como a Clínica Dentária trata
+                os dados pessoais fornecidos pelos utilizadores através da sua plataforma digital.
+            </p>
+
+            <h3>1. Responsável pelo tratamento de dados</h3>
+            <p>
+                O responsável pelo tratamento dos dados pessoais recolhidos através desta plataforma é a
+                Clínica Dentária, no âmbito deste projeto académico simulado.
+            </p>
+
+            <h3>2. Dados pessoais recolhidos</h3>
+            <p>
+                No momento do registo, poderão ser recolhidos os seguintes dados:
+            </p>
+            <ul>
+                <li>Nome completo.</li>
+                <li>Endereço de e-mail.</li>
+                <li>Número de telemóvel, quando fornecido.</li>
+                <li>Palavra-passe.</li>
+            </ul>
+            <p>
+                A palavra-passe é armazenada de forma protegida através de mecanismos de segurança
+                adequados, não sendo visível para os administradores da plataforma.
+            </p>
+
+            <h3>3. Finalidade do tratamento</h3>
+            <p>Os dados pessoais recolhidos são utilizados para:</p>
+            <ul>
+                <li>Criar e gerir a conta do utilizador.</li>
+                <li>Permitir a autenticação na plataforma.</li>
+                <li>Enviar comunicações relacionadas com a conta.</li>
+                <li>Permitir a recuperação de palavra-passe.</li>
+                <li>Melhorar a segurança e o funcionamento da plataforma.</li>
+            </ul>
+
+            <h3>4. Segurança dos dados</h3>
+            <p>
+                A Clínica Dentária adota medidas técnicas e organizativas adequadas para proteger os
+                dados pessoais contra acesso não autorizado, alteração, divulgação ou destruição indevida.
+            </p>
+            <ul>
+                <li>Proteção da palavra-passe através de mecanismos de segurança adequados.</li>
+                <li>Utilização de tokens de recuperação de palavra-passe com validade limitada.</li>
+                <li>Acesso restrito às áreas protegidas da aplicação.</li>
+            </ul>
+
+            <h3>5. Partilha de dados com terceiros</h3>
+            <p>
+                Os dados pessoais dos utilizadores não são vendidos, alugados ou cedidos a terceiros para
+                fins comerciais.
+            </p>
+            <p>
+                Poderão apenas ser tratados por serviços técnicos necessários ao funcionamento da plataforma,
+                como serviços de alojamento, autenticação ou envio de e-mails.
+            </p>
+
+            <h3>6. Direitos do utilizador</h3>
+            <p>
+                O utilizador poderá solicitar o acesso, correção ou eliminação dos seus dados pessoais,
+                de acordo com a legislação aplicável.
+            </p>
+
+            <h3>7. Conservação dos dados</h3>
+            <p>
+                Os dados serão conservados apenas pelo período necessário para cumprir as finalidades
+                para as quais foram recolhidos, salvo obrigação legal em contrário.
+            </p>
+
+            <h3>8. Sessões e cookies</h3>
+            <p>
+                A plataforma poderá utilizar sessões de servidor para manter o utilizador autenticado
+                durante a navegação. Não são utilizados cookies de rastreamento ou publicidade neste
+                contexto académico.
+            </p>
+
+            <h3>9. Nota académica</h3>
+            <p>
+                Este documento foi criado no contexto de um projeto académico. O seu conteúdo é meramente
+                ilustrativo, segue princípios gerais do RGPD a título didático e não tem validade jurídica.
+            </p>
+        </div>
+
+        <div class="legal-modal-footer">
+            <button type="button"
+                    class="legal-close-btn"
+                    onclick="fecharModalLegal('modalPrivacidade')">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirModalLegal(id) {
+        const modal = document.getElementById(id);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.add('aberto');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModalLegal(id) {
+        const modal = document.getElementById(id);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('aberto');
+        document.body.style.overflow = '';
+    }
+
+    function fecharAoClicarFora(event, id) {
+        if (event.target.id === id) {
+            fecharModalLegal(id);
+        }
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            fecharModalLegal('modalTermos');
+            fecharModalLegal('modalPrivacidade');
+        }
+    });
+</script>
 
 </body>
 </html>
