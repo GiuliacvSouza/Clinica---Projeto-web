@@ -113,23 +113,12 @@
 </header>
 
 <main class="flex-grow max-w-7xl w-full mx-auto px-8 py-12">
-    <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-        <div class="max-w-2xl">
-            <span class="text-primary font-semibold tracking-wider uppercase text-xs mb-4 block">Área Financeira</span>
-            <h1 class="text-5xl font-extrabold tracking-tighter text-on-surface mb-6">Faturas e Recibos</h1>
-            <p class="text-on-surface-variant text-lg leading-relaxed font-body">
-                Consulte o seu histórico de pagamentos e aceda aos seus comprovativos fiscais.
-            </p>
-        </div>
-        <div class="bg-primary-container p-6 rounded-xl flex items-center gap-6 shadow-sm">
-            <div class="text-right">
-                <p class="text-label-md text-on-primary-container opacity-70">Saldo em Aberto</p>
-                <p class="text-3xl font-bold text-on-primary-container" th:text="${saldoAberto}">R$ 0,00</p>
-            </div>
-            <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary">
-                <span class="material-symbols-outlined" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-            </div>
-        </div>
+    <div class="mb-10">
+        <span class="text-primary font-semibold tracking-wider uppercase text-xs mb-4 block">Área Financeira</span>
+        <h1 class="text-5xl font-extrabold tracking-tighter text-on-surface mb-4">Faturas e Recibos</h1>
+        <p class="text-on-surface-variant text-lg leading-relaxed font-body max-w-2xl">
+            Consulte o seu histórico de pagamentos e aceda aos seus comprovativos fiscais.
+        </p>
     </div>
 
     <div class="grid grid-cols-1 gap-6">

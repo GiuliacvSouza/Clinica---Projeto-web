@@ -34,7 +34,7 @@ import java.util.Locale;
 @Controller
 public class FaturasController {
 
-    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "PT"));
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd MMM, yyyy");
 
     private final FaturaService faturaService;
@@ -61,13 +61,7 @@ public class FaturasController {
                 .map(this::toView)
                 .toList();
 
-        BigDecimal saldoAberto = faturas.stream()
-                .filter(fatura -> fatura.getEstado() != EstadoFatura.PAGA)
-                .map(this::valorFinalSeguro)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         model.addAttribute("faturas", faturasView);
-        model.addAttribute("saldoAberto", CURRENCY_FORMAT.format(saldoAberto));
         return "faturas/index";
     }
 
@@ -164,20 +158,20 @@ public class FaturasController {
         try {
             Consulta consulta = fatura.getIdAtendimento().getIdConsulta();
             if (consulta == null || consulta.getIdDentista() == null) {
-                return "Clinica Dentaria";
+                return "Clínica Dentária";
             }
 
             Utilizador utilizador = consulta.getIdDentista().getUtilizador();
             if (utilizador == null) {
-                return "Clinica Dentaria";
+                return "Clínica Dentária";
             }
 
             String primeiroNome = utilizador.getPrimeiroNome() != null ? utilizador.getPrimeiroNome().trim() : "";
             String ultimoNome = utilizador.getUltimoNome() != null ? utilizador.getUltimoNome().trim() : "";
             String nome = (primeiroNome + " " + ultimoNome).trim();
-            return nome.isBlank() ? "Clinica Dentaria" : "Dr(a). " + nome;
+            return nome.isBlank() ? "Clínica Dentária" : "Dr(a). " + nome;
         } catch (RuntimeException ex) {
-            return "Clinica Dentaria";
+            return "Clínica Dentária";
         }
     }
 

@@ -69,13 +69,7 @@ public class FaturaDownloadController {
                 .map(f -> toView(f, utilizadorId))
                 .toList();
 
-        BigDecimal totalPendente = faturas.stream()
-                .filter(f -> f.getEstado() == EstadoFatura.PENDENTE)
-                .map(f -> f.getValorFinal() != null ? f.getValorFinal() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         model.addAttribute("faturas", views);
-        model.addAttribute("totalPendente", CURRENCY.format(totalPendente));
         model.addAttribute("nomeUtilizador", session.getAttribute("utilizadorNome"));
         return "paciente/faturas";
     }
