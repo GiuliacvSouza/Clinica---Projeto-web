@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html class="light" lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -103,9 +103,9 @@
 <div class="flex items-start gap-4 bg-error-container/20 border border-error/20 rounded-2xl p-6 mb-8">
         <span class="material-symbols-outlined text-error mt-0.5 text-2xl">warning</span>
         <div>
-            <p class="font-bold text-on-error-container text-base">Esta acao nao pode ser desfeita.</p>
+            <p class="font-bold text-on-error-container text-base">Esta ação não pode ser desfeita.</p>
             <p class="text-sm text-on-error-container/80 mt-1">
-                O cancelamento e definitivo. Caso pretenda apenas alterar a data, utilize a opcao
+                O cancelamento é definitivo. Caso pretenda apenas alterar a data, utilize a opção
                 <a class="underline font-semibold hover:text-error transition-colors"
                    th:href="@{/consultas/{id}/reagendar(id=${consulta.id})}">Reagendar</a>.
             </p>
@@ -152,7 +152,7 @@
             <div class="flex items-center gap-3">
                 <span class="p-2 rounded-xl bg-primary-container/50 text-on-primary-container material-symbols-outlined">schedule</span>
                 <div>
-                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Horario</p>
+                    <p class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Horário</p>
                     <p class="font-bold text-on-surface"
                        th:text="${consulta.dataHoraInicio != null}
                            ? ${#temporals.format(consulta.dataHoraInicio.atZone(T(java.time.ZoneId).systemDefault()), 'HH:mm')}
@@ -167,7 +167,7 @@
 <div class="bg-surface-container-lowest rounded-3xl p-8 border border-outline-variant/20 ambient-glow">
         <h2 class="text-xl font-bold mb-2">Motivo do cancelamento</h2>
         <p class="text-sm text-on-surface-variant mb-6">
-            Indique o motivo para podermos melhorar o nosso servico. Este campo e obrigatorio.
+            Indique o motivo para podermos melhorar o nosso serviço. Este campo é obrigatório.
         </p>
 
         <form th:action="@{/consultas/{id}/cancelar(id=${consulta.id})}" method="post" id="form-cancelar"
@@ -203,7 +203,7 @@
                                value="Motivo de saude"/>
                         <span class="w-4 h-4 rounded-full border-2 border-outline flex-shrink-0
                                      group-has-[:checked]:border-error group-has-[:checked]:bg-error"></span>
-                        <span class="text-sm font-medium text-on-surface">Motivo de saude</span>
+                        <span class="text-sm font-medium text-on-surface">Motivo de saúde</span>
                     </label>
                     <label class="group flex items-center gap-3 p-4 rounded-xl bg-surface-container-low
                                   hover:bg-surface-container transition-all cursor-pointer

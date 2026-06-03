@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html class="light" lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -125,7 +125,7 @@
                     Olá, <span th:text="${nomeUtilizador}">bem-vindo</span>
                 </h1>
                 <p class="text-on-surface-variant text-lg max-w-md leading-relaxed">
-                    Gerencie sua jornada de saude bucal com facilidade. Suas proximas consultas e historico clinico estao centralizados aqui.
+                    Acompanhe a sua saúde oral com facilidade. As suas próximas consultas e o histórico clínico estão centralizados aqui.
                 </p>
             </div>
             <div class="relative h-64 lg:h-96 rounded-xl overflow-hidden shadow-2xl">
@@ -145,22 +145,22 @@
                     <span class="font-bold" th:text="${totalConsultas}">0</span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-on-surface-variant">Proxima Visita</span>
+                    <span class="text-on-surface-variant">Próxima Visita</span>
                     <span class="text-primary font-semibold" th:text="${proximaVisita}">Sem data</span>
                 </div>
             </div>
             <div class="bg-primary bg-gradient-to-br from-primary to-primary-dim p-6 rounded-xl text-on-primary shadow-lg">
                 <h3 class="text-lg font-bold mb-2">Cuide do seu sorriso</h3>
-                <p class="text-sm opacity-90 mb-4">Lembre-se de trocar sua escova a cada 3 meses.</p>
+                <p class="text-sm opacity-90 mb-4">Lembre-se de trocar a sua escova de dentes a cada 3 meses.</p>
                 <button class="bg-surface-container-lowest text-primary px-4 py-2 rounded-lg text-sm font-bold hover:scale-95 transition-transform">
-                    Ver Dicas de Saude
+                    Ver Dicas de Saúde
                 </button>
             </div>
         </aside>
 
         <section class="lg:col-span-9 space-y-8">
             <div class="flex items-end justify-between border-b border-surface-container-highest pb-4">
-                <h2 class="text-3xl font-bold tracking-tight text-on-surface">Minhas Consultas</h2>
+                <h2 class="text-3xl font-bold tracking-tight text-on-surface">As Minhas Consultas</h2>
                 <span class="text-on-surface-variant text-sm font-medium" th:text="${periodoConsultas}">Sem consultas</span>
             </div>
 
@@ -232,7 +232,7 @@
                         <span class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Paciente</span>
                         <input class="w-full rounded-xl border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:ring-primary"
                                name="pesquisa"
-                               placeholder="Nome, email ou telemovel"
+                               placeholder="Nome, email ou telemóvel"
                                th:value="${pesquisa}"
                                type="search"/>
                     </label>
@@ -274,8 +274,8 @@
                     <span class="material-symbols-outlined" data-icon="event_busy">event_busy</span>
                 </div>
                 <p class="font-bold"
-                   th:text="${filtrosAplicados} ? 'Nenhuma consulta encontrada com os filtros selecionados.' : 'Ainda nao existem consultas para este utilizador.'">
-                    Ainda nao existem consultas para este utilizador.
+                   th:text="${filtrosAplicados} ? 'Nenhuma consulta encontrada com os filtros selecionados.' : 'Ainda não existem consultas para este utilizador.'">
+                    Ainda não existem consultas para este utilizador.
                 </p>
                 <a class="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors"
                    th:href="@{/marcar-consulta}">

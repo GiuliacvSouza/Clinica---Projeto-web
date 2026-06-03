@@ -136,7 +136,7 @@ public class ConsultasController {
                         && utilizadorId.equals(consulta.getIdPaciente().getId());
                 if (!ePaciente) {
                     redirectAttributes.addFlashAttribute("mensagemErro",
-                            "Nao tem permissao para cancelar esta consulta.");
+                            "Não tem permissão para cancelar esta consulta.");
                     return "redirect:/consultas";
                 }
             }
@@ -147,7 +147,7 @@ public class ConsultasController {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro",
-                    "Nao foi possivel cancelar a consulta. " + ex.getMessage());
+                    "Não foi possível cancelar a consulta. " + ex.getMessage());
         }
 
         return "redirect:/consultas";
@@ -239,7 +239,7 @@ public class ConsultasController {
             case WEDNESDAY -> "Qua";
             case THURSDAY -> "Qui";
             case FRIDAY -> "Sex";
-            case SATURDAY -> "Sab";
+            case SATURDAY -> "Sáb";
             case SUNDAY -> "Dom";
         };
     }

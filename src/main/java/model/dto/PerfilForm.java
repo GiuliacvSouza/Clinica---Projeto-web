@@ -67,6 +67,10 @@ public class PerfilForm {
     // ── Morada ────────────────────────────────────────────────────────────────
 
     @Size(min = 3, message = "Introduza uma rua válida.")
+    @Pattern(
+        regexp  = "(?U)^$|^[\\p{L}][\\p{L}\\d ,.º°ª\\-/]*$",
+        message = "Introduza uma rua válida."
+    )
     private String rua;
 
     @Pattern(
@@ -82,7 +86,7 @@ public class PerfilForm {
     private String codigoPostal;
 
     @Pattern(
-        regexp  = "(?U)^$|^[\\p{L}]+([ \\-][\\p{L}]+)*$",
+        regexp  = "(?U)^$|^[\\p{L}][\\p{L} \\-]*$",
         message = "Introduza uma localidade válida."
     )
     private String localidade;

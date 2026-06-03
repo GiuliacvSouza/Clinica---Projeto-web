@@ -106,3 +106,23 @@ ALTER TABLE IF EXISTS consulta
         'EM_CONSULTA'
     ))
 @@
+
+-- Códigos postais de teste (inserção segura: ignora se já existir)
+INSERT INTO codigo_postal (codigo_postal, localidade) VALUES
+    ('4900-001', 'Viana do Castelo'),
+    ('4900-360', 'Viana do Castelo'),
+    ('4700-000', 'Braga'),
+    ('4700-307', 'Braga'),
+    ('4000-001', 'Porto'),
+    ('4000-285', 'Porto'),
+    ('1000-001', 'Lisboa'),
+    ('1000-205', 'Lisboa'),
+    ('3000-001', 'Coimbra'),
+    ('4480-000', 'Vila do Conde'),
+    ('4460-000', 'Matosinhos'),
+    ('4410-000', 'Vila Nova de Gaia'),
+    ('4200-001', 'Porto'),
+    ('2750-001', 'Cascais'),
+    ('8000-001', 'Faro')
+ON CONFLICT (codigo_postal) DO NOTHING
+@@

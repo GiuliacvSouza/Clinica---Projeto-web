@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html class="light" lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -123,7 +123,7 @@
 <main class="max-w-7xl mx-auto px-8 py-12">
     <header class="mb-12">
         <h1 class="text-5xl font-extrabold tracking-tight text-on-surface mb-4">Marcar Consulta</h1>
-        <p class="text-on-surface-variant text-lg max-w-2xl">O seu caminho para um sorriso saudavel comeca aqui. Selecione o profissional e o melhor horario para o seu atendimento.</p>
+        <p class="text-on-surface-variant text-lg max-w-2xl">O seu caminho para um sorriso saudável começa aqui. Selecione o profissional e o melhor horário para a sua consulta.</p>
     </header>
 
     <form class="grid grid-cols-1 lg:grid-cols-12 gap-12" method="post" th:action="@{/marcar-consulta}">
@@ -169,7 +169,7 @@
 
                 <div class="bg-surface-container-low rounded-2xl p-8">
                     <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-xl font-bold">Proximas datas</h3>
+                        <h3 class="text-xl font-bold">Próximas datas</h3>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -188,7 +188,7 @@
             <section>
                 <div class="flex items-center gap-3 mb-6">
                     <span class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-bold text-sm">3</span>
-                    <h2 class="text-2xl font-bold tracking-tight">Horarios Disponiveis</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">Horários Disponíveis</h2>
                 </div>
 
                 <div id="horarios-lista" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -216,7 +216,7 @@
                                 name="tipo">
                             <option th:selected="${tipoSelecionado == 'Consulta Geral'}" value="Consulta Geral">Consulta Geral</option>
                             <option th:selected="${tipoSelecionado == 'Ortodontia'}" value="Ortodontia">Ortodontia</option>
-                            <option th:selected="${tipoSelecionado == 'Estetica'}" value="Estetica">Estetica</option>
+                            <option th:selected="${tipoSelecionado == 'Estetica'}" value="Estetica">Estética</option>
                             <option th:selected="${tipoSelecionado == 'Implantologia'}" value="Implantologia">Implantologia</option>
                         </select>
                     </label>
@@ -238,8 +238,8 @@
                     <div class="flex items-start gap-4">
                         <span class="material-symbols-outlined text-primary p-2 bg-primary-container/30 rounded-lg" data-icon="schedule">schedule</span>
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Horario</p>
-                            <p class="text-on-surface font-semibold">Duracao prevista: 45 min</p>
+                            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Horário</p>
+                            <p class="text-on-surface font-semibold">Duração prevista: 45 min</p>
                         </div>
                     </div>
                 </div>
@@ -249,7 +249,7 @@
                         <span class="text-on-surface-variant">Consulta Inicial</span>
                         <span class="text-on-surface font-bold">A confirmar</span>
                     </div>
-                    <p class="text-xs text-on-surface-variant">O pagamento será realizado no local após o atendimento.</p>
+                    <p class="text-xs text-on-surface-variant">O pagamento será efetuado no local após a consulta.</p>
                 </div>
 
                 <button class="w-full signature-gradient text-on-primary py-4 rounded-xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200" type="submit">

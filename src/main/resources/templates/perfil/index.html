@@ -441,18 +441,22 @@
                                    placeholder="1234-567"
                                    th:classappend="${#fields.hasErrors('codigoPostal')} ? 'has-error'"
                                    th:field="*{codigoPostal}"
-                                   type="text"/>
+                                   type="text"
+                                   id="codigoPostalInput"
+                                   autocomplete="postal-code"
+                                   maxlength="8"/>
                             <span class="field-error"
                                   th:errors="*{codigoPostal}"
                                   th:if="${#fields.hasErrors('codigoPostal')}"></span>
                         </div>
 <div class="form-group full">
                             <label class="form-label" th:for="${#ids.next('localidade')}">Localidade</label>
-                            <input class="form-control"
-                                   placeholder="Ex: Viana do Castelo"
-                                   th:classappend="${#fields.hasErrors('localidade')} ? 'has-error'"
+                            <input class="form-control-readonly"
+                                   placeholder="Preenchido automaticamente"
                                    th:field="*{localidade}"
-                                   type="text"/>
+                                   type="text"
+                                   id="localidadeInput"
+                                   readonly/>
                             <span class="field-error"
                                   th:errors="*{localidade}"
                                   th:if="${#fields.hasErrors('localidade')}"></span>
@@ -496,5 +500,53 @@
 </footer>
 <th:block th:replace="~{fragments/modais-legais :: modais}"></th:block>
 <th:block th:replace="~{fragments/modais-legais :: scripts}"></th:block>
+
+<script>
+    (function () {
+        const cpInput  = document.getElementById('codigoPostalInput');
+        const locInput = document.getElementById('localidadeInput');
+
+        if (!cpInput || !locInput) return;
+
+        // Formata enquanto digita: insere o hífen após os 4 primeiros dígitos
+        cpInput.addEventListener('input', function () {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val.length > 4) {
+                val = val.slice(0, 4) + '-' + val.slice(4, 7);
+            }
+            this.value = val;
+            pesquisarLocalidade(val);
+        });
+
+        let debounceTimer;
+
+        function pesquisarLocalidade(codigo) {
+            clearTimeout(debounceTimer);
+
+            // Só consulta quando o formato estiver completo: 4 dígitos + hífen + 3 dígitos
+            if (!/^\d{4}-\d{3}$/.test(codigo)) {
+                locInput.value = '';
+                locInput.placeholder = 'Preenchido automaticamente';
+                return;
+            }
+
+            debounceTimer = setTimeout(function () {
+                fetch('/codigos-postais/' + encodeURIComponent(codigo))
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('não encontrado');
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        locInput.value = data.localidade;
+                        locInput.placeholder = 'Preenchido automaticamente';
+                    })
+                    .catch(function () {
+                        locInput.value = '';
+                        locInput.placeholder = 'Código postal não encontrado';
+                    });
+            }, 300);
+        }
+    })();
+</script>
 </body>
 </html>

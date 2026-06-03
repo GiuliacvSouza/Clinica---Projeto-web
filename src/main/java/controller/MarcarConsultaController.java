@@ -57,7 +57,7 @@ public class MarcarConsultaController {
 
         carregarModelo(model, null, null, null, "Consulta Geral");
         if (!"PACIENTE".equalsIgnoreCase((String) session.getAttribute("utilizadorTipo"))) {
-            model.addAttribute("erroMarcacao", "Para marcar uma consulta por esta pagina, entre com uma conta de paciente.");
+            model.addAttribute("erroMarcacao", "Para marcar uma consulta por esta página, entre com uma conta de paciente.");
         }
         return "marcar-consulta/index";
     }
@@ -172,7 +172,7 @@ public class MarcarConsultaController {
                 ? dentista.getUtilizador().getUltimoNome().trim()
                 : "";
         String nome = (primeiroNome + " " + ultimoNome).trim();
-        return new DentistaOpcao(dentista.getId(), nome.isBlank() ? "Dentista" : "Dr(a). " + nome, "Clinica Geral");
+        return new DentistaOpcao(dentista.getId(), nome.isBlank() ? "Dentista" : "Dr(a). " + nome, "Clínica Geral");
     }
 
     private List<DataOpcao> proximasDatas() {
@@ -198,7 +198,7 @@ public class MarcarConsultaController {
             case WEDNESDAY -> "Qua";
             case THURSDAY -> "Qui";
             case FRIDAY -> "Sex";
-            case SATURDAY -> "Sab";
+            case SATURDAY -> "Sáb";
             case SUNDAY -> "Dom";
         };
     }

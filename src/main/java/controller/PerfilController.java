@@ -1,8 +1,10 @@
 package controller;
 
+import bll.CodigoPostalService;
 import bll.UtilizadorService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import model.CodigoPostal;
 import model.Utilizador;
 import model.dto.PerfilForm;
 import org.springframework.stereotype.Controller;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PerfilController {
 
     private final UtilizadorService utilizadorService;
+    private final CodigoPostalService codigoPostalService;
 
-    public PerfilController(UtilizadorService utilizadorService) {
+    public PerfilController(UtilizadorService utilizadorService,
+                            CodigoPostalService codigoPostalService) {
         this.utilizadorService = utilizadorService;
+        this.codigoPostalService = codigoPostalService;
     }
 
     @GetMapping("/perfil")
@@ -98,6 +103,18 @@ public class PerfilController {
         u.setTelefone(emptyToNull(f.getTelefone()));
         u.setRua(emptyToNull(f.getRua()));
         u.setNumeroPorta(emptyToNull(f.getNumeroPorta()));
+
+        String cp = emptyToNull(f.getCodigoPostal());
+        if (cp != null) {
+            try {
+                CodigoPostal codigoPostal = codigoPostalService.buscarPorId(cp);
+                u.setCodigoPostal(codigoPostal);
+            } catch (RuntimeException ex) {
+                u.setCodigoPostal(null);
+            }
+        } else {
+            u.setCodigoPostal(null);
+        }
     }
 
     private String formatarNomeCompleto(Utilizador u) {
