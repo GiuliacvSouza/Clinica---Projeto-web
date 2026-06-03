@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Duration;
@@ -164,11 +165,19 @@ public class ConsultasController {
         }
 
         try {
-            model.addAttribute("consulta", consultaService.buscarPorId(id));
+            Consulta consulta = consultaService.buscarPorId(id);
+            LocalDate dataInicial = LocalDate.now().plusDays(1);
+            List<LocalTime> horarios = consultaService.listarHorariosDisponiveisParaReagendamento(
+                    id,
+                    consulta.getIdDentista() != null ? consulta.getIdDentista().getId() : null,
+                    dataInicial
+            );
+            model.addAttribute("consulta", consulta);
             model.addAttribute("datas", proximasDatas());
-            model.addAttribute("horarios", HORARIOS_DISPONIVEIS.stream()
+            model.addAttribute("horarios", horarios.stream()
                     .map(h -> DateTimeFormatter.ofPattern("HH:mm").format(h))
                     .toList());
+            model.addAttribute("dataSelecionada", dataInicial.toString());
             return "reagendar-consulta/index";
         } catch (RuntimeException ex) {
             return "redirect:/consultas";
@@ -181,6 +190,7 @@ public class ConsultasController {
             @RequestParam String data,
             @RequestParam String hora,
             HttpSession session,
+            Model model,
             RedirectAttributes redirectAttributes
     ) {
         if (session.getAttribute("utilizadorId") == null) {
@@ -196,11 +206,71 @@ public class ConsultasController {
 
             consultaService.reagendar(id, novaDataHora);
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Consulta reagendada com sucesso.");
+            return "redirect:/consultas";
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            // Erro de conflito ou validação — devolver à página com mensagem
+            try {
+                Consulta consulta = consultaService.buscarPorId(id);
+                LocalDate dataEscolhida = LocalDate.parse(data);
+                List<LocalTime> horarios = consultaService.listarHorariosDisponiveisParaReagendamento(
+                        id,
+                        consulta.getIdDentista() != null ? consulta.getIdDentista().getId() : null,
+                        dataEscolhida
+                );
+                model.addAttribute("consulta", consulta);
+                model.addAttribute("datas", proximasDatas());
+                model.addAttribute("horarios", horarios.stream()
+                        .map(h -> DateTimeFormatter.ofPattern("HH:mm").format(h))
+                        .toList());
+                model.addAttribute("dataSelecionada", data);
+                model.addAttribute("erroReagendamento", ex.getMessage());
+                return "reagendar-consulta/index";
+            } catch (RuntimeException fallback) {
+                redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+                return "redirect:/consultas";
+            }
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+            try {
+                Consulta consulta = consultaService.buscarPorId(id);
+                LocalDate dataEscolhida = LocalDate.parse(data);
+                List<LocalTime> horarios = consultaService.listarHorariosDisponiveisParaReagendamento(
+                        id,
+                        consulta.getIdDentista() != null ? consulta.getIdDentista().getId() : null,
+                        dataEscolhida
+                );
+                model.addAttribute("consulta", consulta);
+                model.addAttribute("datas", proximasDatas());
+                model.addAttribute("horarios", horarios.stream()
+                        .map(h -> DateTimeFormatter.ofPattern("HH:mm").format(h))
+                        .toList());
+                model.addAttribute("dataSelecionada", data);
+                model.addAttribute("erroReagendamento", ex.getMessage());
+                return "reagendar-consulta/index";
+            } catch (RuntimeException fallback) {
+                redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+                return "redirect:/consultas";
+            }
         }
+    }
 
-        return "redirect:/consultas";
+    @GetMapping("/consultas/{id}/horarios-disponiveis-reagendamento")
+    @ResponseBody
+    public List<String> horariosDisponiveisReagendamento(
+            @PathVariable Integer id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
+    ) {
+        try {
+            Consulta consulta = consultaService.buscarPorId(id);
+            Integer dentistaId = consulta.getIdDentista() != null
+                    ? consulta.getIdDentista().getId()
+                    : null;
+            return consultaService.listarHorariosDisponiveisParaReagendamento(id, dentistaId, data)
+                    .stream()
+                    .map(h -> DateTimeFormatter.ofPattern("HH:mm").format(h))
+                    .toList();
+        } catch (RuntimeException ex) {
+            return List.of();
+        }
     }
 
     private static final List<LocalTime> HORARIOS_DISPONIVEIS = List.of(

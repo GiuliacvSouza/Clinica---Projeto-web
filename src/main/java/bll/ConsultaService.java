@@ -219,6 +219,36 @@ public class ConsultaService {
                 .toList();
     }
 
+    public List<LocalTime> listarHorariosDisponiveisParaReagendamento(
+            Integer consultaAtualId,
+            Integer dentistaId,
+            LocalDate data
+    ) {
+        if (dentistaId == null || data == null || data.isBefore(LocalDate.now())) {
+            return List.of();
+        }
+
+        Instant inicioDia = data.atStartOfDay(ZONA_HORARIA).toInstant();
+        Instant fimDia = data.plusDays(1).atStartOfDay(ZONA_HORARIA).minusNanos(1).toInstant();
+        List<Consulta> consultasOcupadas = repository.findOcupadasPorDentistaEntre(
+                dentistaId,
+                inicioDia,
+                fimDia,
+                EstadoConsulta.CANCELADA
+        ).stream()
+                .filter(c -> consultaAtualId == null || !consultaAtualId.equals(c.getId()))
+                .toList();
+
+        return HORARIOS_BASE.stream()
+                .filter(hora -> data.isAfter(LocalDate.now()) || hora.isAfter(LocalTime.now()))
+                .filter(hora -> {
+                    Instant inicio = data.atTime(hora).atZone(ZONA_HORARIA).toInstant();
+                    Instant fim = inicio.plus(Duration.ofMinutes(DURACAO_PADRAO_MINUTOS));
+                    return consultasOcupadas.stream().noneMatch(existente -> existeConflito(inicio, fim, existente));
+                })
+                .toList();
+    }
+
     public boolean horarioDisponivel(Integer dentistaId, Instant inicio, Integer duracaoMinutos, Integer consultaIgnoradaId) {
         if (dentistaId == null || inicio == null || inicio.isBefore(Instant.now())) {
             return false;
@@ -299,13 +329,15 @@ public class ConsultaService {
 
     @Transactional
     public Consulta finalizarConsulta(Integer id) {
-        Consulta consulta = atualizarStatus(id, EstadoConsulta.CONCLUIDA);        try {
+        Consulta consulta = atualizarStatus(id, EstadoConsulta.CONCLUIDA);
+        try {
             if (atendimentoService.buscarPorConsulta(consulta) == null) {
                 model.Atendimento at = new model.Atendimento();
                 at.setIdConsulta(consulta);
                 at.setRetorno(false);
                 at.setDiagnostico("Atendimento criado automaticamente ao concluir a consulta.");
-                model.Atendimento salvo = atendimentoService.salvar(at);                try {
+                model.Atendimento salvo = atendimentoService.salvar(at);
+                try {
                     String nomeProc = resolverProcedimento(consulta);
                     if (nomeProc != null && !nomeProc.isBlank()) {
                         var procs = procedimentoRepository.findByNomeContainingIgnoreCase(nomeProc);
@@ -319,9 +351,11 @@ public class ConsultaService {
                             atendimentoProcedimentoRepository.save(ap);
                         }
                     }
-                } catch (RuntimeException ignoredInner) {                }
+                } catch (RuntimeException ignoredInner) {
+                }
             }
-        } catch (RuntimeException ignored) {        }
+        } catch (RuntimeException ignored) {
+        }
 
         return consulta;
     }
